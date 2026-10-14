@@ -46,7 +46,14 @@ ACTIONS = {
     "important": {"add": ["IMPORTANT"]},
     "trash": {},  # opt-in only; recoverable from Gmail Trash for 30 days, and via `undo`
 }
+MARKER_TAG = "[mail-triage"
 MARKER = re.compile(r"\[mail-triage thread=(?P<thread>\w+) tag=(?P<tag>[\w/-]+)(?: on_done=(?P<on_done>[\w,]*))?\]")
+
+
+def csv_safe(value):
+    """Neutralize spreadsheet formulas: subjects and senders are attacker-controlled."""
+    value = str(value)
+    return "'" + value if value[:1] in ("=", "+", "-", "@", "\t", "\r") else value
 
 
 def write_json(path: Path, data):
@@ -133,7 +140,7 @@ class Report:
         with path.open("w", newline="") as f:
             w = csv.DictWriter(f, cols)
             w.writeheader()
-            w.writerows(old.values())
+            w.writerows({k: csv_safe(v) for k, v in row.items()} for row in old.values())
         save_meta_cache()
         print(f"[report] {len(old)} messages -> {path.relative_to(ROOT) if path.is_relative_to(ROOT) else path}")
 
@@ -388,7 +395,8 @@ class Tasks:
     def by_thread(self) -> dict[str, dict]:
         out = {}
         for t in self.all():
-            m = MARKER.search(t.get("notes") or "")
+            # The genuine marker is always appended last; earlier ones may come from mail-derived text.
+            m = ([None] + list(MARKER.finditer(t.get("notes") or "")))[-1]
             if m:
                 out[m["thread"]] = {**t, **m.groupdict()}
         return out
@@ -452,6 +460,8 @@ def validate_decisions(raw, pending, rules):
             raise ValueError("this tag does not allow tasks")
         if not isinstance(task.get("title"), str) or not task["title"].strip() or len(task["title"]) > 250:
             raise ValueError("task title must contain 1-250 characters")
+        if any(MARKER_TAG in str(task.get(k, "")) for k in ("title", "notes")):
+            raise ValueError("task text must not contain a mail-triage marker")
         if "notes" in task and (not isinstance(task["notes"], str) or len(task["notes"]) > 2000):
             raise ValueError("task notes must be a string of at most 2000 characters")
         if "due" in task:
@@ -559,8 +569,11 @@ def cmd_sync(rules, args, _labels=None):
     for th, t in tasks.by_thread().items():
         if t.get("status") != "completed":
             continue
-        actions = t["on_done"].split(",") if t.get("on_done") is not None else \
-            tags.get(t["tag"], {}).get("on_task_done", ["archive"])
+        configured = tags.get(t["tag"], {}).get("on_task_done", ["archive"])
+        actions = t["on_done"].split(",") if t.get("on_done") is not None else configured
+        # Overrides may only narrow the tag's configured non-trash actions, even if task notes were edited.
+        if t.get("on_done") is not None:
+            actions = [a for a in actions if a in configured and a != "trash"]
         actions = [a for a in actions if a]
         if not actions:
             continue

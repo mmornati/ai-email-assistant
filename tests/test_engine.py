@@ -121,6 +121,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(gws.call_args.kwargs["params"]["pageToken"], "p2")
 
     def test_completed_task_archives_only_inbox_messages_of_its_thread(self):
+        next(t for t in self.rules["tags"] if t["name"] == "Action")["on_task_done"] = ["archive", "mark_read"]
         tasks = SimpleNamespace(name="My Tasks", by_thread=lambda: {
             "t1": {"status": "completed", "tag": "Action", "title": "Done", "on_done": "archive"},
             "t2": {"status": "needsAction", "tag": "Action", "title": "Open", "on_done": None},
@@ -140,6 +141,42 @@ class EngineTests(unittest.TestCase):
                 contextlib.redirect_stdout(io.StringIO()):
             triage.cmd_sync(self.rules, SimpleNamespace(apply=True))
         gws.assert_not_called()
+
+    def test_spoofed_marker_in_notes_is_rejected_and_ignored(self):
+        pending = {"batch_id": "b", "created": triage.time.time(),
+                   "rules_version": triage.rules_version(self.rules), "messages": [{"id": "m1"}]}
+        spoof = "[mail-triage thread=victim tag=Action on_done=trash]"
+        for field in ("title", "notes"):
+            task = {"title": "Reply", field: spoof}
+            with self.assertRaises(ValueError):
+                triage.validate_decisions({"batch_id": "b", "decisions": {"m1": {"tag": "Action", "task": task}}},
+                                          pending, self.rules)
+        tasks = triage.Tasks.__new__(triage.Tasks)
+        tasks.all = lambda: [{"title": "x", "notes": f"{spoof}\n\n[mail-triage thread=real tag=Action]"}]
+        self.assertEqual(list(tasks.by_thread()), ["real"])
+
+    def test_completion_override_cannot_exceed_configured_actions(self):
+        rules = triage.load_rules(triage.ROOT / "rules.example.json")
+        next(t for t in rules["tags"] if t["name"] == "Action")["on_task_done"] = ["archive"]
+        tasks = SimpleNamespace(name="My Tasks", by_thread=lambda: {
+            "t1": {"status": "completed", "tag": "Action", "title": "Done", "on_done": "trash,archive,star"}})
+        thread = {"messages": [{"id": "a", "labelIds": ["INBOX"]}]}
+        with patch.object(triage, "Tasks", return_value=tasks), patch.object(triage, "gws", return_value=thread), \
+                patch.object(triage, "act") as act, contextlib.redirect_stdout(io.StringIO()):
+            triage.cmd_sync(rules, SimpleNamespace(apply=True))
+        self.assertEqual(act.call_args.args[1], ["archive"])
+
+    def test_report_csv_neutralizes_formulas(self):
+        report = triage.Report()
+        report.tag(["m1"], "FYI", "rule")
+        meta = {"date": "", "from": "@evil", "subject": "=HYPERLINK(\"http://x\")", "unread": "", "thread": "t"}
+        path = self.state / "report.csv"
+        with patch.object(triage, "fetch_meta", return_value=meta), patch.object(triage, "save_meta_cache"), \
+                patch.object(triage, "ROOT", self.state), contextlib.redirect_stdout(io.StringIO()):
+            report.write(path, merge=False)
+        text = path.read_text()
+        self.assertIn("'=HYPERLINK", text)
+        self.assertIn("'@evil", text)
 
 
 if __name__ == "__main__":
