@@ -277,16 +277,16 @@ class TriageTests(unittest.TestCase):
                 runner.parse_cli_response("\n".join(json.dumps(e) for e in events))
 
     def test_usage_log_excludes_mail_and_unknown_fields(self):
-        runner.record_usage("test", 1, 10, 20, 1.0, {
+        runner.record_usage("test", 1, 10, 20, 1.0, runner.copilot_usage({
             "totalNanoAiu": 100, "secret": "private",
             "tokenDetails": {"input": {"tokenCount": 5}, "other": {"tokenCount": 3}},
-        }, "ok")
+        }), "ok")
         text = runner.USAGE.read_text()
         self.assertNotIn("private", text)
         self.assertEqual(json.loads(text)["cli_usage"]["tokens"], {"input": 5})
         with contextlib.redirect_stdout(io.StringIO()) as output:
             runner.usage_report()
-        self.assertEqual(json.loads(output.getvalue())["test"]["tokens"]["input"], 5)
+        self.assertEqual(json.loads(output.getvalue())["copilot/test"]["tokens"]["input"], 5)
 
     def test_report_has_deterministic_task_details(self):
         triage.REPORT.task("a1", "CREATE due 2026-10-08: Approve proposal",
@@ -423,13 +423,44 @@ class TriageTests(unittest.TestCase):
         decide.assert_not_called()
         self.assertEqual(json.loads(runner.SUMMARY.read_text())["status"], "error")
 
+    def raw_config(self):
+        return json.loads((triage.ROOT / "classifier.json").read_text())
+
     def test_config_rejects_invalid_values(self):
-        for key, value in (("batch_size", 0), ("max_escalations", -1), ("cheap_model", ""),
-                           ("confidence_threshold", float("nan")), ("disabled_mcp_servers", "all")):
-            path = self.state / "cfg.json"
-            triage.write_json(path, {**self.cfg, key: value})
-            with self.assertRaises(ValueError):
+        path = self.state / "cfg.json"
+        for key, value in (("batch_size", 0), ("max_escalations", -1),
+                           ("confidence_threshold", float("nan")), ("cli", "other"), ("cli", ["copilot"]),
+                           ("providers", []), ("providers", {"other": {}}), ("providers", {})):
+            triage.write_json(path, {**self.raw_config(), key: value})
+            with self.assertRaises(ValueError, msg=key):
                 runner.load_config(path)
+        for key, value in (("cheap_model", ""), ("binary", " "), ("disabled_mcp_servers", "all"), ("extra", 1)):
+            raw = self.raw_config()
+            raw["providers"]["copilot"][key] = value
+            triage.write_json(path, raw)
+            with self.assertRaises(ValueError, msg=key):
+                runner.load_config(path)
+
+    def test_config_selects_provider_settings(self):
+        self.assertEqual(self.cfg["cli"], "copilot")
+        self.assertEqual(self.cfg["binary"], "copilot")
+        self.assertNotIn("providers", self.cfg)
+        with self.assertRaises(ValueError):
+            runner.load_config(triage.ROOT / "classifier.json", cli="other")
+
+    def test_legacy_flat_config_is_read_as_copilot(self):
+        raw = self.raw_config()
+        copilot = raw.pop("providers")["copilot"]
+        del raw["cli"]
+        legacy = {**raw, "cheap_model": copilot["cheap_model"], "escalation_model": copilot["escalation_model"],
+                  "copilot_binary": copilot["binary"], "disabled_mcp_servers": ["github"]}
+        path = self.state / "legacy.json"
+        triage.write_json(path, legacy)
+        cfg = runner.load_config(path)
+        self.assertEqual(cfg, {**self.cfg, "disabled_mcp_servers": ["github"]})
+        triage.write_json(path, {**legacy, "copilot_binary": ""})
+        with self.assertRaises(ValueError):
+            runner.load_config(path)
 
     def test_schedule_calendar_and_no_immediate_execution(self):
         job = schedule.definition(sys.executable)

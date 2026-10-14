@@ -11,6 +11,10 @@ dist/
 __pycache__/
 *.py[cod]
 
+# Local Claude Code state (project skills in .claude/skills/ are tracked)
+.claude/worktrees/
+.claude/settings.local.json
+
 # Local secrets and OS noise
 .env
 .env.*

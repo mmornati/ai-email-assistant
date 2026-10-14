@@ -80,6 +80,32 @@ class SetupScriptTests(unittest.TestCase):
         self.assertIn("brew install googleworkspace-cli", result.stdout)
         self.assertIn("brew install --cask gcloud-cli", result.stdout)
 
+    def test_default_cli_is_copilot_and_selection_is_left_alone(self):
+        result = self.run_script("--dry-run", "--skip-auth", "--skip-verify")
+        self.assertIn("brew install --cask copilot-cli", result.stdout)
+        self.assertNotIn("claude-code", result.stdout)
+        self.assertNotIn("--select-cli", result.stdout)
+
+    def test_cli_claude_installs_claude_code_and_selects_it(self):
+        result = self.run_script("--dry-run", "--skip-verify", "--cli", "claude")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("brew install --cask claude-code", result.stdout)
+        self.assertNotIn("copilot-cli", result.stdout)
+        self.assertIn("runner.py --select-cli claude", result.stdout)
+        self.assertIn("claude auth login", result.stdout)
+        self.assertNotIn("copilot login", result.stdout)
+        self.assertNotIn("brew install", self.brew_log.read_text())
+
+    def test_cli_option_is_validated_and_model_cli_can_be_skipped(self):
+        result = self.run_script("--dry-run", "--cli", "gpt")
+        self.assertEqual(result.returncode, 64)
+        self.assertIn("copilot or claude", result.stderr)
+        for flag in ("--no-model-cli", "--skip-copilot"):
+            result = self.run_script("--dry-run", "--skip-verify", "--cli", "claude", flag)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertNotIn("claude-code", result.stdout)
+            self.assertNotIn("claude auth login", result.stdout)
+
     def test_conflicting_gws_formula_is_rejected(self):
         stub(self.bin, "brew", 'case "$1" in --version) echo "Homebrew 9.9.9";; '
                                'list) [ "$3" = gws ] && exit 0; exit 1;; esac')

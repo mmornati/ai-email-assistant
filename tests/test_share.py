@@ -25,6 +25,9 @@ class ShareTests(unittest.TestCase):
             (root / "rules.json").write_text(sentinel)
             (root / ".env").write_text(sentinel)
             (root / "unexpected.txt").write_text(sentinel)
+            for private in (".claude/settings.local.json", ".claude/worktrees/branch/rules.json"):
+                (root / private).parent.mkdir(parents=True, exist_ok=True)
+                (root / private).write_text(sentinel)
             output = Path(directory) / "bundle.zip"
             self.assertEqual(share.package(output, root), len(share.FILES) + 1)
             with zipfile.ZipFile(output) as archive:
@@ -40,6 +43,19 @@ class ShareTests(unittest.TestCase):
                         self.assertEqual(tag[key], [])
             self.assertEqual(share.package(output, root), len(share.FILES) + 1)
             self.assertEqual(list(output.parent.glob(".mail-share-*")), [])
+
+    def test_every_test_module_skill_and_adr_is_shared(self):
+        for path in (*share.ROOT.glob("tests/*.py"), *share.ROOT.glob(".github/skills/*/SKILL.md"),
+                     *share.ROOT.glob(".claude/skills/*/SKILL.md"), *share.ROOT.glob("docs/adr/*.md")):
+            self.assertIn(path.relative_to(share.ROOT).as_posix(), share.FILES)
+
+    def test_claude_skills_match_copilot_skills(self):
+        copilot = {p.parent.name: p for p in share.ROOT.glob(".github/skills/*/SKILL.md")}
+        claude = {p.parent.name: p for p in share.ROOT.glob(".claude/skills/*/SKILL.md")}
+        self.assertEqual(set(claude), set(copilot))
+        for name, path in copilot.items():
+            self.assertEqual(claude[name].read_bytes(), path.read_bytes(),
+                             f"copy .github/skills/{name}/SKILL.md to .claude/skills/{name}/SKILL.md")
 
     def test_starter_rules_load_and_keep_the_existing_taxonomy(self):
         starter = triage.load_rules(share.ROOT / "rules.example.json")
