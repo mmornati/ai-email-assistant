@@ -8,15 +8,20 @@ import json
 import math
 import os
 import platform
+import sys
 import time
 import warnings
 from pathlib import Path
 from unittest.mock import patch
 
-import runner
-import triage
+# Runnable as `python tools/benchmark.py` from the project root.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+import runner  # noqa: E402
+import triage  # noqa: E402
 
 OUTPUT = triage.STATE / "benchmark.json"
+FIXTURES = Path(__file__).resolve().parent / "benchmark" / "fixtures.json"
 LAYA_REVISION = "7b928d828b7b0e022f929d9bd2e44165aa270148"
 
 
@@ -251,7 +256,7 @@ def main():
         return
     cfg = runner.load_config(triage.ROOT / "classifier.json")
     rules = triage.load_rules(triage.ROOT / "rules.json")
-    fixture = json.loads((triage.ROOT / "benchmark-fixtures.json").read_text())
+    fixture = json.loads(FIXTURES.read_text())
     with triage.run_lock():
         pending = json.loads(triage.PENDING.read_text())
     # Anonymous keys provide reproducible comparisons without publishing Gmail IDs.

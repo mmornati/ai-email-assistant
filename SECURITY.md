@@ -33,7 +33,7 @@ You should receive a response within a week.
     are refused. With subscription auth, API-key variables are removed from the
     call's environment; `api_key` auth adds `--bare`.
 - **Private local state.** `state/` is created owner-only (`0700`, files `0600`)
-  and is excluded from Git and from `share.py` bundles. It is **not encrypted**;
+  and is excluded from Git and from `tools/share.py` bundles. It is **not encrypted**;
   rely on FileVault and a protected account.
 
 ## Known limitations

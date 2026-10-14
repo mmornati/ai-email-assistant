@@ -6,14 +6,14 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-import benchmark
 import triage
+from tools import benchmark
 
 
 class BenchmarkTests(unittest.TestCase):
     def setUp(self):
         self.rules = triage.load_rules(triage.ROOT / "rules.example.json")
-        self.fixture = json.loads((triage.ROOT / "benchmark-fixtures.json").read_text())
+        self.fixture = json.loads(benchmark.FIXTURES.read_text())
 
     def test_fixtures_are_complete_and_valid(self):
         messages = self.fixture["messages"]

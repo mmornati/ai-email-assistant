@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/mmornati/ai-email-assistant/security/advisories/new
+    about: Report privately; never include real mail or state/ files.
+  - name: Documentation
+    url: https://github.com/mmornati/ai-email-assistant/tree/main/docs
+    about: Getting started, configuration, scheduling and troubleshooting guides.
