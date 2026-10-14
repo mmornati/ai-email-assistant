@@ -17,9 +17,11 @@ FILES = (
     "classifier.json", "rules.example.json", "share.py", "scripts/setup-macos.sh",
     "tests/__init__.py", "tests/test_triage.py", "tests/test_benchmark.py", "tests/test_share.py",
     "tests/test_mail_setup.py", "tests/test_schedule.py", "tests/test_setup_script.py",
-    "tests/test_engine.py",
+    "tests/test_engine.py", "tests/test_providers.py",
     "mail_setup.py", ".github/skills/mail-setup/SKILL.md",
     ".github/skills/mail-triage/SKILL.md",
+    # Identical copies for Claude Code, which reads skills from .claude/skills/.
+    ".claude/skills/mail-setup/SKILL.md", ".claude/skills/mail-triage/SKILL.md",
     "benchmark.py", "benchmark-fixtures.json",
     "requirements-benchmark.txt", "requirements-benchmark.lock",
     "docs/adr/0001-laya-vs-luna.md",

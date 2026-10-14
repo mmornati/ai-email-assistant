@@ -26,9 +26,10 @@ with `gws auth login --services gmail,tasks`. No other skill is required.
 ## Procedure
 
 The recommended unattended entry point is `python3 runner.py --apply`, scheduled
-outside Copilot by `schedule.py`. It scans without a model, invokes a tool-free
+outside the AI app by `schedule.py`. It scans without a model, invokes a tool-free
 small-model classifier only for pending batches, escalates ambiguous cases, and
-writes `state/summary.json`. Do not launch another classifier when this runner
+writes `state/summary.json`. The classifier runs through the CLI selected by `cli`
+in `classifier.json` (Copilot or Claude Code), independent of the app you are using. Do not launch another classifier when this runner
 has already processed the batch. See README.md for setup, costs and manual review.
 For an interactive, human-reviewed session, use the steps below instead.
 
