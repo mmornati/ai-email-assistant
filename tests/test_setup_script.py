@@ -39,9 +39,13 @@ class SetupScriptTests(unittest.TestCase):
                                'case "$1" in --version) echo "Homebrew 9.9.9";; '
                                f'--prefix) echo "{prefix}";; list) exit 1;; esac')
 
-    def run_script(self, *args, path=None):
-        env = {"PATH": path or f"{self.bin}:/usr/bin:/bin", "HOME": str(self.home)}
-        return subprocess.run(["bash", str(self.project / "scripts" / SCRIPT.name), *args],
+    def run_script(self, *args):
+        # Only the basic utilities the script needs, so real gws/gcloud/copilot on the host are invisible.
+        for tool in ("dirname", "head", "awk", "chmod", "mkdir", "cp", "cat"):
+            if not (self.bin / tool).exists():
+                (self.bin / tool).symlink_to(shutil.which(tool))
+        env = {"PATH": str(self.bin), "HOME": str(self.home)}
+        return subprocess.run([shutil.which("bash"), str(self.project / "scripts" / SCRIPT.name), *args],
                               capture_output=True, text=True, env=env, timeout=60)
 
     def test_script_is_valid_bash_and_shellcheck_clean(self):

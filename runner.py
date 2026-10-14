@@ -287,7 +287,7 @@ def rule_candidates(messages, decisions):
         if not message.get("bulk"):
             continue
         address = parseaddr(message.get("from", ""))[1]
-        if not re.fullmatch(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+", address):
+        if address not in message.get("from", "") or not re.fullmatch(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+", address):
             continue
         senders.setdefault(address, []).append(message["id"])
     return [{

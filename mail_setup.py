@@ -19,6 +19,9 @@ import triage
 
 def sender_of(value):
     sender = parseaddr(value)[1].lower()
+    # Some parseaddr versions collapse "a@b OR from:c" into one token; require it verbatim.
+    if sender not in value.lower():
+        return None
     return sender if re.fullmatch(r"[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9.-]+", sender) else None
 
 

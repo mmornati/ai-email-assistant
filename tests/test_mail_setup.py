@@ -83,6 +83,10 @@ class MailSetupTests(unittest.TestCase):
         for value in ("bad", "news@example.invalid OR from:person@example.invalid", "x@domain/*"):
             self.assertIsNone(mail_setup.sender_of(value))
 
+    def test_sender_must_appear_verbatim_whatever_parseaddr_returns(self):
+        with patch.object(mail_setup, "parseaddr", return_value=("", "news@example.invalidorfrom")):
+            self.assertIsNone(mail_setup.sender_of("news@example.invalid OR from:person@example.invalid"))
+
     def test_append_preserves_all_existing_policies(self):
         original = copy.deepcopy(self.rules)
         proposed, changes = mail_setup.proposed_rules(self.rules, self.report, self.selections)
