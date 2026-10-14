@@ -382,8 +382,9 @@ Default `classifier.json` settings:
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `cheap_model` | `gpt-6-luna` | First-pass classification |
-| `escalation_model` | `gpt-6.1-sol` | Ambiguous cases only |
+| `cli` | `copilot` | Which `providers` entry classifies mail |
+| `providers.copilot.cheap_model` | `gpt-6-luna` | First-pass classification |
+| `providers.copilot.escalation_model` | `gpt-6.1-sol` | Ambiguous cases only |
 | `confidence_threshold` | `0.85` | First-pass acceptance threshold |
 | `escalation_threshold` | `0.9` | Escalation acceptance threshold |
 | `batch_size` | `25` | Messages per model invocation |
@@ -392,8 +393,12 @@ Default `classifier.json` settings:
 | `context_chars` | `4000` | Max current-message plain-text body chars on escalation |
 | `timeout_seconds` | `180` | Timeout per CLI invocation |
 | `version` | `1` | Bump after intentional classifier-policy changes |
-| `copilot_binary` | `copilot` | CLI executable name or absolute path |
-| `disabled_mcp_servers` | configured names | Also suppress these user MCP servers |
+| `providers.copilot.binary` | `copilot` | CLI executable name or absolute path |
+| `providers.copilot.disabled_mcp_servers` | configured names | Also suppress these user MCP servers |
+
+The older flat format (`copilot_binary`, `cheap_model`, ... at the top level) is
+still accepted and read as `"cli": "copilot"`. Switching CLI or model invalidates
+same-day cached classifications.
 
 Confidence is **model-reported, not calibrated probability**. Before relying on
 unattended decisions for important mail, review representative output. Both low
