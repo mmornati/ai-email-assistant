@@ -9,6 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+import unittest.mock
 from unittest.mock import patch
 
 import triage
@@ -177,6 +178,19 @@ class EngineTests(unittest.TestCase):
         text = path.read_text()
         self.assertIn("'=HYPERLINK", text)
         self.assertIn("'@evil", text)
+
+    def test_matching_title_cannot_suppress_an_explicit_task(self):
+        tasks = SimpleNamespace(name="My Tasks", cfg={}, default_due=lambda: "2026-10-16",
+                                by_thread=lambda: {"other": {"title": "Approve budget", "status": "needsAction"}},
+                                create=unittest.mock.Mock())
+        info = {"m1": {"thread": "t1", "subject": "Approve budget", "age_days": 0},
+                "m2": {"thread": "t2", "subject": "Approve budget", "age_days": 0}}
+        decisions = {"m1": {"tag": "Action", "task": {"title": "Approve budget"}}, "m2": {"tag": "Action"}}
+        with patch.object(triage, "Tasks", return_value=tasks), \
+                patch.object(triage, "thread_of", side_effect=lambda mid: info[mid]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            triage.ensure_tasks(self.rules, decisions, False)
+        self.assertEqual([c.args[0] for c in tasks.create.call_args_list], ["t1"])
 
 
 if __name__ == "__main__":

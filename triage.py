@@ -544,7 +544,9 @@ def ensure_tasks(rules, decisions: dict[str, dict], apply: bool):
         if th in existing:
             REPORT.task(mid, f"exists: {existing[th]['title'][:80]} ({existing[th].get('status')})")
             continue
-        if th in seen or title in open_titles:
+        # Title dedupe only for rule-generated tasks: titles derive from mail text, so a crafted
+        # message must not be able to suppress the task of an explicitly classified thread.
+        if th in seen or (not d.get("task") and title in open_titles):
             REPORT.task(mid, f"duplicate of task: {title[:80]}")
             continue
         # Explicit agent decisions always get their task; rule-based ones only for recent mail.
