@@ -15,7 +15,7 @@ and the interactive review interface, not the hourly scheduler.
 ## Quick start (macOS)
 
 ```bash
-git clone https://github.com/<you>/ai-email-assistant.git
+git clone https://github.com/mmornati/ai-email-assistant.git
 cd ai-email-assistant
 scripts/setup-macos.sh --dry-run   # show every command first
 scripts/setup-macos.sh             # install, authenticate, verify
