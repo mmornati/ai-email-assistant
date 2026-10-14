@@ -14,6 +14,13 @@
       "cheap_model": "gpt-6-luna",
       "escalation_model": "gpt-6.1-sol",
       "disabled_mcp_servers": []
+    },
+    "claude": {
+      "binary": "claude",
+      "cheap_model": "claude-haiku-5-5",
+      "escalation_model": "claude-sonnet-5-5",
+      "auth": "subscription",
+      "max_budget_usd_per_call": 0.25
     }
   }
 }

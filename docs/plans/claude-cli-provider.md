@@ -1,6 +1,6 @@
 # Plan: selectable classifier CLI (Copilot or Claude)
 
-Status: proposal, not implemented. Branch: `claude/claude-cli-integration-plan-640b25`.
+Status: in progress — steps 1 (refactor) and 2 (Claude backend) implemented. Branch: `claude/claude-cli-integration-plan-640b25`.
 
 ## Goal
 
@@ -306,6 +306,29 @@ Each is a manual run with a synthetic, non-mail prompt:
    (`subtype`, `num_turns`, `usage`, `total_cost_usd`) on the installed version
    and pin a minimum Claude Code version in README.
 
+## Spike results (2026-10-14, Claude Code 2.1.284, synthetic prompts only)
+
+- **Output contract (spike 4):** `-p --output-format json` prints one object with
+  `type: "result"`, `subtype`, `is_error`, `num_turns`, `permission_denials`,
+  `result`, `usage.{input,output,cache_read_input,cache_creation_input}_tokens` and
+  `total_cost_usd`, as assumed. The pinned ID `claude-haiku-5-5` works, with a harmless
+  `unrecognized_model` notice on stderr.
+- **Isolation (spike 1, subscription auth):** with `--setting-sources project`,
+  `--system-prompt` and an empty cwd, the global `~/.claude/CLAUDE.md` and project
+  instructions are **not** sent. The only extra context is a short account section
+  (the signed-in email). `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1` does not remove it and adds
+  an environment section, so it is not used. `--exclude-dynamic-system-prompt-sections`
+  is ignored with `--system-prompt`.
+- **Overhead (spike 2, partial):** a tiny prompt costs ~740-815 cache-write tokens
+  (vs ~17k for Copilot). A two-message synthetic classification on Haiku used 1,635
+  cache-write and 696 output tokens; the CLI reported `total_cost_usd` 0.027.
+  Output tokens are higher than the visible JSON, which suggests thinking tokens;
+  evaluate `--effort low` before publishing cost figures.
+- **Provider override check:** a Claude Code session sets `ANTHROPIC_BASE_URL` for
+  its own proxy, so `runner.py` refuses the Claude backend when started from inside
+  one. This is intended; the LaunchAgent environment does not have it. Document it.
+- Unattended auth from the LaunchAgent (spike 3) is still open.
+
 ## Rollout (one PR, reviewable commits)
 
 1. Refactor: config normalization + backend table, Copilot only; legacy and new
@@ -322,6 +345,6 @@ Default stays `"cli": "copilot"` so existing users see no change.
 - Default Claude models: `claude-haiku-5-5` (first pass) and `claude-sonnet-5-5`
   (escalation) are proposed; pinned IDs rather than aliases (`haiku`, `sonnet`)
   so a silent alias upgrade does not change classifications or cost.
-- Default `auth` for Claude: `subscription` (no key handling, weaker isolation)
-  vs `api_key` (`--bare`, strongest isolation, pay-as-you-go billing).
+- ~~Default `auth` for Claude~~ — decided: `subscription`; `api_key` (`--bare`)
+  stays available.
 - Skill sharing approach (copies + drift test proposed).

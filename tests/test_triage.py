@@ -286,7 +286,7 @@ class TriageTests(unittest.TestCase):
         self.assertEqual(json.loads(text)["cli_usage"]["tokens"], {"input": 5})
         with contextlib.redirect_stdout(io.StringIO()) as output:
             runner.usage_report()
-        self.assertEqual(json.loads(output.getvalue())["test"]["tokens"]["input"], 5)
+        self.assertEqual(json.loads(output.getvalue())["copilot/test"]["tokens"]["input"], 5)
 
     def test_report_has_deterministic_task_details(self):
         triage.REPORT.task("a1", "CREATE due 2026-10-08: Approve proposal",

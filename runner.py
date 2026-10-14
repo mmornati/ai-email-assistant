@@ -203,12 +203,112 @@ def copilot_read_usage(stdout, workdir):
     return copilot_usage(json.loads(usage_file.read_text())) if usage_file.exists() else None
 
 
+# --- Claude Code CLI backend --------------------------------------------------
+
+CLAUDE_PROVIDER_ENV = (
+    "ANTHROPIC_BASE_URL", "ANTHROPIC_BEDROCK_BASE_URL", "ANTHROPIC_VERTEX_BASE_URL",
+    "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY",
+)
+
+
+def claude_validate(settings):
+    if settings["auth"] not in ("subscription", "api_key"):
+        raise ValueError('providers.claude.auth must be "subscription" or "api_key"')
+    budget = settings["max_budget_usd_per_call"]
+    if type(budget) not in (float, int) or not math.isfinite(budget) or budget <= 0:
+        raise ValueError("providers.claude.max_budget_usd_per_call must be a positive number")
+
+
+def claude_check_env():
+    if any(os.environ.get(k) for k in CLAUDE_PROVIDER_ENV):
+        raise ValueError("custom provider overrides are not allowed; use the approved Anthropic route")
+
+
+def claude_request(messages, rules, cfg, model, workdir):
+    # The system prompt holds only fixed instructions and tag definitions; mail goes on stdin.
+    system = (
+        CLASSIFIER_RULES + f"Today is {dt.date.today().isoformat()}. "
+        "Allowed tags follow; the email data arrives as the user message:\n"
+        + json.dumps({"tags": allowed_tags(rules)}, ensure_ascii=False, separators=(",", ":"))
+    )
+    payload = json.dumps({"messages": message_data(messages)}, ensure_ascii=False, separators=(",", ":"))
+    command = [
+        cfg["binary"], "-p", "--model", model, "--output-format", "json",
+        "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
+        "--setting-sources", "project", "--disable-slash-commands", "--no-session-persistence",
+        "--permission-mode", "dontAsk", "--max-budget-usd", str(cfg["max_budget_usd_per_call"]),
+        "--system-prompt", system,
+    ]
+    env = dict(os.environ)
+    if cfg["auth"] == "api_key":
+        # Bare mode skips hooks, plugins, memory and CLAUDE.md, but only accepts API-key auth.
+        if not env.get("ANTHROPIC_API_KEY"):
+            raise ValueError('providers.claude.auth is "api_key" but ANTHROPIC_API_KEY is not set')
+        command.append("--bare")
+    else:
+        # Keep billing on the subscription login the user selected.
+        env.pop("ANTHROPIC_API_KEY", None)
+        env.pop("ANTHROPIC_AUTH_TOKEN", None)
+    env.update(NO_COLOR="1", DISABLE_AUTOUPDATER="1", DISABLE_TELEMETRY="1", DISABLE_ERROR_REPORTING="1")
+    return command, env, payload, len(system) + len(payload)
+
+
+def parse_claude_response(text):
+    """Read the single result object printed by `claude -p --output-format json`."""
+    result = json.loads(text)
+    if not isinstance(result, dict) or result.get("type") != "result":
+        raise ValueError("classifier output is not a result object")
+    if result.get("subtype") != "success" or result.get("is_error") is not False:
+        raise ValueError("classifier reported an error")
+    if result.get("num_turns") != 1 or result.get("permission_denials"):
+        raise ValueError("classifier must answer in one tool-free turn")
+    content = result.get("result")
+    if not isinstance(content, str):
+        raise ValueError("classifier result has no text content")
+    fenced = re.fullmatch(r"\s*```(?:json)?[ \t]*\n(.*?)\n?```\s*", content, re.S)
+    return json.loads(fenced.group(1) if fenced else content)
+
+
+def claude_failure(stdout):
+    """Name a failed run's result subtype (e.g. error_max_budget_usd) without echoing output."""
+    try:
+        subtype = json.loads(stdout).get("subtype")
+    except (ValueError, AttributeError):
+        return None
+    return subtype if isinstance(subtype, str) and re.fullmatch(r"[a-z_]{1,40}", subtype) else None
+
+
+def claude_read_usage(stdout, workdir):
+    try:
+        result = json.loads(stdout)
+    except ValueError:
+        return None
+    if not isinstance(result, dict) or not isinstance(result.get("usage"), dict):
+        return None
+    usage = result["usage"]
+    names = {"input_tokens": "input", "output_tokens": "output",
+             "cache_read_input_tokens": "cache_read", "cache_creation_input_tokens": "cache_write"}
+    safe_usage = {"tokens": {
+        name: usage[key] for key, name in names.items() if type(usage.get(key)) in (int, float)
+    }}
+    cost = result.get("total_cost_usd")
+    if type(cost) in (int, float) and math.isfinite(cost):
+        safe_usage["cost_usd"] = cost
+    return safe_usage
+
+
 BACKENDS = {
     "copilot": SimpleNamespace(
         label="Copilot",
         keys={"binary", "cheap_model", "escalation_model", "disabled_mcp_servers"},
         validate=copilot_validate, check_env=copilot_check_env, request=copilot_request,
-        parse=parse_cli_response, usage=copilot_read_usage,
+        parse=parse_cli_response, usage=copilot_read_usage, failure=lambda stdout: None,
+    ),
+    "claude": SimpleNamespace(
+        label="Claude Code",
+        keys={"binary", "cheap_model", "escalation_model", "auth", "max_budget_usd_per_call"},
+        validate=claude_validate, check_env=claude_check_env, request=claude_request,
+        parse=parse_claude_response, usage=claude_read_usage, failure=claude_failure,
     ),
 }
 
@@ -235,9 +335,10 @@ def call_model(messages, rules, cfg, model):
         usage = backend.usage(result.stdout, workdir)
         if result.returncode:
             record(len(result.stdout), usage, "cli_error")
+            reason = backend.failure(result.stdout)
             raise RuntimeError(
-                f"{backend.label} exited {result.returncode}; check authentication, model access and CLI version "
-                "(output suppressed to avoid logging email)"
+                f"{backend.label} exited {result.returncode}{f' ({reason})' if reason else ''}; "
+                "check authentication, model access and CLI version (output suppressed to avoid logging email)"
             )
         try:
             output = backend.parse(result.stdout)
@@ -339,7 +440,8 @@ def usage_report():
     models = {}
     for line in USAGE.read_text().splitlines() if USAGE.exists() else []:
         entry = json.loads(line)
-        totals = models.setdefault(entry["model"], {
+        # Entries written before CLI selection existed were all Copilot calls.
+        totals = models.setdefault(f"{entry.get('cli', 'copilot')}/{entry['model']}", {
             "calls": 0, "errors": 0, "missing_usage": 0, "tokens": Counter(),
         })
         totals["calls"] += 1
@@ -349,6 +451,8 @@ def usage_report():
             totals["missing_usage"] += 1
         else:
             totals["tokens"].update(usage["tokens"])
+            if "cost_usd" in usage:
+                totals["cost_usd"] = round(totals.get("cost_usd", 0) + usage["cost_usd"], 6)
     print(json.dumps(models, indent=2))
 
 
@@ -432,6 +536,7 @@ def main():
     parser.add_argument("--retry-review", action="store_true", help="retry ambiguous mail held for review today")
     parser.add_argument("--scheduled", action="store_true", help="skip calendar catch-ups outside weekday 08:00-19:59")
     parser.add_argument("--usage-report", action="store_true", help="print recorded token totals; no scan or model call")
+    parser.add_argument("--cli", choices=sorted(BACKENDS), help="override the classifier.json cli for this run")
     parser.add_argument("--config", type=Path, default=ROOT / "classifier.json")
     parser.add_argument("--rules", default=str(ROOT / "rules.json"))
     parser.add_argument("--window", default=None)
@@ -449,7 +554,7 @@ def main():
         return 0
     with triage.run_lock():
         try:
-            cfg = load_config(args.config)
+            cfg = load_config(args.config, args.cli)
         except (OSError, ValueError) as e:
             triage.write_json(SUMMARY, {
                 "started": time.time(), "finished": time.time(), "apply": args.apply,
