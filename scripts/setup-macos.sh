@@ -7,6 +7,7 @@
 #
 # It never modifies mail, never enables --apply, and never installs a schedule.
 # Every step is idempotent: re-run it at any time to repair or verify a setup.
+# `--check` only inspects the installation (a "doctor") and changes nothing.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -21,7 +22,9 @@ DRY_RUN=0
 SKIP_AUTH=0
 SKIP_COPILOT=0
 SKIP_VERIFY=0
+CHECK_ONLY=0
 GCP_PROJECT=""
+TASK_LIST=""
 
 usage() {
   cat <<EOF
@@ -30,7 +33,10 @@ Usage: scripts/setup-macos.sh [options]
 Options:
   -y, --yes            Answer yes to every prompt (still opens browser logins)
   -n, --dry-run        Print the commands that would run; change nothing
+  -c, --check          Health check only: report what is installed and
+                       authorized, change nothing (exit 1 if incomplete)
       --project ID     Use an existing Google Cloud project for gws auth setup
+      --task-list NAME Google Tasks list for a new rules.json (default: My Tasks)
       --skip-auth      Install tools and local files only; no logins
       --skip-copilot   Do not install or log in to the Copilot CLI
                        (model-free use only: runner.py --no-model)
@@ -45,7 +51,9 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     -y|--yes) ASSUME_YES=1 ;;
     -n|--dry-run) DRY_RUN=1 ;;
+    -c|--check) CHECK_ONLY=1 ;;
     --project) GCP_PROJECT="${2:?--project requires a value}"; shift ;;
+    --task-list) TASK_LIST="${2:?--task-list requires a value}"; shift ;;
     --skip-auth) SKIP_AUTH=1 ;;
     --skip-copilot) SKIP_COPILOT=1 ;;
     --skip-verify) SKIP_VERIFY=1 ;;
@@ -83,6 +91,92 @@ python_ok() {
   "$1" -c "import sys; sys.exit(0 if sys.version_info >= (3, $MIN_PY_MINOR) else 1)" 2>/dev/null
 }
 
+# Prints the first Python 3.$MIN_PY_MINOR+ interpreter on PATH or in Homebrew, or nothing.
+find_python() {
+  local candidate
+  for candidate in python3 python3.13 python3.12 python3.11 python3.10 \
+                   "$(brew --prefix 2>/dev/null)/bin/python3"; do
+    if command -v "$candidate" >/dev/null 2>&1 && python_ok "$candidate"; then
+      command -v "$candidate"
+      return
+    fi
+  done
+}
+
+# Prints one word per missing piece: setup, apis, login. Reads gws status JSON on stdin.
+gws_missing() {
+  "$PYTHON" -c '
+import json, sys
+try:
+    s = json.load(sys.stdin)
+except ValueError:
+    print("setup login"); sys.exit()
+missing = []
+if not s.get("client_config_exists"):
+    missing.append("setup")
+apis = set(s.get("enabled_apis") or [])
+if not {"gmail.googleapis.com", "tasks.googleapis.com"} <= apis:
+    missing.append("apis")
+scopes = set(s.get("scopes") or [])
+gmail = {"https://www.googleapis.com/auth/gmail.modify", "https://mail.google.com/"}
+if not (s.get("has_refresh_token") and scopes & gmail and "https://www.googleapis.com/auth/tasks" in scopes):
+    missing.append("login")
+print(" ".join(missing))
+'
+}
+
+gws_status() { gws auth status 2>/dev/null || true; }
+
+# --- Health check (--check): read-only, prints a checklist ---------------------
+DOCTOR_FAILED=0
+check() {  # check <required 0|1> <passed 0|1> <label> <how to fix>
+  if [[ "$2" == 1 ]]; then
+    printf '%s  ✓ %s%s\n' "$GREEN" "$3" "$RESET"
+  elif [[ "$1" == 1 ]]; then
+    printf '%s  ✗ %s%s  %s→ %s%s\n' "$RED" "$3" "$RESET" "$DIM" "$4" "$RESET"
+    DOCTOR_FAILED=1
+  else
+    printf '%s  ○ %s%s  %s→ %s%s\n' "$YELLOW" "$3" "$RESET" "$DIM" "$4" "$RESET"
+  fi
+}
+yes_no() { if "$@"; then echo 1; else echo 0; fi; }
+has() { command -v "$1" >/dev/null 2>&1; }
+private_dir() {  # GNU stat first, then BSD/macOS stat
+  [[ -d "$1" && "$(stat -c '%a' "$1" 2>/dev/null || stat -f '%Lp' "$1" 2>/dev/null)" == 700 ]]
+}
+
+doctor() {
+  local missing=""
+  step "AI Mail Assistant health check"
+  check 1 "$(yes_no test "$(uname -s)" = Darwin)" "macOS" "the setup script and schedule are macOS-only"
+  check 1 "$(yes_no has brew)" "Homebrew" "install it from https://brew.sh"
+  PYTHON="$(find_python)"
+  check 1 "$(yes_no test -n "$PYTHON")" "Python 3.$MIN_PY_MINOR+ ${PYTHON:+($PYTHON)}" "make setup"
+  check 1 "$(yes_no has gws)" "Google Workspace CLI (gws)" "brew install googleworkspace-cli"
+  check 0 "$(yes_no has gcloud)" "Google Cloud CLI (first-time OAuth setup only)" "brew install --cask gcloud-cli"
+  check 0 "$(yes_no has copilot)" "GitHub Copilot CLI (classification only)" "brew install --cask copilot-cli"
+  check 1 "$(yes_no test -f "$ROOT/rules.json")" "rules.json" "make setup (copies rules.example.json)"
+  check 1 "$(yes_no private_dir "$ROOT/state")" "state/ is private (0700)" "make setup"
+  if [[ -n "$PYTHON" ]] && has gws; then
+    missing="$(gws_status | gws_missing)"
+    check 1 "$(yes_no test -z "$missing")" "gws authorized for Gmail + Tasks${missing:+ (missing: $missing)}" "make setup"
+  fi
+  check 0 "$(yes_no test -f "$HOME/Library/LaunchAgents/local.ai-mail-assistant.plist")" \
+    "Hourly schedule installed (optional)" "make schedule-install, after reviewing a dry run"
+  echo
+  if [[ $DOCTOR_FAILED -eq 0 ]]; then
+    ok "ready: 'make preview' runs a read-only, model-free dry run"
+  else
+    warn "incomplete: run 'make setup' (idempotent, safe to re-run)"
+  fi
+  return "$DOCTOR_FAILED"
+}
+
+if [[ $CHECK_ONLY -eq 1 ]]; then
+  doctor || exit 1
+  exit 0
+fi
+
 # --- 1. Platform and Homebrew ------------------------------------------------
 step "Checking platform"
 [[ "$(uname -s)" == "Darwin" ]] || die "this script is for macOS; see README for other platforms"
@@ -95,13 +189,7 @@ ok "Homebrew $(brew --version | head -n1 | awk '{print $2}')"
 
 # --- 2. Python -----------------------------------------------------------------
 step "Python 3.$MIN_PY_MINOR+"
-PYTHON=""
-for candidate in python3 "$(brew --prefix 2>/dev/null)/bin/python3"; do
-  if command -v "$candidate" >/dev/null 2>&1 && python_ok "$candidate"; then
-    PYTHON="$(command -v "$candidate")"
-    break
-  fi
-done
+PYTHON="$(find_python)"
 if [[ -z "$PYTHON" ]]; then
   warn "no Python 3.$MIN_PY_MINOR+ found (macOS ships 3.9); installing $BREW_PYTHON"
   run brew install "$BREW_PYTHON"
@@ -152,35 +240,27 @@ ok "state/ is private (owner-only)"
 if [[ -f rules.json ]]; then
   ok "rules.json exists; leaving your rules untouched"
 else
+  if [[ -z "$TASK_LIST" && $ASSUME_YES -eq 0 && $DRY_RUN -eq 0 && -t 0 ]]; then
+    read -r -p "  Google Tasks list for follow-up tasks [My Tasks]: " TASK_LIST || TASK_LIST=""
+  fi
   run cp rules.example.json rules.json
+  if [[ -n "$TASK_LIST" && "$TASK_LIST" != "My Tasks" ]]; then
+    printf '%s  $ set tasks.list to "%s" in rules.json%s\n' "$DIM" "$TASK_LIST" "$RESET"
+    # The name travels through the environment, never through the Python source.
+    [[ $DRY_RUN -eq 1 ]] || TASK_LIST="$TASK_LIST" "$PYTHON" -c '
+import json, os
+text = open("rules.json").read()
+default = "\"list\": \"My Tasks\""
+assert text.count(default) == 1, "unexpected starter rules"
+text = text.replace(default, "\"list\": " + json.dumps(os.environ["TASK_LIST"], ensure_ascii=False))
+json.loads(text)
+open("rules.json", "w").write(text)
+'
+  fi
   ok "created rules.json from the starter rules (no cleanup actions enabled)"
 fi
 
 # --- 5. Authentication --------------------------------------------------------------
-# Prints one word per missing piece: setup, apis, login. Reads gws status JSON on stdin.
-gws_missing() {
-  "$PYTHON" -c '
-import json, sys
-try:
-    s = json.load(sys.stdin)
-except ValueError:
-    print("setup login"); sys.exit()
-missing = []
-if not s.get("client_config_exists"):
-    missing.append("setup")
-apis = set(s.get("enabled_apis") or [])
-if not {"gmail.googleapis.com", "tasks.googleapis.com"} <= apis:
-    missing.append("apis")
-scopes = set(s.get("scopes") or [])
-gmail = {"https://www.googleapis.com/auth/gmail.modify", "https://mail.google.com/"}
-if not (s.get("has_refresh_token") and scopes & gmail and "https://www.googleapis.com/auth/tasks" in scopes):
-    missing.append("login")
-print(" ".join(missing))
-'
-}
-
-gws_status() { gws auth status 2>/dev/null || true; }
-
 if [[ $SKIP_AUTH -eq 1 ]]; then
   step "Authentication (skipped)"
 else
@@ -259,11 +339,13 @@ fi
 # --- 7. Next steps ----------------------------------------------------------------------
 step "Done. Next steps"
 cat <<EOF
-  1. Personalize rules (read-only discovery, you approve every rule):
+  1. Health check, anytime:                   make doctor
+  2. Personalize rules (read-only discovery, you approve every rule):
        open this folder in Copilot and ask it to use the mail-setup skill
-  2. Review rules.json and classifier.json (models, limits).
-  3. Paid classification, still a dry run:   $PYTHON runner.py
-  4. Apply for real after reviewing state/:   $PYTHON runner.py --apply
-  5. Optional hourly weekday schedule:        $PYTHON schedule.py render
-                                              $PYTHON schedule.py install
+  3. Review rules.json and classifier.json (models, limits).
+  4. Paid classification, still a dry run:    make classify   ($PYTHON runner.py)
+  5. Apply for real after reviewing state/:   make apply      ($PYTHON runner.py --apply)
+  6. Optional hourly weekday schedule:        make schedule-install
+
+  All commands: make help        Guide: docs/getting-started.md
 EOF

@@ -10,19 +10,21 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 FILES = (
-    "README.md", "LICENSE", "SECURITY.md", "CONTRIBUTING.md", ".gitignore",
-    "triage.py", "runner.py", "schedule.py",
-    "classifier.json", "rules.example.json", "share.py", "scripts/setup-macos.sh",
+    "README.md", "LICENSE", "SECURITY.md", "CONTRIBUTING.md", ".gitignore", "Makefile",
+    "triage.py", "runner.py", "schedule.py", "mail_setup.py",
+    "classifier.json", "rules.example.json",
+    "scripts/setup-macos.sh",
+    "tools/share.py", "tools/benchmark.py", "tools/benchmark/fixtures.json",
+    "tools/benchmark/requirements.txt", "tools/benchmark/requirements.lock",
     "tests/__init__.py", "tests/test_triage.py", "tests/test_benchmark.py", "tests/test_share.py",
     "tests/test_mail_setup.py", "tests/test_schedule.py", "tests/test_setup_script.py",
     "tests/test_engine.py",
-    "mail_setup.py", ".github/skills/mail-setup/SKILL.md",
-    ".github/skills/mail-triage/SKILL.md",
-    "benchmark.py", "benchmark-fixtures.json",
-    "requirements-benchmark.txt", "requirements-benchmark.lock",
-    "docs/adr/0001-laya-vs-luna.md",
+    ".github/skills/mail-setup/SKILL.md", ".github/skills/mail-triage/SKILL.md",
+    "docs/README.md", "docs/getting-started.md", "docs/how-it-works.md", "docs/configuration.md",
+    "docs/scheduling.md", "docs/copilot.md", "docs/costs.md", "docs/operations.md",
+    "docs/sharing.md", "docs/assets/banner.svg", "docs/adr/0001-laya-vs-luna.md",
 )
 
 

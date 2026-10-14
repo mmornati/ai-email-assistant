@@ -6,8 +6,8 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-import share
 import triage
+from tools import share
 
 
 class ShareTests(unittest.TestCase):

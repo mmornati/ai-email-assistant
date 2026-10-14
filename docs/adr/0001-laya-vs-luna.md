@@ -75,7 +75,7 @@ uses `truststore==0.10.4` to load the native system certificate store; TLS
 verification was **not** disabled. That dependency is benchmark-only.
 
 Exact resolved benchmark dependencies are in
-[`requirements-benchmark.lock`](../../requirements-benchmark.lock).
+[`tools/benchmark/requirements.lock`](../../tools/benchmark/requirements.lock).
 
 ### Confidence warning
 
@@ -182,7 +182,7 @@ Laya received no tools, so no embedded instruction caused a mailbox action.
 | s16 | Approval already recorded | FYI | FYI | Internal-Comms | FYI |
 
 The fixtures are checked in:
-[`benchmark-fixtures.json`](../../benchmark-fixtures.json). A perfect result on
+[`tools/benchmark/fixtures.json`](../../tools/benchmark/fixtures.json). A perfect result on
 these obvious 16 controls is not evidence of perfect production accuracy.
 
 ### Same-scope real-mail comparison
@@ -312,20 +312,23 @@ neither reference labels nor the other model's predictions are given as input.
 
 ### Reproduce
 
+Paths were updated after the benchmark moved to `tools/`; the commands are
+otherwise as run.
+
 ```bash
 uv venv --python 3.13 .venv-benchmark
-uv pip sync --python .venv-benchmark/bin/python requirements-benchmark.lock
-.venv-benchmark/bin/python benchmark.py --prepare
+uv pip sync --python .venv-benchmark/bin/python tools/benchmark/requirements.lock
+.venv-benchmark/bin/python tools/benchmark.py --prepare
 
 # Downloads finished: local checkpoints load offline; Luna still uses its normal network route.
 HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 \
-  .venv-benchmark/bin/python benchmark.py --repeats 2
+  .venv-benchmark/bin/python tools/benchmark.py --repeats 2
 
 HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 \
-  .venv-benchmark/bin/python benchmark.py --local-only --schema compact \
+  .venv-benchmark/bin/python tools/benchmark.py --local-only --schema compact \
   --output state/benchmark-compact.json
 
-python3 -m unittest -q test_triage test_benchmark
+python3 -m unittest -q tests.test_triage tests.test_benchmark
 ```
 
 `--prepare` downloads only the pinned English/multilingual checkpoints, without
