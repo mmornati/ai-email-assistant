@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "cheap_model": "gpt-6-luna",
+  "escalation_model": "gpt-6.1-sol",
+  "confidence_threshold": 0.85,
+  "escalation_threshold": 0.9,
+  "batch_size": 25,
+  "max_batches": 4,
+  "max_escalations": 10,
+  "context_chars": 4000,
+  "timeout_seconds": 180,
+  "copilot_binary": "copilot",
+  "disabled_mcp_servers": []
+}

@@ -1,0 +1,21 @@
+# Private runtime data: mailbox metadata, decisions, plans, journals, usage logs
+state/
+
+# Personal ruleset (created from rules.example.json by setup or by hand)
+rules.json
+
+# Build output and environments
+dist/
+.venv/
+.venv-benchmark/
+__pycache__/
+*.py[cod]
+
+# Local secrets and OS noise
+.env
+.env.*
+*.pem
+client_secret*.json
+credentials*.json
+token*.json
+.DS_Store
