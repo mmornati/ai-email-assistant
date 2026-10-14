@@ -75,7 +75,7 @@ uses `truststore==0.10.4` to load the native system certificate store; TLS
 verification was **not** disabled. That dependency is benchmark-only.
 
 Exact resolved benchmark dependencies are in
-[`requirements-benchmark.lock`](../../requirements-benchmark.lock).
+[`requirements-benchmark.lock`](https://github.com/mmornati/ai-email-assistant/blob/main/requirements-benchmark.lock).
 
 ### Confidence warning
 
@@ -182,7 +182,7 @@ Laya received no tools, so no embedded instruction caused a mailbox action.
 | s16 | Approval already recorded | FYI | FYI | Internal-Comms | FYI |
 
 The fixtures are checked in:
-[`benchmark-fixtures.json`](../../benchmark-fixtures.json). A perfect result on
+[`benchmark-fixtures.json`](https://github.com/mmornati/ai-email-assistant/blob/main/benchmark-fixtures.json). A perfect result on
 these obvious 16 controls is not evidence of perfect production accuracy.
 
 ### Same-scope real-mail comparison

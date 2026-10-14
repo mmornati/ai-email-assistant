@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo console · AI E-Mail Assistant</title>
+<meta name="description" content="Step through a real run of the AI E-Mail Assistant engine on an invented mailbox: the inbox, the tasks, the terminal and the summary, before and after.">
+<meta name="theme-color" content="#f4f2ec">
+<link rel="icon" href="../docs/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../docs/assets/brand/transit.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--enamel);color:var(--ink);font:400 1rem/1.5 var(--read-face);font-variant-numeric:tabular-nums}
+a{color:inherit;text-underline-offset:.2em}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+h1,h2,h3{font-family:var(--sign-face);margin:0;line-height:1.05}
+.wrap{width:min(1400px,100% - 32px);margin-inline:auto}
+code{font-family:var(--mono-face);font-size:.92em}
+
+.top{border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font:800 1.1rem/1 var(--sign-face);text-decoration:none}
+.top .note{margin-left:auto;font:600 .82rem/1.3 var(--sign-face);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);text-align:right}
+@media (max-width:700px){.top .note{display:none}}
+
+/* the run as a line of stations */
+.steps{padding:26px 0 8px}
+.steps h1{font-size:clamp(1.9rem,3.4vw,2.8rem);font-weight:800;margin-bottom:22px}
+.steps ol{position:relative;display:grid;grid-template-columns:repeat(5,1fr);margin:0;padding:0;list-style:none}
+.steps ol::before{content:"";position:absolute;left:14px;right:14px;top:13px;height:8px;border-radius:4px;background:var(--l-trunk)}
+.steps button{position:relative;display:block;width:100%;text-align:left;background:none;border:0;padding:44px 16px 4px 0;color:var(--ink-2);cursor:pointer;font:inherit}
+.steps button::before{content:"";position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--enamel);border:5px solid var(--l-trunk);transition:transform .35s var(--step)}
+.steps button[aria-current="step"]{color:var(--ink)}
+.steps button[aria-current="step"]::before{background:var(--l-trunk);transform:scale(1.12)}
+.steps button:hover::before{transform:scale(1.12)}
+.steps b{display:block;font:700 1.15rem/1.1 var(--sign-face);color:var(--ink)}
+.steps small{display:block;font-size:.9rem;margin-top:2px}
+.caption{margin:14px 0 0;padding:14px 18px;border-radius:12px;background:var(--enamel-2);font-size:1.02rem}
+.caption code{background:var(--enamel);padding:1px 6px;border-radius:5px}
+@media (max-width:800px){
+  .steps ol{grid-template-columns:1fr;gap:6px}
+  .steps ol::before{left:13px;right:auto;top:10px;bottom:10px;width:8px;height:auto}
+  .steps button{padding:4px 0 4px 50px;min-height:40px}
+}
+
+/* layout */
+.grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:22px;padding:22px 0 64px}
+.col{display:grid;gap:22px;align-content:start}
+@media (max-width:1000px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--enamel);border:1px solid var(--rule);border-radius:16px;overflow:hidden}
+.panel > header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--rule)}
+.panel > header h2{font-size:1.25rem;font-weight:800}
+.panel > header .meta{margin-left:auto;font:600 .88rem/1 var(--sign-face);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.panel > header .meta.sig{color:var(--signal)}
+
+/* inbox: a plain mail list */
+.mail{list-style:none;margin:0;padding:0}
+.mail li{display:grid;grid-template-columns:14px minmax(0,11rem) minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--enamel-3)}
+.mail li:last-child{border-bottom:0}
+.mail .u{width:9px;height:9px;border-radius:50%;background:var(--l-meeting-invite)}
+.mail li:not(.unread) .u{background:transparent}
+.mail .from{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mail li:not(.unread) .from{font-weight:400;color:var(--ink-2)}
+.mail .line1{min-width:0;display:flex;align-items:center;gap:8px;overflow:hidden}
+.mail .subj{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mail li.unread .subj{font-weight:700}
+.mail .snip{color:var(--ink-3);font-weight:400}
+.mail .tags{display:flex;gap:5px;flex:none}
+.mail .when{font:400 .85rem/1 var(--mono-face);color:var(--ink-3);white-space:nowrap}
+.mail .star{color:var(--l-newsletter)}
+.mail li.waiting{background:color-mix(in srgb,var(--signal) 7%,transparent)}
+.mail .wait{display:inline-flex;align-items:center;gap:6px;font:700 .78rem/1 var(--sign-face);letter-spacing:.04em;color:var(--signal);flex:none}
+.mail .wait::before{content:"";width:10px;height:10px;border-radius:50%;border:3px solid var(--signal)}
+.mail .gone{padding:14px 18px;color:var(--ink-2);font-size:.95rem;display:block}
+@media (max-width:700px){
+  .mail li{grid-template-columns:12px 1fr auto}
+  .mail .line1{grid-column:2/-1;flex-wrap:wrap}
+  .mail .snip{display:none}
+}
+
+/* tasks */
+.tasks{list-style:none;margin:0;padding:6px 0}
+.tasks li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 18px;align-items:start}
+.tasks .box{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--ink-2);margin-top:1px;display:grid;place-items:center}
+.tasks li.done .box{background:var(--l-fyi);border-color:var(--l-fyi)}
+.tasks li.done .t{text-decoration:line-through;color:var(--ink-3)}
+.tasks .t{font-weight:700}
+.tasks .d{display:flex;gap:10px;align-items:center;margin-top:5px;font-size:.88rem;color:var(--ink-2)}
+.tasks .due{font:600 .8rem/1 var(--sign-face);letter-spacing:.04em;padding:5px 8px;border-radius:6px;background:var(--enamel-2);color:var(--ink)}
+.empty{padding:22px 18px;color:var(--ink-2)}
+
+/* terminal */
+.term{background:#121417;color:#eceae4;border-color:#121417}
+.term > header{border-color:#2c3035}
+.term > header h2{color:#eceae4}
+.term > header .meta{color:#9ea2a7}
+.term pre{margin:0;padding:16px 18px 18px;font:400 .84rem/1.6 var(--mono-face);white-space:pre-wrap;word-break:break-word;max-height:540px;overflow:auto}
+.term .cmd{color:#fff;font-weight:600}
+.term .p{color:var(--signal)}
+.term .dim{color:#9ea2a7}
+.term .apply{color:#5fd48a}
+.term .dry{color:#ffd166}
+
+/* summary board */
+.board{background:var(--panel);color:var(--panel-ink);border-color:var(--panel)}
+.board > header{border-color:color-mix(in srgb,var(--panel-ink) 16%,transparent)}
+.board > header h2{color:var(--panel-ink)}
+.board > header .meta{color:var(--panel-ink-2)}
+.board dl{display:grid;grid-template-columns:1fr auto;margin:0;padding:6px 18px 14px}
+.board dt,.board dd{padding:9px 0;border-bottom:1px solid color-mix(in srgb,var(--panel-ink) 10%,transparent);margin:0}
+.board dt{font:600 .98rem/1.2 var(--sign-face);letter-spacing:.05em;text-transform:uppercase;color:var(--panel-ink-2)}
+.board dd{font:600 1.05rem/1.2 var(--mono-face);text-align:right}
+.board dd.sig,.board dt.sig{color:var(--signal)}
+.board details{padding:0 18px 16px}
+.board summary{cursor:pointer;font:700 .9rem/1 var(--sign-face);letter-spacing:.06em;text-transform:uppercase;color:var(--panel-ink-2)}
+.board details pre{font:400 .78rem/1.5 var(--mono-face);white-space:pre-wrap;max-height:320px;overflow:auto;color:var(--panel-ink-2)}
+
+.mapwrap{padding:18px 18px 8px}
+
+/* shot mode: one panel alone, for documentation screenshots */
+html.shot body{background:var(--enamel)}
+html.shot .top,html.shot .steps{display:none}
+html.shot .grid{display:block;padding:0;width:100%}
+html.shot .col{display:block}
+html.shot [data-panel]{display:none}
+html.shot [data-panel].on{display:block;border-radius:0;border:0}
+html.shot .term pre{max-height:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="11.5" fill="none" stroke="currentColor" stroke-width="5"/><rect x="0" y="12.5" width="30" height="5" rx="2.5" fill="var(--signal)"/></svg>
+      AI E-Mail Assistant
+    </a>
+    <p class="note">Demo console · real engine · invented mailbox</p>
+  </div>
+</header>
+
+<main>
+<div class="steps wrap">
+  <h1>One morning, five runs of the engine.</h1>
+  <ol id="steps"></ol>
+  <p class="caption" id="caption" aria-live="polite"></p>
+</div>
+
+<div class="grid wrap">
+  <div class="col">
+    <section class="panel" data-panel="inbox" aria-labelledby="inbox-h">
+      <header><h2 id="inbox-h">Inbox</h2><span class="meta" id="inbox-meta"></span></header>
+      <ul class="mail" id="mail"></ul>
+    </section>
+    <section class="panel" data-panel="map" aria-labelledby="map-h">
+      <header><h2 id="map-h">Where the mail went</h2><span class="meta">after the applied run</span></header>
+      <div class="mapwrap"><svg id="map"></svg></div>
+    </section>
+  </div>
+  <div class="col">
+    <section class="panel" data-panel="tasks" aria-labelledby="tasks-h">
+      <header><h2 id="tasks-h">My Tasks</h2><span class="meta" id="tasks-meta"></span></header>
+      <ul class="tasks" id="tasks"></ul>
+    </section>
+    <section class="panel board" data-panel="board" aria-labelledby="board-h">
+      <header><h2 id="board-h">state/summary.json</h2><span class="meta" id="board-meta"></span></header>
+      <dl id="summary"></dl>
+      <details><summary>Raw file</summary><pre id="raw"></pre></details>
+    </section>
+    <section class="panel term" data-panel="terminal" aria-labelledby="term-h">
+      <header><h2 id="term-h">Terminal</h2><span class="meta">~/ai-email-assistant</span></header>
+      <pre id="term"></pre>
+    </section>
+  </div>
+</div>
+</main>
+
+<script type="module">
+import { drawLineMap, lineVar, DARK_TEXT } from "../docs/assets/js/linemap.js";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const params = new URLSearchParams(location.search);
+if (params.get("theme")) document.documentElement.dataset.theme = params.get("theme");
+
+const snap = await fetch("../docs/assets/demo/run.json").then((r) => r.json());
+const STEPS = {
+  arrive: { label: "Arrive", sub: "38 unread overnight", text: "The invented mailbox at 08:00: 38 unread messages in the 7-day window, plus one older thread that a scheduled run never touches." },
+  preview: { label: "Preview", sub: "dry run, 2 model calls", text: "<code>python3 runner.py</code> plans everything and changes nothing. Rules route 27 messages; 10 go to the first-pass model, 3 of those to the stronger one. Decisions are validated and cached for today." },
+  apply: { label: "Apply", sub: "labels, sweeps, tasks", text: "<code>python3 runner.py --apply</code> reuses the preview's validated decisions with no new model call: four tasks first, then labels, then sweeps archive what is done." },
+  quiet: { label: "Next hour", sub: "nothing new, no model", text: "The 09:00 scheduled run finds nothing new to classify. The message held for review is not re-sent today, so no model is launched." },
+  done: { label: "Task done", sub: "thread archived", text: "You tick off “Approve the Q4 hiring plan” in Google Tasks. The next run syncs it and archives the thread, as the Action tag's <code>on_task_done</code> asks." },
+};
+const order = Object.keys(STEPS);
+const fmtAge = (h) => (h < 24 ? `${Math.round(h)}h` : `${Math.round(h / 24)}d`);
+const bullet = (tag, blind) => `<span class="bullet${blind ? " bullet--blind" : ""}"${DARK_TEXT.has(tag) ? " data-dark" : ""} style="--c:${lineVar(tag)}">AI/${esc(tag)}</span>`;
+const day = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+
+$("#steps").innerHTML = order.map((k) => `<li><button type="button" data-step="${k}"><b>${STEPS[k].label}</b><small>${STEPS[k].sub}</small></button></li>`).join("");
+
+function colour(line) {
+  const e = esc(line);
+  if (line.startsWith("$ ")) return `<span class="cmd"><span class="p">$</span>${e.slice(1)}</span>`;
+  if (/^\s+DRY/.test(line)) return e.replace("DRY", '<span class="dry">DRY</span>');
+  if (/^\s+APPLY/.test(line)) return e.replace("APPLY", '<span class="apply">APPLY</span>');
+  if (/^\[/.test(line)) return `<span class="dim">${e}</span>`;
+  return e;
+}
+
+let previous = null;
+function show(name) {
+  const step = snap.steps.find((s) => s.name === name);
+  document.querySelectorAll("#steps button").forEach((b) => {
+    if (b.dataset.step === name) b.setAttribute("aria-current", "step");
+    else b.removeAttribute("aria-current");
+  });
+  $("#caption").innerHTML = STEPS[name].text;
+
+  const inbox = step.mailbox.filter((m) => m.inbox);
+  const gone = step.mailbox.length - inbox.length;
+  const unread = inbox.filter((m) => m.unread).length;
+  const waiting = name !== "arrive" && name !== "preview" ? inbox.filter((m) => snap.routes[m.id] === "waiting") : [];
+  $("#inbox-meta").textContent = `${inbox.length} in inbox · ${unread} unread`;
+  const blind = previous && previous !== name;
+  $("#mail").innerHTML = inbox.map((m) => {
+    const wait = waiting.includes(m);
+    return `<li class="${m.unread ? "unread" : ""}${wait ? " waiting" : ""}">
+      <span class="u" aria-label="${m.unread ? "unread" : "read"}"></span>
+      <span class="from">${esc(m.from)}</span>
+      <span class="line1">${m.starred ? '<svg class="star" role="img" aria-label="starred" width="15" height="15" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="currentColor"/></svg>' : ""}<span class="tags">${m.tags.map((t) => bullet(t, blind)).join("")}</span>${wait ? '<span class="wait">Waiting for you</span>' : ""}<span class="subj">${esc(m.subject)} <span class="snip">— ${esc(m.snippet)}</span></span></span>
+      <span class="when">${fmtAge(m.hours)}</span></li>`;
+  }).join("") + (gone ? `<li class="gone-row"><span class="gone">${gone} archived out of the inbox by sweeps and completed tasks; still searchable in All Mail.</span></li>` : "");
+
+  const tasks = step.tasks;
+  $("#tasks-meta").textContent = tasks.length ? `${tasks.filter((t) => t.status !== "completed").length} open` : "empty";
+  $("#tasks").innerHTML = tasks.length ? tasks.map((t) => `<li class="${t.status === "completed" ? "done" : ""}"><span class="box" aria-hidden="true">${t.status === "completed" ? '<svg width="12" height="12" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}</span><div><div class="t">${esc(t.title)}</div><div class="d"><span class="due">Due ${day(t.due)}</span><span>AI/Action · linked to the thread</span></div></div></li>`).join("")
+    : `<li class="empty">No tasks yet. ${name === "preview" ? "A dry run plans tasks but creates none." : "Nothing has run."}</li>`;
+
+  const s = step.summary;
+  if (s) {
+    $("#board-meta").textContent = s.apply ? "applied" : "dry run";
+    const rows = [
+      ["Status", s.status.replace("_", " ")], ["Pending for the model", s.pending], ["Classified", s.classified],
+      ["Reused from cache", s.cached], ["Archived", s.archived], ["Tasks created", s.tasks_created],
+      ["Model calls this run", step.model_calls.length], ["Waiting for you", s.unresolved_ids.length],
+    ];
+    $("#summary").innerHTML = rows.map(([k, v]) => {
+      const sig = k === "Waiting for you" && v ? ' class="sig"' : "";
+      return `<dt${sig}>${k}</dt><dd${sig}>${esc(v)}</dd>`;
+    }).join("") + (s.rule_candidates.length ? `<dt>Rule proposed</dt><dd>${esc(s.rule_candidates[0].query)}</dd>` : "");
+    $("#raw").textContent = JSON.stringify({ ...s, started: undefined, finished: undefined }, null, 1);
+  } else {
+    $("#board-meta").textContent = "not written yet";
+    $("#summary").innerHTML = `<dt>Status</dt><dd>no run yet</dd>`;
+    $("#raw").textContent = "{}";
+  }
+
+  const lines = step.transcript.length
+    ? step.transcript.flatMap((r) => [`$ ${r.command}`, ...r.output.split("\n"), ""])
+    : ["$ ls state/", "ls: state/: No such file or directory"];
+  $("#term").innerHTML = lines.map(colour).join("\n");
+  previous = name;
+  if (!params.get("shot")) history.replaceState(null, "", `?step=${name}${params.get("theme") ? `&theme=${params.get("theme")}` : ""}`);
+}
+
+document.querySelectorAll("#steps button").forEach((b) => b.addEventListener("click", () => show(b.dataset.step)));
+drawLineMap($("#map"), snap, { label: "Where the demo mail went after the applied run" });
+show(order.includes(params.get("step")) ? params.get("step") : "apply");
+
+const shot = params.get("shot");
+if (shot) {
+  document.documentElement.classList.add("shot");
+  document.querySelector(`[data-panel="${shot}"]`).classList.add("on");
+}
+document.documentElement.dataset.ready = "1";
+</script>
+</body>
+</html>

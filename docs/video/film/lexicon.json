@@ -1,0 +1,5 @@
+{
+  "_doc": "Pronunciation fixes, applied to the spoken text only (subtitles keep the original). Keys are whole words, case-sensitive. Checked with the narration-lexicon skill.",
+  "en": {},
+  "fr": {}
+}

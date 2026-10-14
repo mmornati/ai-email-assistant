@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""Stand-in for the GitHub Copilot CLI classifier in the demo.
+
+It reads the real prompt runner.py sends on stdin, answers with the scripted classification of each
+message from $DEMO_ANSWERS for the requested model, and emits the same JSONL event stream and usage
+file shape the real CLI does. Token counts are estimated from text length and are not real usage.
+"""
+from __future__ import annotations
+
+import datetime as dt
+import json
+import os
+import sys
+from pathlib import Path
+
+
+def business_days(n):
+    d = dt.date.today()
+    while n:
+        d += dt.timedelta(days=1)
+        n -= d.weekday() < 5
+    return d.isoformat()
+
+
+def main():
+    argv = sys.argv[1:]
+    model = argv[argv.index("--model") + 1]
+    usage_file = argv[argv.index("--usage-output-file") + 1]
+    prompt = sys.stdin.read()
+    data = json.loads(prompt.split("Allowed tags and email data follow:\n", 1)[1])
+    answers = json.loads(Path(os.environ["DEMO_ANSWERS"]).read_text())
+    family = "sol" if "sol" in model else "luna"
+    result = {}
+    for message in data["messages"]:
+        scripted = answers[message["id"]].get(family) or answers[message["id"]]["luna"]
+        answer = json.loads(json.dumps(scripted))
+        task = answer.get("task")
+        if task and "due_in" in task:
+            task["due"] = business_days(task.pop("due_in"))
+        result[message["id"]] = answer
+    content = json.dumps(result, ensure_ascii=False)
+    Path(usage_file).write_text(json.dumps({
+        "totalUserRequests": 1,
+        "tokenDetails": {"input": {"tokenCount": len(prompt) // 4}, "output": {"tokenCount": len(content) // 4}},
+    }))
+    log = os.environ.get("DEMO_MODEL_LOG")
+    if log:
+        with open(log, "a") as f:
+            f.write(json.dumps({"model": model, "ids": list(result), "prompt_chars": len(prompt)}) + "\n")
+    print(json.dumps({"type": "assistant.message", "data": {"phase": "final_answer", "content": content}}))
+
+
+if __name__ == "__main__":
+    main()
