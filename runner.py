@@ -308,9 +308,15 @@ def claude_read_usage(stdout, workdir):
     safe_usage = {"tokens": {
         name: usage[key] for key, name in names.items() if type(usage.get(key)) in (int, float)
     }}
+    # Claude Code writes its cache with a 1-hour TTL, billed at a higher rate; this is a subset of cache_write.
+    one_hour = (usage.get("cache_creation") or {}).get("ephemeral_1h_input_tokens") \
+        if isinstance(usage.get("cache_creation"), dict) else None
+    if type(one_hour) in (int, float):
+        safe_usage["tokens"]["cache_write_1h"] = one_hour
+    # The CLI's own estimate; it uses fallback rates for model IDs the installed CLI does not know.
     cost = result.get("total_cost_usd")
     if type(cost) in (int, float) and math.isfinite(cost):
-        safe_usage["cost_usd"] = cost
+        safe_usage["cli_cost_usd"] = cost
     return safe_usage
 
 
@@ -468,8 +474,8 @@ def usage_report():
             totals["missing_usage"] += 1
         else:
             totals["tokens"].update(usage["tokens"])
-            if "cost_usd" in usage:
-                totals["cost_usd"] = round(totals.get("cost_usd", 0) + usage["cost_usd"], 6)
+            if "cli_cost_usd" in usage:
+                totals["cli_cost_usd"] = round(totals.get("cli_cost_usd", 0) + usage["cli_cost_usd"], 6)
     print(json.dumps(models, indent=2))
 
 

@@ -18,7 +18,8 @@ def claude_result(content, **overrides):
         "type": "result", "subtype": "success", "is_error": False, "num_turns": 1,
         "permission_denials": [], "result": content, "total_cost_usd": 0.0061,
         "usage": {"input_tokens": 2, "output_tokens": 9, "cache_read_input_tokens": 0,
-                  "cache_creation_input_tokens": 739, "service_tier": "standard"},
+                  "cache_creation_input_tokens": 739, "service_tier": "standard",
+                  "cache_creation": {"ephemeral_1h_input_tokens": 739, "ephemeral_5m_input_tokens": 0}},
         **overrides,
     })
 
@@ -111,7 +112,7 @@ class ClaudeBackendTests(unittest.TestCase):
         self.assertEqual(command[command.index("--tools") + 1], "")
         self.assertEqual(command[command.index("--output-format") + 1], "json")
         self.assertEqual(command[command.index("--setting-sources") + 1], "project")
-        self.assertEqual(command[command.index("--max-budget-usd") + 1], "0.25")
+        self.assertEqual(command[command.index("--max-budget-usd") + 1], "1.0")
         for flag in ("--strict-mcp-config", "--disable-slash-commands", "--no-session-persistence"):
             self.assertIn(flag, command)
         self.assertNotIn("--bare", command)
@@ -182,14 +183,15 @@ class ClaudeBackendTests(unittest.TestCase):
         entry = self.last_usage()
         self.assertEqual(entry["cli"], "claude")
         self.assertEqual(entry["cli_usage"], {
-            "tokens": {"input": 2, "output": 9, "cache_read": 0, "cache_write": 739}, "cost_usd": 0.0061,
+            "tokens": {"input": 2, "output": 9, "cache_read": 0, "cache_write": 739, "cache_write_1h": 739},
+            "cli_cost_usd": 0.0061,
         })
         with runner.USAGE.open("a") as f:  # pre-selection entries have no "cli" field
             f.write(json.dumps({"model": "gpt-6-luna", "status": "ok", "cli_usage": None}) + "\n")
         with contextlib.redirect_stdout(io.StringIO()) as output:
             runner.usage_report()
         report = json.loads(output.getvalue())
-        self.assertEqual(report["claude/claude-haiku-5-5"]["cost_usd"], 0.0061)
+        self.assertEqual(report["claude/claude-haiku-5-5"]["cli_cost_usd"], 0.0061)
         self.assertEqual(report["copilot/gpt-6-luna"]["missing_usage"], 1)
 
 

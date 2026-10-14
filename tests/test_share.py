@@ -44,9 +44,9 @@ class ShareTests(unittest.TestCase):
             self.assertEqual(share.package(output, root), len(share.FILES) + 1)
             self.assertEqual(list(output.parent.glob(".mail-share-*")), [])
 
-    def test_every_test_module_and_skill_is_shared(self):
+    def test_every_test_module_skill_and_adr_is_shared(self):
         for path in (*share.ROOT.glob("tests/*.py"), *share.ROOT.glob(".github/skills/*/SKILL.md"),
-                     *share.ROOT.glob(".claude/skills/*/SKILL.md")):
+                     *share.ROOT.glob(".claude/skills/*/SKILL.md"), *share.ROOT.glob("docs/adr/*.md")):
             self.assertIn(path.relative_to(share.ROOT).as_posix(), share.FILES)
 
     def test_claude_skills_match_copilot_skills(self):

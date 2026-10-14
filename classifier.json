@@ -20,7 +20,7 @@
       "cheap_model": "claude-haiku-5-5",
       "escalation_model": "claude-sonnet-5-5",
       "auth": "subscription",
-      "max_budget_usd_per_call": 0.25
+      "max_budget_usd_per_call": 1.0
     }
   }
 }

@@ -1,6 +1,6 @@
 # Plan: selectable classifier CLI (Copilot or Claude)
 
-Status: in progress — steps 1 (refactor) and 2 (Claude backend) implemented. Branch: `claude/claude-cli-integration-plan-640b25`.
+Status: implemented (steps 1-5). Decisions and measurements: `docs/adr/0002-selectable-classifier-cli.md`. Branch: `claude/claude-cli-integration-plan-640b25`.
 
 ## Goal
 

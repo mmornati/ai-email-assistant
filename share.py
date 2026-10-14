@@ -24,7 +24,7 @@ FILES = (
     ".claude/skills/mail-setup/SKILL.md", ".claude/skills/mail-triage/SKILL.md",
     "benchmark.py", "benchmark-fixtures.json",
     "requirements-benchmark.txt", "requirements-benchmark.lock",
-    "docs/adr/0001-laya-vs-luna.md",
+    "docs/adr/0001-laya-vs-luna.md", "docs/adr/0002-selectable-classifier-cli.md",
 )
 
 

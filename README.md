@@ -9,8 +9,10 @@ rule-matched mail, sweeping old notifications, synchronizing completed tasks,
 deduplicating tasks, or generating the routine report.
 
 **Recommended setup:** a local macOS schedule runs `runner.py`. It does not
-launch an AI session when there is no unresolved mail. Copilot is the classifier
-and the interactive review interface, not the hourly scheduler.
+launch an AI session when there is no unresolved mail. The classifier is a CLI
+you choose in `classifier.json`: the GitHub Copilot CLI (default) or Claude Code.
+The same tool also hosts the interactive review skills; neither is the hourly
+scheduler.
 
 ## Quick start (macOS)
 
@@ -25,18 +27,21 @@ The setup script is idempotent and safe to re-run. It:
 
 1. installs Python 3.10+ (if needed), the
    [Google Workspace CLI](https://github.com/googleworkspace/cli) (`googleworkspace-cli`),
-   the Google Cloud CLI (`gcloud-cli`) and the
-   [GitHub Copilot CLI](https://docs.github.com/copilot/how-tos/copilot-cli) (`copilot-cli`)
-   with Homebrew;
+   the Google Cloud CLI (`gcloud-cli`) and the classifier CLI with Homebrew:
+   the [GitHub Copilot CLI](https://docs.github.com/copilot/how-tos/copilot-cli)
+   (`copilot-cli`) by default, or [Claude Code](https://claude.com/product/claude-code)
+   (`claude-code`) with `--cli claude`;
 2. creates a private `state/` folder and `rules.json` from the starter rules;
 3. logs in to `gcloud`, runs `gws auth setup` (OAuth client + Gmail/Tasks APIs)
    and `gws auth login` with **only** the `gmail.modify` and `tasks` scopes, then
-   `copilot login`;
+   `copilot login` or `claude auth login`;
 4. runs the offline tests and a read-only, model-free dry run.
 
 It never modifies mail, never passes `--apply`, and never installs the schedule.
-Use `--skip-copilot` for a model-free setup, `--project <id>` to reuse an existing
-Google Cloud project, and `--help` for all options.
+Use `--cli claude` to classify with Claude Code (it also sets `"cli"` in
+`classifier.json`), `--no-model-cli` for a model-free setup (`--skip-copilot`
+still works), `--project <id>` to reuse an existing Google Cloud project, and
+`--help` for all options.
 
 > **Note:** Homebrew's `gws` formula is an unrelated tool with the same binary
 > name. Install `googleworkspace-cli`, not `gws`; the script checks for this.
@@ -71,11 +76,12 @@ operations are not rolled back if classification subsequently fails.
 | `triage.py` | Existing deterministic mailbox/Tasks engine and interactive commands |
 | `rules.json` | Tags, ordered Gmail queries, actions, task policies and default dates |
 | `runner.py` | Scan, cache, gated classification, validation and reporting |
-| `classifier.json` | Models, thresholds, batching and per-run limits |
+| `classifier.json` | Classifier CLI (Copilot or Claude Code), models, thresholds, batching and per-run limits |
 | `schedule.py` | Render/install/status/uninstall the macOS calendar job |
 | `tests/` | Isolated tests; no mailbox access or paid model calls |
 | `scripts/setup-macos.sh` | Install, authenticate and verify from zero on macOS |
-| `.github/skills/mail-triage/SKILL.md` | Interactive Copilot review procedure |
+| `.github/skills/mail-triage/SKILL.md` | Interactive review procedure (Copilot) |
+| `.claude/skills/*/SKILL.md` | Identical skill copies for Claude Code; a test keeps them in sync |
 | `rules.example.json` | Generic starter rules; no sender-specific queries or automatic cleanup |
 | `share.py` | Build a clean ZIP from an explicit file allowlist |
 | `mail_setup.py` | Bounded read-only sender discovery and approved local-rule updates |
@@ -117,11 +123,12 @@ Recipients should:
 2. Run `bash scripts/setup-macos.sh`, or install the prerequisite CLIs below
    manually, and authenticate **their own accounts**.
    Use `gws auth setup` if OAuth configuration is needed, then
-   `gws auth login --services gmail,tasks`, `gws auth status`, and `copilot login`.
+   `gws auth login --services gmail,tasks`, `gws auth status`, and `copilot login`
+   or `claude auth login` for the classifier CLI selected in `classifier.json`.
    Do not use read-only access for applied runs; Gmail modification and Tasks
    access are required. Follow the CLI prompts and organizational OAuth policy.
-3. Review `rules.json`, the task-list name, allowed models in `classifier.json`,
-   and any locally configured MCP server names to disable.
+3. Review `rules.json`, the task-list name, the classifier CLI and allowed models
+   in `classifier.json`, and any locally configured MCP server names to disable.
 4. Run the offline tests and the `mail-setup` onboarding skill below to personalize
    sender rules. Inspect a model-free dry run before deliberately enabling paid
    classification or mailbox changes.
@@ -137,14 +144,18 @@ benchmarking the starter rules is a different configuration.
 `scripts/setup-macos.sh` handles everything in this section. Manually, use
 Python 3.10+ on macOS, an authenticated
 [`gws` CLI](https://github.com/googleworkspace/cli) with Gmail and Tasks access,
-and an authenticated [Copilot CLI](https://docs.github.com/copilot/how-tos/copilot-cli).
+and the authenticated classifier CLI selected in `classifier.json` (see
+[Choosing the classifier CLI](#choosing-the-classifier-cli)).
 There are no additional Python package dependencies.
 
 The installed Copilot CLI must support `--available-tools=`,
 `--no-custom-instructions`, `--no-remote-export`, `--output-format json`, and
 `--usage-output-file`.
-Check `copilot --help` and `copilot help permissions`. Both configured models
-must be accessible under your account and organization policy.
+Check `copilot --help` and `copilot help permissions`. Claude Code was verified
+with version 2.1.284; it must support `-p`, `--output-format json`, `--tools`,
+`--strict-mcp-config`, `--setting-sources`, `--no-session-persistence` and
+`--max-budget-usd` (check `claude --help`). Both configured models must be
+accessible under your account and organization policy.
 
 ```bash
 cd /path/to/ai-mail-assistant
@@ -168,7 +179,8 @@ Do not run both scheduling systems below at the same time.
 
 ## First-run personalized rules: `mail-setup`
 
-Open the extracted folder as a Local folder-backed project in Copilot and ask:
+Open the extracted folder as a Local folder-backed project in Copilot, or start
+`claude` in it (Claude Code reads the same skill from `.claude/skills/`), and ask:
 
 > Use the mail-setup skill to inspect my mailbox read-only, propose personalized
 > rules, and ask before saving them. Do not modify mail or create tasks.
@@ -178,7 +190,7 @@ The included skill runs `mail_setup.py discover`. The script reads at most
 groups exact sender addresses deterministically and writes bounded samples to
 `state/setup-discovery.json`. It fetches only selected metadata headers and short
 snippets, not bodies/attachments; makes no model calls; and never modifies mail
-or tasks. The reviewing Copilot session consumes its normal tokens. No model
+or tasks. The reviewing Copilot or Claude Code session consumes its normal tokens. No model
 training or local-model installation is needed.
 
 For each recurring group, up to three development and two separate validation
@@ -214,7 +226,7 @@ These are hard caps, not a request to read the entire mailbox. All discovery,
 selection, preview and backup data is private `state/` and excluded from ZIPs.
 The skill does not enable classification, mailbox application or scheduling.
 
-## Recommended schedule: outside the Copilot app
+## Recommended schedule: outside the AI app
 
 ### Installation
 
@@ -223,6 +235,10 @@ python3 schedule.py render            # inspect the generated job; does not inst
 python3 schedule.py install           # persistent schedule; future runs use --apply
 python3 schedule.py status            # inspect the registered job and last exit code
 ```
+
+`install` checks that the classifier CLI selected in `classifier.json` is on
+`PATH` and prints which one the job will use. It refuses Claude Code with
+`"auth": "api_key"`, because the job never stores an API key.
 
 The installer records the absolute current interpreter path and current `PATH`.
 It creates `~/Library/LaunchAgents/local.ai-mail-assistant.plist` and registers
@@ -246,6 +262,9 @@ python3 schedule.py install --dry-run
 These are alternative installations, not additional jobs. To change installation
 options, uninstall, then install again. Model/rule edits are read on each run and
 do not require reinstalling; interpreter, `PATH`, or project-path changes do.
+Switching `cli` is a config edit too, as long as the other CLI's binary is on the
+`PATH` recorded at install time (for example `~/.local/bin` for Claude Code's
+native installer); otherwise reinstall.
 
 ### Timing and machine lifecycle
 
@@ -254,7 +273,7 @@ inclusive**, in the Mac's local timezone: 12 opportunities/day, 60/week,
 approximately 264 in a 22-workday month. The equivalent cron expression is
 `0 8-19 * * 1-5`; the installed job uses calendar entries, not cron.
 
-It runs as the logged-in user, without a terminal or the Copilot app being open.
+It runs as the logged-in user, without a terminal or the Copilot/Claude app being open.
 The Mac must be powered on and that user logged in. Calendar events missed during
 sleep may be coalesced into one wake-up run, not replayed hour by hour. Missed runs
 while shut down/logged out are not a guaranteed backlog queue. `--scheduled`
@@ -306,11 +325,15 @@ python3 schedule.py uninstall
 For immediate manual processing, run `runner.py` directly; it need not wait for
 the next calendar event.
 
-## Configuring the Copilot app
+## Configuring the Copilot app (or Claude Code)
 
 Keep this folder configured as a **Local, folder-backed project**. It has no Git
 checkout requirement. Model selection in the app controls interactive assistance;
 it does **not** override `classifier.json` for the external runner.
+
+Claude Code needs no project setup: run `claude` in this folder and the same
+skills load from `.claude/skills/`. The prompts below work unchanged. The
+app-only automation alternative is described for Copilot.
 
 ### Interactive review (recommended app use)
 
@@ -376,6 +399,79 @@ Local project Automation with:
 The runner's classifier is a separate CLI process with its own model setting.
 Do not claim this option achieves zero-token scans overall.
 
+## Choosing the classifier CLI
+
+`classifier.json` selects the CLI that classifies pending mail with `"cli"`, and
+keeps each CLI's binary and models under `"providers"`. The reasoning and the
+measurements behind the Claude Code defaults are in
+[ADR 0002](docs/adr/0002-selectable-classifier-cli.md).
+
+```json
+{
+  "cli": "claude",
+  "providers": {
+    "copilot": {"binary": "copilot", "cheap_model": "gpt-6-luna", "escalation_model": "gpt-6.1-sol",
+                "disabled_mcp_servers": []},
+    "claude": {"binary": "claude", "cheap_model": "claude-haiku-5-5",
+               "escalation_model": "claude-sonnet-5-5", "auth": "subscription",
+               "max_budget_usd_per_call": 1.0}
+  }
+}
+```
+
+Switch with an editor or with:
+
+```bash
+python3 runner.py --select-cli claude   # validates the file, rewrites only "cli"
+python3 runner.py --cli claude          # one paid dry run with Claude Code; file unchanged
+```
+
+Every `providers` block is validated on each run, so a mistake in the inactive
+one is reported before you switch to it. Switching invalidates same-day cached
+classifications (a different classifier produced them).
+
+### Claude Code
+
+Each classification is one `claude -p --output-format json` call with:
+
+- no tools (`--tools ""`), no MCP servers (`--strict-mcp-config` with an empty
+  config), no skills (`--disable-slash-commands`) and no saved session
+  (`--no-session-persistence`);
+- `--setting-sources project` in an empty temporary directory, so your user
+  settings, hooks, plugins and permissions are not loaded;
+- the classifier instructions and tag definitions as the system prompt
+  (replacing Claude Code's coding-agent prompt) and the mail on stdin only;
+- a per-call cap, `--max-budget-usd` = `max_budget_usd_per_call`.
+
+The answer must be a single successful, tool-free turn; anything else is recorded
+as an error and no decision is applied.
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `providers.claude.cheap_model` | `claude-haiku-5-5` | First-pass classification |
+| `providers.claude.escalation_model` | `claude-sonnet-5-5` | Ambiguous cases only |
+| `providers.claude.auth` | `subscription` | `subscription` or `api_key` (see below) |
+| `providers.claude.max_budget_usd_per_call` | `1.0` | Runaway guard, in the CLI's own cost estimate |
+
+Keep pinned model IDs. On Claude Code 2.1.284 the `haiku` alias resolved to the
+older Claude Haiku 4.5, so an alias can silently change both classifications and
+cost.
+
+**Auth.** `subscription` (default) uses your `claude auth login` and removes
+`ANTHROPIC_API_KEY`/`ANTHROPIC_AUTH_TOKEN` from the call's environment so billing
+stays on that login. With these flags, a synthetic probe showed that your global
+`~/.claude/CLAUDE.md` and project instructions are **not** sent; Claude Code still
+adds a short account section containing your sign-in email. `api_key` adds
+`--bare`, which also skips that and every other automatic context, but accepts only
+`ANTHROPIC_API_KEY`; the scheduled job cannot use it.
+
+**Refused environments.** Like Copilot's custom-provider variables, the runner
+refuses to call Claude Code when `ANTHROPIC_BASE_URL`, `ANTHROPIC_BEDROCK_BASE_URL`,
+`ANTHROPIC_VERTEX_BASE_URL`, `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX` or
+`CLAUDE_CODE_USE_FOUNDRY` is set. A terminal inside a Claude Code session sets
+`ANTHROPIC_BASE_URL` for that session's own proxy, so run `runner.py` from a normal
+terminal or the schedule, not from inside Claude Code.
+
 ## Model routing and configuration
 
 Default `classifier.json` settings:
@@ -396,6 +492,8 @@ Default `classifier.json` settings:
 | `providers.copilot.binary` | `copilot` | CLI executable name or absolute path |
 | `providers.copilot.disabled_mcp_servers` | configured names | Also suppress these user MCP servers |
 
+The Claude Code block is described in [Choosing the classifier CLI](#choosing-the-classifier-cli).
+
 The older flat format (`copilot_binary`, `cheap_model`, ... at the top level) is
 still accepted and read as `"cli": "copilot"`. Switching CLI or model invalidates
 same-day cached classifications.
@@ -410,10 +508,10 @@ attachments and other thread messages are not fetched. HTML-only messages or
 references requiring missing thread history may remain unresolved. Classification
 cannot safely infer missing requests/deadlines.
 
-Calls have no available tools, run in a temporary working directory, suppress
+Copilot calls have no available tools, run in a temporary working directory, suppress
 project custom instructions and remote session export, and receive mail through
 stdin, not command-line arguments. Built-in MCP servers and the configured server
-names are disabled. Account-level CLI system context/plugins may still add
+names are disabled. Claude Code calls get the equivalent isolation listed above. Account-level CLI system context/plugins may still add
 overhead; this is **not** a bare model API call. Custom provider environment
 overrides are refused to prevent silently routing mail to another provider.
 
@@ -429,9 +527,10 @@ python3 runner.py --retry-review --apply
 ```
 
 Capacity-limited mail stays pending and is eligible on the next run. The limits
-bound workload, **not an exact currency budget**. The CLI has a separate soft
+bound workload, **not an exact currency budget**. The Copilot CLI has a separate soft
 AI-credit cap with a documented minimum of 30 credits; it is not used here as a
-micro-call budget.
+micro-call budget. Claude Code's `max_budget_usd_per_call` is a per-call guard
+against runaway output, measured in the CLI's estimate (see below), not a budget.
 
 ## Costs and token estimates
 
@@ -464,6 +563,40 @@ above gives approximately **$0.00210** for that call:
 
 This demonstrates why batching and skipping empty runs matter: even a tiny prompt
 can carry substantial CLI system context. Actual classifier prompts are larger.
+
+### Claude Code rates and measured overhead
+
+Anthropic API rates, USD per million tokens, taken from Anthropic's model price
+list as of **2026-10-06** ([pricing](https://platform.claude.com/docs/en/about-claude/pricing)).
+Claude Haiku 5.5 rates apply to prompts of 100K tokens or fewer. Cache writes cost
+1.25x input for a 5-minute TTL and 2x for a 1-hour TTL; Claude Code wrote 1-hour
+entries in every probe below.
+
+| Model | Input | Cache read | Cache write 5m | Cache write 1h | Output |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Claude Haiku 5.5 | $0.10 | $0.01 | $0.125 | $0.20 | $0.50 |
+| Claude Sonnet 5.5 | $2.00 | $0.20 | $2.50 | $4.00 | $10.00 |
+
+With a **subscription** login these are reference values: usage counts toward the
+plan's limits rather than being billed per token. With `api_key` auth they are
+the billed rates.
+
+Because the system prompt replaces Claude Code's default one and no tools are
+offered, overhead is small. Synthetic probes on Claude Code 2.1.284 (not inbox
+runs, not an accuracy benchmark):
+
+- a tiny JSON echo used 2 input, 720-815 cache-write and 9 output tokens,
+  about **$0.00015** at Haiku rates (vs ~17,000 cache-write tokens for Copilot);
+- a two-message classification used 2 input, 1,635 cache-write and 696 output
+  tokens, about **$0.00068** at Haiku rates. Output exceeds the visible JSON,
+  most likely because Haiku 5.5 thinks by default; lowering effort is untested.
+
+**Do not use the CLI's reported cost for these models.** Claude Code 2.1.284 does
+not recognize `claude-haiku-5-5` or `claude-sonnet-5-5` and prices them at
+Claude Opus 5.5 rates: the two-message probe above reported $0.027, about 40x
+the Haiku figure. The runner stores that number as `cli_cost_usd` only for
+reference; compute cost from tokens. `--max-budget-usd` uses the same estimate,
+which is why the default cap is $1.00 rather than a few cents.
 
 An additional synthetic one-message classification validated both configured
 models. The small-model call used 3 input, 17,379 cache-write and 64 output tokens
@@ -498,8 +631,11 @@ agent session on every one of those ticks, even when the inbox is empty.
 python3 runner.py --usage-report
 ```
 
-`state/usage.jsonl` records each call's model, message count, status, duration,
-prompt/response character counts and sanitized CLI token totals. Characters are
+`state/usage.jsonl` records each call's CLI, model, message count, status, duration,
+prompt/response character counts and sanitized CLI token totals. The report groups
+by `cli/model` (entries written before CLI selection count as `copilot`). Claude
+Code entries add `cache_write_1h`, the 1-hour-TTL part of `cache_write`, and the
+CLI's own `cli_cost_usd` estimate (see the warning above). Characters are
 **not** tokens. A timeout or missing usage export is marked as missing usage;
 it does not prove that the failed call was free. Model response validation can
 fail after a successfully billed call.
@@ -512,10 +648,14 @@ USD = (input * input_rate + cache_read * cache_read_rate
 AI credits at reference rate = USD * 100
 ```
 
+For Claude Code, price `cache_write_1h` at the 1-hour rate and only
+`cache_write - cache_write_1h` at the 5-minute rate. `benchmark.py` applies this
+with the rates above.
+
 Use the CLI's billing token categories, not an additional sum of the inclusive
 model input totals, to avoid double-counting cached tokens. Reconcile with the
-account's Copilot usage view; legacy plans may expose premium-request accounting
-instead. CLI logs and synthetic probes are not the account invoice.
+account's Copilot usage view (legacy plans may expose premium-request accounting
+instead) or your Claude plan's usage page / Anthropic Console. CLI logs and synthetic probes are not the account invoice.
 
 ## Tasks, actions and safety
 
@@ -539,7 +679,9 @@ partial failures.
 New JSON state/usage files have owner-only permissions. State contains sensitive
 mail metadata and task details and is **not encrypted by this application**;
 use a protected account/disk, do not share it, and review any pre-existing file
-permissions. CLI/provider retention policy still applies to data sent to Copilot.
+permissions. The selected CLI's provider retention policy still applies to data
+sent to Copilot (GitHub and the model provider) or Claude Code (Anthropic; terms
+differ between a Claude subscription and API-key use).
 Routine schedule logs omit subjects/bodies/tasks; interactive engine reports can
 contain them. Usage logs accumulate; rotate/archive them privately as needed.
 
@@ -565,8 +707,10 @@ delete created tasks. An applied operation plan is renamed
 `state/plan.applied-<timestamp>.json`.
 
 For authentication failures, stop unattended work, use `gws auth status` and
-`gws auth login --services gmail,tasks`, or `copilot login` for Copilot,
-then rerun a preview. For model-access/CLI errors, verify the installed flags and
+`gws auth login --services gmail,tasks`, or `copilot login` / `claude auth login`
+for the classifier CLI, then rerun a preview. If Claude Code is refused because of
+`ANTHROPIC_BASE_URL`, you are probably running inside a Claude Code session; use a
+normal terminal. For model-access/CLI errors, verify the installed flags and
 permitted model names. For stale batches, regenerate pending and decisions.
 Do not bypass validation, replay legacy files, or use blanket tool permissions.
 
