@@ -6,14 +6,14 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-import benchmark
 import triage
+from tools import benchmark
 
 
 class BenchmarkTests(unittest.TestCase):
     def setUp(self):
         self.rules = triage.load_rules(triage.ROOT / "rules.example.json")
-        self.fixture = json.loads((triage.ROOT / "benchmark-fixtures.json").read_text())
+        self.fixture = json.loads(benchmark.FIXTURES.read_text())
 
     def test_fixtures_are_complete_and_valid(self):
         messages = self.fixture["messages"]
@@ -58,6 +58,16 @@ class BenchmarkTests(unittest.TestCase):
                                       {"input": 0.1, "cache_read": 0.01, "cache_write": 0.125, "output": 0.5})
         self.assertAlmostEqual(cost, 0.0026693)
         self.assertIsNone(benchmark.billing_cost(None, {}))
+        self.assertIsNone(benchmark.billing_cost({"tokens": {"input": 1}}, benchmark.MODEL_RATES.get("unknown")))
+
+    def test_billing_prices_one_hour_cache_writes_separately(self):
+        # Synthetic two-message Claude Haiku 5.5 probe: 1,635 cache-write tokens, all with a 1-hour TTL.
+        usage = {"tokens": {"input": 2, "cache_read": 0, "cache_write": 1635, "cache_write_1h": 1635, "output": 696}}
+        self.assertAlmostEqual(benchmark.billing_cost(usage, benchmark.MODEL_RATES["claude-haiku-5-5"]), 0.0006752)
+        usage["tokens"]["cache_write_1h"] = 0
+        self.assertAlmostEqual(benchmark.billing_cost(usage, benchmark.MODEL_RATES["claude-haiku-5-5"]), 0.000552575)
+        self.assertEqual(set(benchmark.MODEL_RATES), {"gpt-6-luna", "gpt-6.1-sol", "claude-haiku-5-5",
+                                                      "claude-sonnet-5-5"})
 
     def test_schemas_keep_all_allowed_tags(self):
         allowed = {t["name"] for t in self.rules["tags"]}
