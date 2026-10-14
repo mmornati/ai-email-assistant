@@ -156,10 +156,27 @@ def paired_metrics(left, right):
             ]}
 
 
+# USD per million tokens at the documented reference rates; see README "Costs and token estimates".
+# Claude Haiku 5.5 rates apply to prompts of 100K tokens or fewer.
+MODEL_RATES = {
+    "gpt-6-luna": {"input": 0.10, "cache_read": 0.01, "cache_write": 0.125, "output": 0.50},
+    "gpt-6.1-sol": {"input": 2.00, "cache_read": 0.10, "cache_write": 2.50, "output": 10.00},
+    "claude-haiku-5-5": {"input": 0.10, "cache_read": 0.01, "cache_write": 0.125, "cache_write_1h": 0.20,
+                         "output": 0.50},
+    "claude-sonnet-5-5": {"input": 2.00, "cache_read": 0.20, "cache_write": 2.50, "cache_write_1h": 4.00,
+                          "output": 10.00},
+}
+
+
 def billing_cost(usage, rates):
-    if not usage or "tokens" not in usage:
+    if not usage or "tokens" not in usage or not rates:
         return None
-    return sum(usage["tokens"].get(key, 0) * rates[key] for key in rates) / 1_000_000
+    tokens = dict(usage["tokens"])
+    # cache_write_1h is the 1-hour-TTL part of cache_write, billed at its own rate.
+    one_hour = tokens.pop("cache_write_1h", 0)
+    tokens["cache_write"] = tokens.get("cache_write", 0) - one_hour
+    cost = sum(tokens.get(key, 0) * rates[key] for key in ("input", "cache_read", "cache_write", "output"))
+    return (cost + one_hour * rates.get("cache_write_1h", rates["cache_write"])) / 1_000_000
 
 
 def evaluate(scope, messages, gold, rules, cfg, model, local, repeat, directory, router=None, schema="baseline"):
@@ -178,9 +195,7 @@ def evaluate(scope, messages, gold, rules, cfg, model, local, repeat, directory,
                 output = runner.call_model(messages, rules, cfg, model)
             usage_entry = json.loads(usage_path.read_text().splitlines()[-1])
             metrics = {"wall_seconds": usage_entry["duration_seconds"], "usage": usage_entry["cli_usage"]}
-            metrics["usd_reference"] = billing_cost(metrics["usage"], {
-                "input": 0.10, "cache_read": 0.01, "cache_write": 0.125, "output": 0.50,
-            })
+            metrics["usd_reference"] = billing_cost(metrics["usage"], MODEL_RATES.get(model))
         entry["metrics"] = metrics
         if local:
             predictions = output

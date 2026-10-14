@@ -6,7 +6,7 @@ effect immediately without reinstalling the schedule.
 | File | In Git? | Purpose |
 | --- | --- | --- |
 | `rules.json` | No (personal) | Tags, ordered Gmail queries, actions, task policies, default dates |
-| `classifier.json` | Yes | Models, thresholds, batching and per-run limits |
+| `classifier.json` | Yes | Classifier CLI (Copilot or Claude Code), models, thresholds, batching and per-run limits |
 
 ## `rules.json`
 
@@ -58,8 +58,9 @@ bulk sender occurs at least three times in a pending batch), but never edits
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `cheap_model` | `gpt-6-luna` | First-pass classification |
-| `escalation_model` | `gpt-6.1-sol` | Ambiguous cases only |
+| `cli` | `copilot` | Which `providers` entry classifies mail ([Choosing the classifier CLI](classifier-cli.md)) |
+| `providers.copilot.cheap_model` | `gpt-6-luna` | First-pass classification |
+| `providers.copilot.escalation_model` | `gpt-6.1-sol` | Ambiguous cases only |
 | `confidence_threshold` | `0.85` | First-pass acceptance threshold |
 | `escalation_threshold` | `0.9` | Escalation acceptance threshold |
 | `batch_size` | `25` | Messages per model invocation |
@@ -68,18 +69,24 @@ bulk sender occurs at least three times in a pending batch), but never edits
 | `context_chars` | `4000` | Max current-message plain-text body chars on escalation |
 | `timeout_seconds` | `180` | Timeout per CLI invocation |
 | `version` | `1` | Bump after intentional classifier-policy changes |
-| `copilot_binary` | `copilot` | CLI executable name or absolute path |
-| `disabled_mcp_servers` | `[]` | Also suppress these user MCP server names |
+| `providers.copilot.binary` | `copilot` | CLI executable name or absolute path |
+| `providers.copilot.disabled_mcp_servers` | `[]` | Also suppress these user MCP server names |
+| `providers.claude.*` | see [Claude Code](classifier-cli.md#claude-code) | Binary, models, auth mode and per-call cap |
 
 Both low confidence and `needs_context=true` trigger escalation.
 
-Capacity-limited mail stays pending and is eligible on the next run. The limits
-bound workload, **not an exact currency budget**. The CLI has a separate soft
-AI-credit cap with a documented minimum of 30 credits; it is not used here as a
-micro-call budget. See [Costs](costs.md).
+The older flat format (`copilot_binary`, `cheap_model`, ... at the top level) is
+still accepted and read as `"cli": "copilot"`. Switching CLI or model invalidates
+same-day cached classifications.
 
-Model selection in the Copilot app controls interactive assistance; it does
-**not** override `classifier.json` for the external runner.
+Capacity-limited mail stays pending and is eligible on the next run. The limits
+bound workload, **not an exact currency budget**. The Copilot CLI has a separate
+soft AI-credit cap with a documented minimum of 30 credits; it is not used here as
+a micro-call budget. Claude Code's `max_budget_usd_per_call` is a per-call guard
+against runaway output, not a budget. See [Costs](costs.md).
+
+Model selection in the Copilot app or Claude Code controls interactive
+assistance; it does **not** override `classifier.json` for the external runner.
 
 ## Scan window and limits
 

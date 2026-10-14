@@ -1,6 +1,6 @@
 # Scheduling
 
-The recommended schedule runs **outside the Copilot app**, as a macOS launchd
+The recommended schedule runs **outside the AI app**, as a macOS launchd
 job. Empty runs start no AI session and cost nothing in model tokens.
 
 ## Install
@@ -10,6 +10,10 @@ make schedule-render     # python3 schedule.py render   — inspect; does not in
 make schedule-install    # python3 schedule.py install  — persistent; future runs use --apply
 make schedule-status     # python3 schedule.py status   — registered job and last exit code
 ```
+
+`install` checks that the classifier CLI selected in `classifier.json` is on
+`PATH` and prints which one the job will use. It refuses Claude Code with
+`"auth": "api_key"`, because the job never stores an API key.
 
 The installer records the absolute current interpreter path and current `PATH`.
 It creates `~/Library/LaunchAgents/local.ai-mail-assistant.plist` and registers
@@ -33,6 +37,9 @@ python3 schedule.py install --dry-run
 These are alternative installations, not additional jobs. To change installation
 options, uninstall, then install again. Model/rule edits are read on each run and
 do not require reinstalling; interpreter, `PATH`, or project-path changes do.
+Switching `cli` is a config edit too, as long as the other CLI's binary is on the
+`PATH` recorded at install time (for example `~/.local/bin` for Claude Code's
+native installer); otherwise reinstall.
 
 > [!IMPORTANT]
 > Do not run the external schedule and an app automation at the same time.
@@ -44,7 +51,7 @@ inclusive**, in the Mac's local timezone: 12 opportunities/day, 60/week,
 approximately 264 in a 22-workday month. The equivalent cron expression is
 `0 8-19 * * 1-5`; the installed job uses calendar entries, not cron.
 
-It runs as the logged-in user, without a terminal or the Copilot app being open.
+It runs as the logged-in user, without a terminal or the Copilot/Claude app being open.
 The Mac must be powered on and that user logged in. Calendar events missed during
 sleep may be coalesced into one wake-up run, not replayed hour by hour. Missed runs
 while shut down/logged out are not a guaranteed backlog queue. `--scheduled`
@@ -96,7 +103,7 @@ tick.
 ## App-only automation alternative
 
 If an external schedule is unsuitable, uninstall it first, then create/edit a
-Local project Automation with:
+Local project Automation (described for Copilot) with:
 
 | Setting | Value |
 | --- | --- |

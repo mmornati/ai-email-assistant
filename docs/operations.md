@@ -55,8 +55,9 @@ Start with `make doctor`; it names each missing piece and how to fix it.
 | Symptom | Fix |
 | --- | --- |
 | `gws` authorization missing or expired | Stop unattended work, then `gws auth status` and `gws auth login --services gmail,tasks` (or re-run `make setup`), then preview again |
-| Copilot errors / not logged in | `copilot login` |
-| Model access or CLI flag errors | Verify the installed CLI flags (see [manual installation](getting-started.md#manual-installation)) and permitted model names in `classifier.json` |
+| Classifier CLI not logged in | `copilot login` or `claude auth login` |
+| Claude Code refused because of `ANTHROPIC_BASE_URL` | You are probably inside a Claude Code session; run from a normal terminal |
+| Model access or CLI flag errors | Verify the installed CLI flags (see [Choosing the classifier CLI](classifier-cli.md)) and permitted model names in `classifier.json` |
 | Stale batch / decisions rejected | Regenerate pending and decisions; batches expire after 24 hours |
 | `gws` is a different tool | `brew uninstall gws`, then `brew install googleworkspace-cli` |
 | macOS Python is 3.9 | `make setup` installs `python@3.13`; or run `make PYTHON=/path/to/python3 …` |

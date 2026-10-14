@@ -24,7 +24,8 @@
 **AI Mail Assistant** keeps your Gmail inbox triaged every working hour. Your own
 Gmail rules handle the routine mail; a small model looks only at the human mail
 those rules cannot place, and a stronger model sees only what the small one is
-unsure about. Requests become Google Tasks with a due date and a link back to the
+unsure about. The classifier is the CLI you already use: the **GitHub Copilot
+CLI** or **Claude Code**. Requests become Google Tasks with a due date and a link back to the
 thread. When you complete a task, the thread is tidied up automatically.
 
 If there is nothing new, **no model is called and nothing is spent**.
@@ -86,17 +87,17 @@ in the loop. Status, logs and usage reports live in local files.
 ## 🚀 Quick start
 
 > **You need:** a Mac with [Homebrew](https://brew.sh), a Gmail account, and
-> (for classification) a GitHub Copilot subscription.
+> (for classification) a GitHub Copilot or Claude subscription.
 
 ```bash
 git clone https://github.com/mmornati/ai-email-assistant.git
 cd ai-email-assistant
-make setup
+make setup                 # or: bash scripts/setup-macos.sh --cli claude
 ```
 
 That single command installs the CLIs and Python 3.10+ if needed, creates your
 private `rules.json` and `state/`, signs you in to Google (Gmail + Tasks only)
-and Copilot, then runs the offline tests and a **read-only** preview. It is safe
+and your classifier CLI, then runs the offline tests and a **read-only** preview. It is safe
 to re-run at any time, and `make setup-preview` prints every command without
 running any of them.
 
@@ -119,7 +120,7 @@ make apply       # apply labels and tasks, after a confirmation prompt
   ✓ Python 3.10+ (/opt/homebrew/bin/python3.13)
   ✓ Google Workspace CLI (gws)
   ✓ Google Cloud CLI (first-time OAuth setup only)
-  ✓ GitHub Copilot CLI (classification only)
+  ✓ GitHub Copilot CLI (selected classifier CLI)
   ✓ rules.json
   ✓ state/ is private (0700)
   ✓ gws authorized for Gmail + Tasks
@@ -187,7 +188,7 @@ such as archive, mark read or star. They appear in Gmail as `AI/<tag>`.
 | 2 small-model calls/day | $0.15/month |
 | 12 small-model calls/day + 1 escalation/day | $2.46/month |
 
-These are illustrative estimates, not caps. `make usage` reports your real
+These are illustrative estimates at Copilot rates, not caps. `make usage` reports your real
 numbers. [Full breakdown and rates →](docs/costs.md)
 
 ## 📚 Documentation
@@ -197,8 +198,9 @@ numbers. [Full breakdown and rates →](docs/costs.md)
 | 🚀 [Getting started](docs/getting-started.md) | Install, health check, first run, personalized rules |
 | 🔍 [How it works](docs/how-it-works.md) | Pipeline, layout, model routing, safety model |
 | ⚙️ [Configuration](docs/configuration.md) | `rules.json` and `classifier.json` reference |
+| 🔀 [Classifier CLI](docs/classifier-cli.md) | Copilot or Claude Code: switching, isolation, auth |
 | ⏰ [Scheduling](docs/scheduling.md) | launchd job, monitoring, exit codes |
-| 🤖 [Copilot app](docs/copilot.md) | Interactive review with the `mail-triage` skill |
+| 🤖 [Interactive review](docs/interactive-review.md) | The `mail-triage` skill in Copilot or Claude Code |
 | 💰 [Costs](docs/costs.md) | Rates, measured overhead, monthly estimates |
 | 🛠️ [Operations](docs/operations.md) | Command reference, undo, troubleshooting |
 | 📦 [Sharing a ZIP](docs/sharing.md) | Hand a clean copy to a colleague |
@@ -211,7 +213,7 @@ numbers. [Full breakdown and rates →](docs/costs.md)
 ├── Makefile                                              `make help`
 ├── scripts/setup-macos.sh                                Installer + doctor
 ├── tools/                                                Packaging and benchmark
-├── .github/skills/                                       Copilot skills
+├── .github/skills/ · .claude/skills/                     Copilot / Claude Code skills
 ├── docs/                                                 Guides and ADRs
 └── tests/                                                Offline test suite
 ```

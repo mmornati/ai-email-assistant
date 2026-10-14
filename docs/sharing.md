@@ -32,12 +32,12 @@ are unchanged.
 
 1. Unzip into a permanent local folder on macOS. No repository is required.
 2. Run `make setup` (or `bash scripts/setup-macos.sh`) and authenticate
-   **your own accounts**; see [Getting started](getting-started.md) for the
-   manual alternative. Do not use read-only access for applied runs; Gmail
+   **your own accounts** (`--cli claude` to classify with Claude Code); see
+   [Getting started](getting-started.md) for the manual alternative. Do not use read-only access for applied runs; Gmail
    modification and Tasks access are required. Follow the CLI prompts and your
    organizational OAuth policy.
-3. Review `rules.json`, the task-list name, allowed models in `classifier.json`,
-   and any locally configured MCP server names to disable.
+3. Review `rules.json`, the task-list name, the classifier CLI and allowed models
+   in `classifier.json`, and any locally configured MCP server names to disable.
 4. Run the offline tests (`make test`) and the
    [`mail-setup` onboarding skill](getting-started.md#4-personalize-your-rules-mail-setup)
    to personalize sender rules. Inspect a model-free dry run (`make preview`)

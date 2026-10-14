@@ -20,11 +20,14 @@ FILES = (
     "tools/benchmark/requirements.txt", "tools/benchmark/requirements.lock",
     "tests/__init__.py", "tests/test_triage.py", "tests/test_benchmark.py", "tests/test_share.py",
     "tests/test_mail_setup.py", "tests/test_schedule.py", "tests/test_setup_script.py",
-    "tests/test_engine.py",
+    "tests/test_engine.py", "tests/test_providers.py",
     ".github/skills/mail-setup/SKILL.md", ".github/skills/mail-triage/SKILL.md",
+    # Identical copies for Claude Code, which reads skills from .claude/skills/.
+    ".claude/skills/mail-setup/SKILL.md", ".claude/skills/mail-triage/SKILL.md",
     "docs/README.md", "docs/getting-started.md", "docs/how-it-works.md", "docs/configuration.md",
-    "docs/scheduling.md", "docs/copilot.md", "docs/costs.md", "docs/operations.md",
-    "docs/sharing.md", "docs/assets/banner.svg", "docs/adr/0001-laya-vs-luna.md",
+    "docs/classifier-cli.md", "docs/scheduling.md", "docs/interactive-review.md",
+    "docs/costs.md", "docs/operations.md", "docs/sharing.md", "docs/assets/banner.svg",
+    "docs/adr/0001-laya-vs-luna.md", "docs/adr/0002-selectable-classifier-cli.md",
 )
 
 

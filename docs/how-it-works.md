@@ -31,8 +31,10 @@ there is no automatic "FYI" or archive fallback. Already completed rule/sweep
 operations are not rolled back if classification subsequently fails.
 
 The recommended setup is a local macOS schedule that runs `runner.py`. It does
-not launch an AI session when there is no unresolved mail. Copilot is the
-classifier and the interactive review interface, not the hourly scheduler.
+not launch an AI session when there is no unresolved mail. The classifier is a CLI
+you choose in `classifier.json`, the GitHub Copilot CLI (default) or Claude Code
+([details](classifier-cli.md)). The same tool also hosts the interactive review
+skills; neither is the hourly scheduler.
 
 ## Repository layout
 
@@ -42,7 +44,7 @@ ai-email-assistant/
 ├── triage.py               Deterministic mailbox/Tasks engine and interactive commands
 ├── mail_setup.py           Bounded read-only sender discovery and approved rule updates
 ├── schedule.py             Render/install/status/uninstall the macOS calendar job
-├── classifier.json         Models, thresholds, batching and per-run limits
+├── classifier.json         Classifier CLI (Copilot or Claude Code), models, limits
 ├── rules.example.json      Generic starter rules: no sender queries, no cleanup
 ├── rules.json              Your personal rules (git-ignored, created by setup)
 ├── state/                  Private runtime data, owner-only (git-ignored)
@@ -53,15 +55,16 @@ ai-email-assistant/
 │   ├── share.py            Build a clean ZIP from an explicit file allowlist
 │   ├── benchmark.py        Read-only local-model benchmark (optional)
 │   └── benchmark/          Synthetic fixtures and pinned benchmark dependencies
-├── .github/skills/
-│   ├── mail-setup/         First-run personalized ruleset review (Copilot skill)
-│   └── mail-triage/        Interactive review procedure (Copilot skill)
+├── .github/skills/         Copilot skills:
+│   ├── mail-setup/           first-run personalized ruleset review
+│   └── mail-triage/          interactive review procedure
+├── .claude/skills/         Identical copies for Claude Code (a test keeps them in sync)
 ├── docs/                   Guides and architecture decision records
 └── tests/                  Isolated tests: no mailbox access, no paid model calls
 ```
 
 The command-line entry points stay at the top level on purpose: installed
-schedules, the Copilot skills and shared ZIPs refer to them by path.
+schedules, the skills and shared ZIPs refer to them by path.
 
 ## Model routing
 
@@ -81,12 +84,13 @@ unattended decisions for important mail, review representative output.
 
 ### Isolated model calls
 
-Calls have no available tools, run in a temporary working directory, suppress
-project custom instructions and remote session export, and receive mail through
-stdin, not command-line arguments. Built-in MCP servers and the configured server
-names are disabled. Account-level CLI system context/plugins may still add
-overhead; this is **not** a bare model API call. Custom provider environment
-overrides are refused to prevent silently routing mail to another provider.
+Calls have no available tools, run in a temporary working directory, and receive
+mail through stdin, not command-line arguments. Project instructions, MCP servers
+and session export/persistence are disabled; the exact flags per CLI are in
+[Choosing the classifier CLI](classifier-cli.md). Account-level CLI system
+context may still add overhead; this is **not** a bare model API call. Custom
+provider environment overrides are refused to prevent silently routing mail to
+another provider.
 
 Classification reads the final assistant message from structured JSONL events
 rather than terminal-wrapped text (this fixed long-response JSON corruption).
@@ -128,7 +132,9 @@ The classifier cannot add action overrides or invent a tag.
 New JSON state/usage files have owner-only permissions. State contains sensitive
 mail metadata and task details and is **not encrypted by this application**;
 use a protected account/disk, do not share it, and review any pre-existing file
-permissions. CLI/provider retention policy still applies to data sent to Copilot.
+permissions. The selected CLI's provider retention policy still applies to data
+sent to Copilot (GitHub and the model provider) or Claude Code (Anthropic; terms
+differ between a Claude subscription and API-key use).
 Routine schedule logs omit subjects/bodies/tasks; interactive engine reports can
 contain them. Usage logs accumulate; rotate/archive them privately as needed.
 

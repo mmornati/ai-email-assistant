@@ -1,10 +1,14 @@
-# Using the Copilot app
+# Interactive review (Copilot or Claude Code)
 
-Keep this folder configured as a **Local, folder-backed project**. It has no Git
-checkout requirement. Model selection in the app controls interactive assistance;
-it does **not** override `classifier.json` for the external runner.
+In the Copilot app, keep this folder configured as a **Local, folder-backed
+project**. It has no Git checkout requirement. Claude Code needs no project setup:
+run `claude` in this folder and the same skills load from `.claude/skills/`. The
+prompts below work unchanged in both. Model selection in the app controls
+interactive assistance; it does **not** override `classifier.json` for the
+external runner.
 
-Two skills ship with the project:
+Two skills ship with the project, as identical copies in `.github/skills/`
+(Copilot) and `.claude/skills/` (Claude Code); a test keeps them in sync:
 
 | Skill | Use it for |
 | --- | --- |

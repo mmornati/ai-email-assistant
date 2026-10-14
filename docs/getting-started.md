@@ -25,14 +25,15 @@ idempotent and safe to re-run. It:
 
 1. installs Python 3.10+ (if needed), the
    [Google Workspace CLI](https://github.com/googleworkspace/cli) (`googleworkspace-cli`),
-   the Google Cloud CLI (`gcloud-cli`) and the
-   [GitHub Copilot CLI](https://docs.github.com/copilot/how-tos/copilot-cli) (`copilot-cli`)
-   with Homebrew;
+   the Google Cloud CLI (`gcloud-cli`) and the classifier CLI with Homebrew:
+   the [GitHub Copilot CLI](https://docs.github.com/copilot/how-tos/copilot-cli)
+   (`copilot-cli`) by default, or [Claude Code](https://claude.com/product/claude-code)
+   (`claude-code`) with `--cli claude`;
 2. creates a private `state/` folder and `rules.json` from the starter rules, asking
    which Google Tasks list should receive follow-up tasks (default: `My Tasks`);
 3. logs in to `gcloud`, runs `gws auth setup` (OAuth client + Gmail/Tasks APIs)
    and `gws auth login` with **only** the `gmail.modify` and `tasks` scopes, then
-   `copilot login`;
+   `copilot login` or `claude auth login`;
 4. runs the offline tests and a read-only, model-free dry run.
 
 It never modifies mail, never passes `--apply`, and never installs the schedule.
@@ -44,14 +45,15 @@ Options (pass them to the script directly):
 | `--dry-run` | Print the commands; change nothing (`make setup-preview`) |
 | `--check` | Health check only (`make doctor`) |
 | `--yes` | Answer yes to every prompt (browser logins still open) |
+| `--cli copilot\|claude` | Classifier CLI to install, log in to and select in `classifier.json` ([details](classifier-cli.md)) |
 | `--project ID` | Reuse an existing Google Cloud project for `gws auth setup` |
 | `--task-list NAME` | Google Tasks list written into a **new** `rules.json` |
 | `--skip-auth` | Install tools and local files only; no logins |
-| `--skip-copilot` | Model-free setup: no Copilot CLI (`runner.py --no-model` only) |
+| `--no-model-cli` | Model-free setup: no classifier CLI (`runner.py --no-model` only); `--skip-copilot` still works |
 | `--skip-verify` | Skip the tests and the read-only dry run |
 
 ```bash
-bash scripts/setup-macos.sh --project my-gcp-project --task-list "Inbox follow-ups"
+bash scripts/setup-macos.sh --cli claude --task-list "Inbox follow-ups"
 ```
 
 > [!WARNING]
@@ -71,7 +73,7 @@ make doctor
   ✓ Python 3.10+ (/opt/homebrew/bin/python3.13)
   ✓ Google Workspace CLI (gws)
   ✓ Google Cloud CLI (first-time OAuth setup only)
-  ✓ GitHub Copilot CLI (classification only)
+  ✓ GitHub Copilot CLI (selected classifier CLI)
   ✓ rules.json
   ✓ state/ is private (0700)
   ✓ gws authorized for Gmail + Tasks
@@ -100,7 +102,8 @@ Review `state/summary.json`, `state/pending.json` and `state/plan.json`
 The starter rules have no sender-specific queries, so at first every message
 goes to the classifier. Teach the rules your recurring senders to cut model use.
 
-Open the folder as a Local, folder-backed project in Copilot and ask:
+Open the folder as a Local, folder-backed project in Copilot, or start `claude`
+in it (Claude Code reads the same skill from `.claude/skills/`), and ask:
 
 > Use the mail-setup skill to inspect my mailbox read-only, propose personalized
 > rules, and ask before saving them. Do not modify mail or create tasks.
@@ -110,7 +113,7 @@ The skill runs `mail_setup.py discover` (`make discover`). The script reads at m
 groups exact sender addresses deterministically and writes bounded samples to
 `state/setup-discovery.json`. It fetches only selected metadata headers and short
 snippets, not bodies/attachments; makes no model calls; and never modifies mail
-or tasks. The reviewing Copilot session consumes its normal tokens. No model
+or tasks. The reviewing Copilot or Claude Code session consumes its normal tokens. No model
 training or local-model installation is needed.
 
 For each recurring group, up to three development and two separate validation
@@ -159,7 +162,7 @@ classifications for same-day reuse and writes the operation plan.
 
 Review `state/summary.json`, `state/pending.json` and `state/plan.json`. After
 approval, either replay exactly the reviewed plan
-(`python3 triage.py apply-plan --apply`, see [Copilot app](copilot.md)), or run a
+(`python3 triage.py apply-plan --apply`, see [Interactive review](interactive-review.md)), or run a
 fresh scan with `make apply`.
 
 ## 6. Put it on a schedule
@@ -176,18 +179,18 @@ Details, timing and the model-free variant: [Scheduling](scheduling.md).
 
 Prefer to do it by hand? You need macOS, Python 3.10+, an authenticated
 [`gws` CLI](https://github.com/googleworkspace/cli) with Gmail and Tasks access,
-and (for classification) an authenticated
-[Copilot CLI](https://docs.github.com/copilot/how-tos/copilot-cli).
+and (for classification) the authenticated classifier CLI selected in
+`classifier.json` ([Choosing the classifier CLI](classifier-cli.md)).
 There are no additional Python package dependencies.
 
 ```bash
 brew install googleworkspace-cli
-brew install --cask gcloud-cli copilot-cli
+brew install --cask gcloud-cli copilot-cli   # or claude-code
 mkdir -m 700 state && cp rules.example.json rules.json
 gws auth setup                         # OAuth client + Gmail/Tasks APIs, if needed
 gws auth login --scopes https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/tasks
 gws auth status
-copilot login
+copilot login                          # or: claude auth login (then runner.py --select-cli claude)
 python3 -m unittest discover -q -s tests -t .
 python3 runner.py --no-model
 ```
@@ -195,11 +198,9 @@ python3 runner.py --no-model
 Do not use read-only access for applied runs; Gmail modification and Tasks
 access are required. Follow the CLI prompts and your organization's OAuth policy.
 
-The installed Copilot CLI must support `--available-tools=`,
-`--no-custom-instructions`, `--no-remote-export`, `--output-format json`, and
-`--usage-output-file`. Check `copilot --help` and `copilot help permissions`.
-Both configured models must be accessible under your account and organization
-policy.
+The classifier CLI must support the flags listed in
+[Choosing the classifier CLI](classifier-cli.md). Both configured models must be
+accessible under your account and organization policy.
 
 ---
 
