@@ -11,9 +11,10 @@ Every command that changes Gmail or Google Tasks is a dry run unless you pass
 such as `plan.json`, `summary.json`, `pending.json` and, for `triage.py`,
 `dry-run.csv`. It does not create labels or task lists.
 
-A dry run with classification can still **cost model usage**: it calls the
-classifier so you can see real decisions. Use `runner.py --no-model` for a free
-preview.
+A dry run with classification (`make classify`) can still **cost model usage**:
+it calls the classifier so you can see real decisions. `make preview`
+(`python3 runner.py --no-model`) is the free preview. `make apply` asks for
+confirmation before it passes `--apply`.
 
 ![The dry-run step in the demo console: planned changes, nothing applied](../assets/screens/console-preview-light.webp#only-light){ loading=lazy }
 ![The dry-run step in the demo console: planned changes, nothing applied](../assets/screens/console-preview-dark.webp#only-dark){ loading=lazy }
@@ -28,7 +29,7 @@ Tasks. Nothing is sent, forwarded, unsubscribed or permanently deleted. Trashed
 mail stays recoverable from Gmail Trash for 30 days, and trash operations are
 journaled for undo.
 
-The setup script requests only the `gmail.modify` and `tasks` OAuth scopes.
+`make setup` requests only the `gmail.modify` and `tasks` OAuth scopes.
 
 ## Validated model output
 
@@ -55,7 +56,8 @@ since the scan, the run stops instead of acting on stale information.
 
 Mail the model is unsure about is not guessed, archived or filed as "FYI". It stays
 untagged in the inbox, its ID is listed in `state/summary.json`, and the run exits
-with code `2`. See [Manual review](review.md).
+with code `2`. See [Interactive review](../interactive-review.md) to resolve it,
+and [Operations](../operations.md#retrying-held-mail) to retry it deliberately.
 
 ## `sweep_guard`
 
@@ -94,7 +96,7 @@ rolled back automatically.
   `schedule.py` and `mail_setup.py` set a `077` umask, so new files are readable
   only by you; JSON state and usage files are written with mode `600`.
 - `state/` and `rules.json` are excluded from Git and from the ZIP built by
-  `share.py`.
+  `make share` (`tools/share.py`); see [Sharing a ZIP](../sharing.md).
 - State holds sensitive mail metadata and task details and is **not encrypted** by
   this application. Rely on FileVault and a protected user account, and do not share
   it. Review the permissions of any files that existed before you installed.
@@ -119,11 +121,18 @@ The tool's stance:
 - The classifier has **no tools**: it can only return JSON, which is then
   validated. Even a fully manipulated answer is limited to choosing among your own
   tags and proposing a bounded task.
-- The Copilot call runs with built-in and configured MCP servers disabled, without
-  project custom instructions, in a temporary directory, with mail passed on stdin.
-- The `mail-triage` and `mail-setup` skills instruct Copilot never to follow
-  instructions, links or requests found in email, and to reject senders whose mail
-  contains suspicious AI instructions.
+- Whichever classifier CLI `classifier.json` selects runs without tools, in an
+  empty temporary directory, with mail passed on stdin. The Copilot CLI call
+  disables MCP servers, custom instructions and remote export; the Claude Code
+  call disables tools, MCP servers, skills, user settings and session
+  persistence. The exact flags are in
+  [Choosing the classifier CLI](../classifier-cli.md).
+- The runner refuses to call a CLI when an environment variable would route mail
+  to a different provider (for example `COPILOT_PROVIDER_BASE_URL` or
+  `ANTHROPIC_BASE_URL`).
+- The `mail-triage` and `mail-setup` skills, in Copilot or Claude Code, treat email
+  content as untrusted data and never follow instructions found in it; `mail-setup`
+  rejects senders whose mail contains suspicious AI instructions.
 - The task marker is matched as the **last** marker in a task's notes, and
   proposed task text containing a marker is rejected, so mail text cannot hijack
   which thread a task controls.
@@ -146,7 +155,13 @@ From [SECURITY.md](https://github.com/mmornati/ai-email-assistant/blob/main/SECU
   runs. Use a single-user machine.
 - Model-reported confidence is not a calibrated probability.
 - Data sent to Copilot is subject to GitHub's and the model provider's retention
-  policies.
+  policies; data sent to Claude Code is subject to Anthropic's, which differ
+  between a Claude subscription and API-key use.
+- Claude Code with subscription auth still adds a short account section (the
+  signed-in email) to each call.
+- With Claude Code, the tag descriptions from `rules.json` are passed on the
+  command line, so other local users can see them in the process list. Mail
+  content never goes there.
 
 To report a vulnerability, use GitHub's private vulnerability reporting, and never
 include real mail, Gmail IDs, tokens or `state/` files in a report.

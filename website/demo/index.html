@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Demo console · AI E-Mail Assistant</title>
-<meta name="description" content="Step through a real run of the AI E-Mail Assistant engine on an invented mailbox: the inbox, the tasks, the terminal and the summary, before and after.">
+<title>Demo console · AI Mail Assistant</title>
+<meta name="description" content="Step through a real run of the AI Mail Assistant engine on an invented mailbox: the inbox, the tasks, the terminal and the summary, before and after.">
 <meta name="theme-color" content="#f4f2ec">
 <link rel="icon" href="../docs/assets/brand/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../docs/assets/brand/transit.css">
@@ -36,6 +36,7 @@ code{font-family:var(--mono-face);font-size:.92em}
 .steps b{display:block;font:700 1.15rem/1.1 var(--sign-face);color:var(--ink)}
 .steps small{display:block;font-size:.9rem;margin-top:2px}
 .caption{margin:14px 0 0;padding:14px 18px;border-radius:12px;background:var(--enamel-2);font-size:1.02rem}
+.hint{margin:10px 0 0;color:var(--ink-2);font-size:.95rem}
 .caption code{background:var(--enamel);padding:1px 6px;border-radius:5px}
 @media (max-width:800px){
   .steps ol{grid-template-columns:1fr;gap:6px}
@@ -72,6 +73,7 @@ code{font-family:var(--mono-face);font-size:.92em}
 .mail .wait{display:inline-flex;align-items:center;gap:6px;font:700 .78rem/1 var(--sign-face);letter-spacing:.04em;color:var(--signal);flex:none}
 .mail .wait::before{content:"";width:10px;height:10px;border-radius:50%;border:3px solid var(--signal)}
 .mail .gone{padding:14px 18px;color:var(--ink-2);font-size:.95rem;display:block}
+.mail li.gone-row,.tasks li.empty{display:block}
 @media (max-width:700px){
   .mail li{grid-template-columns:12px 1fr auto}
   .mail .line1{grid-column:2/-1;flex-wrap:wrap}
@@ -96,7 +98,7 @@ code{font-family:var(--mono-face);font-size:.92em}
 .term > header .meta{color:#9ea2a7}
 .term pre{margin:0;padding:16px 18px 18px;font:400 .84rem/1.6 var(--mono-face);white-space:pre-wrap;word-break:break-word;max-height:540px;overflow:auto}
 .term .cmd{color:#fff;font-weight:600}
-.term .p{color:var(--signal)}
+.term .p{color:#9ea2a7}
 .term .dim{color:#9ea2a7}
 .term .apply{color:#5fd48a}
 .term .dry{color:#ffd166}
@@ -131,10 +133,10 @@ html.shot .term pre{max-height:none}
 <header class="top">
   <div class="wrap">
     <a class="brand" href="../">
-      <svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="11.5" fill="none" stroke="currentColor" stroke-width="5"/><rect x="0" y="12.5" width="30" height="5" rx="2.5" fill="var(--signal)"/></svg>
-      AI E-Mail Assistant
+      <svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="11.5" fill="none" stroke="currentColor" stroke-width="5"/><rect x="0" y="12.5" width="30" height="5" rx="2.5" fill="var(--l-meeting-invite)"/></svg>
+      AI Mail Assistant
     </a>
-    <p class="note">Demo console · real engine · invented mailbox</p>
+    <p class="note">Real engine · invented mailbox</p>
   </div>
 </header>
 
@@ -143,6 +145,7 @@ html.shot .term pre{max-height:none}
   <h1>One morning, five runs of the engine.</h1>
   <ol id="steps"></ol>
   <p class="caption" id="caption" aria-live="polite"></p>
+  <p class="hint">Run the same five steps on your Mac, with no account: <code>make demo</code>.</p>
 </div>
 
 <div class="grid wrap">
@@ -183,9 +186,9 @@ if (params.get("theme")) document.documentElement.dataset.theme = params.get("th
 
 const snap = await fetch("../docs/assets/demo/run.json").then((r) => r.json());
 const STEPS = {
-  arrive: { label: "Arrive", sub: "38 unread overnight", text: "The invented mailbox at 08:00: 38 unread messages in the 7-day window, plus one older thread that a scheduled run never touches." },
-  preview: { label: "Preview", sub: "dry run, 2 model calls", text: "<code>python3 runner.py</code> plans everything and changes nothing. Rules route 27 messages; 10 go to the first-pass model, 3 of those to the stronger one. Decisions are validated and cached for today." },
-  apply: { label: "Apply", sub: "labels, sweeps, tasks", text: "<code>python3 runner.py --apply</code> reuses the preview's validated decisions with no new model call: four tasks first, then labels, then sweeps archive what is done." },
+  arrive: { label: "Arrive", sub: "38 unread, 37 this week", text: "The invented mailbox at 08:00: 38 unread messages in the 7-day window, plus one older thread that a scheduled run never touches." },
+  preview: { label: "Preview", sub: "dry run, 2 model calls", text: "<code>make classify</code> (<code>runner.py</code>) plans everything and changes nothing. Rules route 27 messages; 10 go to the first-pass model, 3 of those to the stronger one. Decisions are validated and cached for today." },
+  apply: { label: "Apply", sub: "labels, sweeps, tasks", text: "<code>make apply</code> (<code>runner.py --apply</code>) asks first, then reuses the preview's validated decisions with no new model call: four tasks first, then labels, then sweeps archive what is done." },
   quiet: { label: "Next hour", sub: "nothing new, no model", text: "The 09:00 scheduled run finds nothing new to classify. The message held for review is not re-sent today, so no model is launched." },
   done: { label: "Task done", sub: "thread archived", text: "You tick off “Approve the Q4 hiring plan” in Google Tasks. The next run syncs it and archives the thread, as the Action tag's <code>on_task_done</code> asks." },
 };

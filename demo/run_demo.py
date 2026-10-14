@@ -56,6 +56,14 @@ def seed(now):
             "tasks": [], "calls": []}, answers
 
 
+def classifier_view():
+    cfg = json.loads((ROOT / "classifier.json").read_text())
+    provider = cfg["providers"]["copilot"]
+    return {"cli": "copilot", "cheap_model": provider["cheap_model"],
+            "escalation_model": provider["escalation_model"], "batch_size": cfg["batch_size"],
+            "confidence_threshold": cfg["confidence_threshold"], "escalation_threshold": cfg["escalation_threshold"]}
+
+
 def mailbox_view(db, now):
     names = {l["id"]: l["name"] for l in db["labels"]}
     rows = []
@@ -80,11 +88,21 @@ class Demo:
         for name in ("triage.py", "runner.py", "classifier.json"):
             shutil.copy2(ROOT / name, workspace / name)
         (workspace / "rules.json").write_text(json.dumps(RULES, indent=1))
+        # the stand-in classifier is a Copilot-style CLI, whatever the local classifier.json selects
+        cfg = json.loads((workspace / "classifier.json").read_text())
+        (workspace / "classifier.json").write_text(json.dumps({**cfg, "cli": "copilot"}, indent=1))
         self.now = time.time()
         db, answers = seed(self.now)
         self.state.write_text(json.dumps(db, ensure_ascii=False, indent=1))
         self.answers.write_text(json.dumps(answers, ensure_ascii=False))
-        self.env = {**os.environ, "PATH": f"{HERE / 'fakes'}{os.pathsep}{os.environ['PATH']}",
+        # The stand-in CLIs are copied in (a shared ZIP does not keep the executable bit) and run with this Python.
+        bin_dir = workspace / "bin"
+        bin_dir.mkdir()
+        for fake in ("gws", "copilot"):
+            source = (HERE / "fakes" / fake).read_text().split("\n", 1)[1]
+            (bin_dir / fake).write_text(f"#!{sys.executable}\n{source}")
+            (bin_dir / fake).chmod(0o755)
+        self.env = {**os.environ, "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
                     "DEMO_STATE": str(self.state), "DEMO_ANSWERS": str(self.answers),
                     "DEMO_MODEL_LOG": str(self.model_log), "NO_COLOR": "1"}
         for k in ("COPILOT_PROVIDER_BASE_URL", "COPILOT_PROVIDER_TYPE"):
@@ -170,7 +188,7 @@ def main():
             "owner": OWNER,
             "rules": [{"name": t["name"], "match": t["match"], "on_tag": t["on_tag"],
                        "sweep": t["sweep"], "task": t["task"]} for t in RULES["tags"]],
-            "classifier": json.loads((ROOT / "classifier.json").read_text()),
+            "classifier": classifier_view(),
             "routes": {m["id"]: route(m["id"]) for m in start["mailbox"]},
             "steps": steps,
         }

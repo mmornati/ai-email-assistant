@@ -1,0 +1,105 @@
+WEBVTT
+
+1
+00:00:00.600 --> 00:00:01.746
+Huit heures.
+
+2
+00:00:01.846 --> 00:00:05.040
+Trente-sept nouveaux messages sont arrivés cette semaine.
+
+3
+00:00:05.140 --> 00:00:09.678
+Des demandes, des invitations, des alertes, des newsletters, tout en vrac.
+
+4
+00:00:10.528 --> 00:00:12.613
+L'essentiel, c'est de la routine.
+
+5
+00:00:12.713 --> 00:00:17.464
+De simples règles, vos propres recherches Gmail, aiguillent vingt-sept messages.
+
+6
+00:00:17.564 --> 00:00:22.465
+Aucune intelligence artificielle n'intervient, et rien n'est envoyé nulle part.
+
+7
+00:00:23.315 --> 00:00:26.104
+Seuls dix messages demandent vraiment à être lus.
+
+8
+00:00:26.204 --> 00:00:30.934
+Un petit modèle peu coûteux, via Copilot ou Claude Code, les traite en un seul lot.
+
+9
+00:00:31.034 --> 00:00:36.468
+Les trois qui le font hésiter passent à un modèle plus puissant, avec un court extrait du message.
+
+10
+00:00:37.318 --> 00:00:40.363
+Ensuite, du code ordinaire vérifie chaque réponse.
+
+11
+00:00:40.463 --> 00:00:43.806
+Les bons messages, des étiquettes connues, des dates valides.
+
+12
+00:00:43.906 --> 00:00:47.015
+Tout le reste est refusé avant de toucher votre boîte.
+
+13
+00:00:47.865 --> 00:00:49.928
+Chaque message reçoit un libellé.
+
+14
+00:00:50.028 --> 00:00:53.628
+Quatre demandes deviennent des tâches Google, avec leur échéance.
+
+15
+00:00:53.728 --> 00:00:55.962
+Onze messages traités sont archivés.
+
+16
+00:00:56.062 --> 00:01:01.069
+Et un seul, tu es là vendredi, reste dans votre boîte, parce qu'aucun modèle n'était sûr.
+
+17
+00:01:01.919 --> 00:01:04.046
+À neuf heures, le planning repasse.
+
+18
+00:01:04.146 --> 00:01:07.255
+Rien de nouveau à lire, donc aucun modèle n'est appelé.
+
+19
+00:01:07.355 --> 00:01:09.376
+La plupart des heures ne coûtent rien.
+
+20
+00:01:10.226 --> 00:01:12.119
+Rien ne bouge sans votre accord.
+
+21
+00:01:12.219 --> 00:01:16.437
+Chaque changement est d'abord une simulation, écrite dans un plan lisible.
+
+22
+00:01:16.537 --> 00:01:20.243
+Les changements appliqués sont journalisés, et vous pouvez les annuler.
+
+23
+00:01:21.093 --> 00:01:22.751
+AI Mail Assistant.
+
+24
+00:01:22.851 --> 00:01:25.512
+Open source, pour votre Mac et Gmail.
+
+25
+00:01:25.612 --> 00:01:28.400
+Une seule commande pour l'installer : make setup.
+
+26
+00:01:28.500 --> 00:01:30.350
+Chaque message trouve sa voie.

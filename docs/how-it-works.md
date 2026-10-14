@@ -138,5 +138,5 @@ differ between a Claude subscription and API-key use).
 Routine schedule logs omit subjects/bodies/tasks; interactive engine reports can
 contain them. Usage logs accumulate; rotate/archive them privately as needed.
 
-See also [SECURITY.md](../SECURITY.md) for the full security model and known
+See also [SECURITY.md](https://github.com/mmornati/ai-email-assistant/blob/main/SECURITY.md) for the full security model and known
 limitations.

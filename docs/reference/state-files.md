@@ -1,7 +1,9 @@
 # State files
 
-Everything the tool writes lives in `state/` in the project folder. The folder is
-owner-only, excluded from Git and from shared ZIPs, and **not encrypted**. Several
+Everything the tool writes lives in `state/` in the project folder (the launchd
+job definition itself is in `~/Library/LaunchAgents/`; see
+[Scheduling](../scheduling.md)). The folder is owner-only, excluded from Git and
+from shared ZIPs, and **not encrypted**. Several
 files contain mail metadata (senders, subjects, snippets) or task details; treat
 the whole folder as private.
 
@@ -26,7 +28,7 @@ the whole folder as private.
 | `setup-selections.json` | the `mail-setup` skill | No | Reviewed selections. |
 | `setup-rules.preview.json` | `mail_setup.py preview`/`approve` | No | Proposed rules. |
 | `rules.before-setup-<id>.json` | `mail_setup.py approve --apply` | No | Backup of the previous rules. |
-| `benchmark.json`, `laya-install.json`, `benchmark-usage/` | `benchmark.py` | Classification evidence only | Optional benchmark output. |
+| `benchmark.json`, `laya-install.json`, `benchmark-usage/` | `tools/benchmark.py` | Classification evidence only | Optional benchmark output. |
 
 ## `summary.json`
 
@@ -150,7 +152,8 @@ After an **applied** runner run, `messages` is reduced to the unresolved ones.
 ```
 
 `runner.py` overwrites this file on every run with the decisions it accepted. See
-[Manual review](../guide/review.md#by-hand-decisionsjson) for writing it yourself.
+[Interactive review](../interactive-review.md#interactive-review-recommended-app-use)
+for writing it yourself.
 
 ## `plan.json`
 
@@ -186,23 +189,26 @@ mail held for review today. Entries for messages no longer pending are dropped.
 
 ## `usage.jsonl`
 
-One line per model call:
+One line per model call. `make usage` (`python3 runner.py --usage-report`) totals
+it per `cli/model`; [Costs](../costs.md#measure-your-real-usage) explains how to
+turn the token counts into money.
 
 | Field | Meaning |
 | --- | --- |
 | `ts` | Unix timestamp. |
+| `cli` | `copilot` or `claude`. Lines written before the classifier CLI became selectable have no `cli` and count as `copilot`. |
 | `model` | Model name. |
 | `messages` | Messages in the call. |
 | `status` | `ok`, `timeout`, `cli_error` or `invalid_json`. |
 | `prompt_chars`, `response_chars` | Character counts (not tokens). |
 | `duration_seconds` | Wall time. |
-| `cli_usage` | `null` if the CLI wrote no usage, otherwise `totalNanoAiu` and `totalUserRequests` when present, and `tokens` with `input`, `output`, `cache_read`, `cache_write`. |
+| `cli_usage` | `null` if the CLI reported no usage. Otherwise `tokens` with `input`, `output`, `cache_read`, `cache_write` when present. Copilot entries may add `totalNanoAiu` and `totalUserRequests`. Claude Code entries may add `tokens.cache_write_1h` (the 1-hour-TTL part of `cache_write`) and `cli_cost_usd`, the CLI's own cost estimate, which [is not reliable for these models](../costs.md#claude-code-rates-and-measured-overhead). |
 
-Demo line (invented mailbox; the stand-in CLI estimates tokens from text length, so
-these are not real usage figures):
+Demo line (invented mailbox, Copilot path; the stand-in CLI estimates tokens from
+text length, so these are not real usage figures):
 
 ```json
-{"ts": 1792007205.012898, "model": "gpt-6-luna", "messages": 10, "status": "ok", "prompt_chars": 5734, "response_chars": 1498, "duration_seconds": 0.036, "cli_usage": {"totalUserRequests": 1, "tokens": {"input": 1433, "output": 317}}}
+{"ts": 1792007205.012898, "cli": "copilot", "model": "gpt-6-luna", "messages": 10, "status": "ok", "prompt_chars": 5734, "response_chars": 1498, "duration_seconds": 0.036, "cli_usage": {"totalUserRequests": 1, "tokens": {"input": 1433, "output": 317}}}
 ```
 
 The file grows forever; rotate or archive it privately if needed.

@@ -26,3 +26,7 @@ token*.json
 
 # Built documentation site
 site/
+
+# Local media and design-review scratch
+build/
+.impeccable/review/

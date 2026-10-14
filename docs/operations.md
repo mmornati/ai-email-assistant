@@ -79,7 +79,7 @@ errors. Real-mail agreement was measured separately; without human reference
 labels it is not an accuracy result.
 
 The optional benchmark dependencies are isolated in `.venv-benchmark` and pinned
-in [`tools/benchmark/requirements.lock`](../tools/benchmark/requirements.lock).
+in [`tools/benchmark/requirements.lock`](https://github.com/mmornati/ai-email-assistant/blob/main/tools/benchmark/requirements.lock).
 They are not required by the scheduled runner. `tools/benchmark.py` never applies
 decisions. It persists classification-only evidence under `state/`; no raw mail
 or task text is exported. Running the offline tests needs no model downloads.

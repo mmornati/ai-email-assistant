@@ -11,6 +11,7 @@
 </p>
 
 <p align="center">
+  <a href="https://mmornati.github.io/ai-email-assistant/"><b>Website, demo and film</b></a> ·
   <a href="#-quick-start">Quick start</a> ·
   <a href="docs/how-it-works.md">How it works</a> ·
   <a href="docs/configuration.md">Configuration</a> ·
@@ -130,6 +131,9 @@ make apply       # apply labels and tasks, after a confirmation prompt
 ```
 
 </details>
+
+🎬 **No account yet?** `make demo` runs the real engine on an invented mailbox, and the
+[demo console and film](https://mmornati.github.io/ai-email-assistant/) show the same run.
 
 📖 **The full walkthrough**, including personalizing rules and a manual install, is in
 [**Getting started**](docs/getting-started.md).

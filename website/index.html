@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI E-Mail Assistant · Every message, routed</title>
-<meta name="description" content="Open-source Gmail triage for macOS: deterministic rules sort your inbox every hour, a model reads only the mail rules cannot place, and nothing changes until you approve it.">
-<meta property="og:title" content="AI E-Mail Assistant · Every message, routed">
+<title>AI Mail Assistant · Every message, routed</title>
+<meta name="description" content="Open-source Gmail triage for macOS: deterministic rules sort your inbox every hour, a model (through the Copilot CLI or Claude Code) reads only the mail rules cannot place, and nothing changes until you approve it.">
+<meta property="og:title" content="AI Mail Assistant · Every message, routed">
 <meta property="og:description" content="Rules first, model last. Gmail triage that turns requests into Google Tasks and leaves what it is unsure about for you.">
 <meta property="og:image" content="docs/assets/brand/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--enamel);color:var(--ink);font:400 1.0625rem/1.6 var(--read-face);font-variant-numeric:tabular-nums}
 img,video,svg{max-width:100%}
 a{color:inherit;text-underline-offset:.22em;text-decoration-thickness:1.5px}
-a:hover{text-decoration-color:var(--signal)}
+a:hover{text-decoration-color:var(--focus)}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
 .wrap{width:min(1280px,100% - 32px);margin-inline:auto}
 .skip{position:absolute;left:-999px;top:8px;background:var(--panel);color:var(--panel-ink);padding:8px 14px;border-radius:6px;z-index:9}
@@ -49,7 +49,7 @@ code,kbd,pre{font-family:var(--mono-face);font-size:.92em}
 .hero{position:relative;padding:28px 0 0}
 .hero-stage{position:relative}
 .hero-map{display:block;width:100%}
-.sign{position:absolute;left:0;top:0;width:42%;background:var(--panel);color:var(--panel-ink);border-radius:18px;padding:clamp(22px,2.4vw,36px);box-shadow:0 30px 60px -36px rgba(18,20,23,.55),0 2px 0 rgba(18,20,23,.06)}
+.sign{position:absolute;left:0;top:0;width:42%;background:var(--panel);color:var(--panel-ink);border-radius:18px;padding:clamp(22px,2.4vw,36px)}
 .sign h1{font-size:clamp(2.6rem,4.4vw,4.1rem);font-weight:800;letter-spacing:-.02em;line-height:.94}
 .sign h1 span{display:block}
 .sign .lead{font-size:clamp(1rem,1.25vw,1.16rem);color:var(--panel-ink-2);margin:18px 0 22px;max-width:44ch}
@@ -60,10 +60,10 @@ code,kbd,pre{font-family:var(--mono-face);font-size:.92em}
 .btn:active{transform:translateY(0)}
 .btn svg{flex:none}
 .btn-primary{background:var(--enamel);color:var(--ink)}
-.btn-primary .roundel{width:20px;height:20px;border-radius:50%;border:5px solid var(--signal)}
+.btn-primary .roundel{width:20px;height:20px;border-radius:50%;border:5px solid var(--l-trunk)}
 .btn-ghost{color:var(--panel-ink);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--panel-ink) 35%,transparent)}
 .btn-ghost:hover{box-shadow:inset 0 0 0 2px var(--panel-ink)}
-.sign .facts{margin:18px 0 0;font:600 .82rem/1.4 var(--sign-face);letter-spacing:.08em;text-transform:uppercase;color:var(--panel-ink-2)}
+.sign .facts{margin:18px 0 0;font:600 .95rem/1.4 var(--sign-face);letter-spacing:.02em;color:var(--panel-ink-2)}
 
 /* the departures board under the map */
 .board{margin-top:18px;background:var(--panel);color:var(--panel-ink);border-radius:16px;padding:8px 22px 6px;overflow:hidden}
@@ -74,7 +74,7 @@ code,kbd,pre{font-family:var(--mono-face);font-size:.92em}
 .board th,.board td{text-align:left;padding:11px 12px 10px 0;border-bottom:1px solid color-mix(in srgb,var(--panel-ink) 10%,transparent);white-space:nowrap}
 .board tr:last-child td,.board tr:last-child th{border-bottom:0}
 .board th{font-weight:700;color:var(--panel-ink);width:22%}
-.board td{color:var(--panel-ink-2)}
+.board td{color:var(--panel-ink-2);text-transform:none;letter-spacing:0;font:400 .98rem/1.3 var(--read-face)}
 .board .n{font:600 1.15rem/1 var(--mono-face);color:var(--panel-ink);text-align:right;width:4.5ch}
 .board .flip{display:inline-block;overflow:hidden;vertical-align:bottom}
 .board .flip span{display:inline-block}
@@ -115,8 +115,6 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 .line li.model::before{border-style:solid;box-shadow:0 0 0 4px var(--enamel),0 0 0 7px var(--l-trunk)}
 .line h3{margin-bottom:8px}
 .line p{font-size:.98rem;color:var(--ink-2);margin:0}
-.line .tag{display:block;font:600 .78rem/1 var(--sign-face);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
-.line .model .tag{color:var(--ink)}
 @media (max-width:900px){
   .line{grid-template-columns:1fr}
   .line::before{left:10px;right:auto;top:0;bottom:0;width:10px;height:auto}
@@ -126,8 +124,8 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 /* before and after */
 .ba{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
 .shot{margin:0}
-.shot img{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--rule);box-shadow:0 30px 60px -40px rgba(18,20,23,.45)}
-.shot figcaption{display:flex;align-items:baseline;gap:12px;margin-top:14px;font:700 1.08rem/1.2 var(--sign-face)}
+.shot img{display:block;width:100%;height:auto;border-radius:14px;outline:1px solid var(--rule);outline-offset:-1px}
+.shot figcaption{display:flex;align-items:baseline;gap:12px;margin-top:14px;font:700 1.08rem/1.3 var(--sign-face)}
 .shot figcaption span{font:400 .95rem/1.4 var(--read-face);color:var(--ink-2)}
 .shot figcaption i{flex:none;width:14px;height:14px;border-radius:50%;border:4px solid var(--c,var(--l-trunk));transform:translateY(1px)}
 .after-note{display:grid;grid-template-columns:7fr 5fr;gap:28px;margin-top:40px;align-items:start}
@@ -143,12 +141,13 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 .timetable{width:100%;border-collapse:collapse;font-size:1rem}
 .timetable th{font:700 .8rem/1 var(--sign-face);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:0 16px 12px 0;border-bottom:2px solid var(--ink)}
 .timetable td{padding:18px 16px 18px 0;border-bottom:1px solid var(--rule);vertical-align:top}
-.timetable td:first-child{font:600 1.05rem/1.3 var(--mono-face);white-space:nowrap}
-.timetable .run{font:700 1.2rem/1.2 var(--sign-face)}
+.timetable td:first-child{font:700 1.1rem/1.3 var(--sign-face);white-space:nowrap}
+.timetable td:first-child code{font:600 1rem/1.3 var(--mono-face)}
+.timetable .run{font:700 1.2rem/1.3 var(--sign-face)}
 .timetable .run small{display:block;font:400 .95rem/1.45 var(--read-face);color:var(--ink-2);margin-top:4px}
 .timetable .calls{font:600 1.6rem/1 var(--mono-face);text-align:right;white-space:nowrap}
-.timetable .spur{display:inline-block;width:46px;height:12px;border-radius:6px;background:var(--enamel);box-shadow:inset 0 0 0 3px var(--l-trunk);vertical-align:middle;margin-right:10px}
-.timetable tr.dark .spur{opacity:.2}
+.timetable .spur{display:inline-block;width:46px;height:10px;border-radius:5px;background:var(--l-trunk);vertical-align:middle;margin-right:10px}
+.timetable tr.dark .spur{background:transparent;box-shadow:inset 0 0 0 2px var(--rule)}
 .timetable tr.dark .calls{color:var(--ink-3)}
 .cost-grid{display:grid;grid-template-columns:7fr 5fr;gap:40px;align-items:start}
 .cost-grid .shot img{border-radius:12px}
@@ -169,12 +168,12 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 .lang{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--enamel-2)}
 .lang button{border:0;background:none;color:var(--ink-2);font:700 .95rem/1 var(--sign-face);letter-spacing:.06em;padding:10px 18px;border-radius:999px;cursor:pointer}
 .lang button[aria-pressed="true"]{background:var(--panel);color:var(--panel-ink)}
-.screen{position:relative;border-radius:18px;overflow:hidden;background:#121417;box-shadow:0 50px 100px -60px rgba(18,20,23,.7)}
-.screen video{display:block;width:100%;aspect-ratio:16/9;background:#121417}
-.play{position:absolute;inset:0;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;padding:0}
+.screen{position:relative;border-radius:18px;overflow:hidden;background:var(--enamel);outline:1px solid var(--rule);outline-offset:-1px}
+.screen video{display:block;width:100%;aspect-ratio:16/9;background:var(--enamel)}
+.play{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;padding:0 0 clamp(14px,3vw,28px) clamp(14px,3vw,28px);border:0;background:transparent;cursor:pointer}
 .play span{display:inline-flex;align-items:center;gap:14px;background:var(--enamel);color:var(--ink);font:800 1.2rem/1 var(--sign-face);padding:16px 22px 16px 16px;border-radius:999px;box-shadow:0 20px 40px -20px rgba(0,0,0,.6);transition:transform .3s var(--ease-out)}
 .play:hover span{transform:scale(1.04)}
-.play i{width:40px;height:40px;border-radius:50%;background:var(--signal);display:grid;place-items:center}
+.play i{width:40px;height:40px;border-radius:50%;background:var(--ink);display:grid;place-items:center}
 .film-alt{margin-top:14px;color:var(--ink-2);font-size:.95rem}
 
 /* start */
@@ -182,30 +181,41 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 .term{background:var(--panel);color:var(--panel-ink);border-radius:16px;padding:22px 24px;overflow-x:auto}
 .term pre{margin:0;font:400 .98rem/1.85 var(--mono-face);white-space:pre}
 .term .c{color:var(--panel-ink-2)}
-.term .p{color:var(--signal)}
+.term .dry{color:var(--l-newsletter)}
+.shot .term pre{font-size:.86rem;line-height:1.6}
+@media (max-width:760px){.shot .term pre{font-size:.72rem;white-space:pre-wrap;word-break:break-word}}
+.term .p{color:var(--panel-ink-2)}
 .start ol{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:18px}
 .start ol li{display:grid;grid-template-columns:34px 1fr;gap:14px}
 .start ol li::before{counter-increment:s;content:counter(s);width:34px;height:34px;border-radius:50%;background:var(--panel);color:var(--panel-ink);display:grid;place-items:center;font:800 1.05rem/1 var(--sign-face)}
 .start ol p{margin:4px 0 0;color:var(--ink-2)}
-@media (max-width:900px){.start{grid-template-columns:1fr}}
+@media (max-width:900px){.start{grid-template-columns:1fr}.term pre{font-size:.8rem}}
 
 /* limits */
+.fares{margin-top:44px;display:grid;grid-template-columns:4fr 8fr;gap:8px 40px;align-items:start}
+.fares h3{font-size:1.6rem}
+.fares dl{margin:0;display:grid;gap:0}
+.fares dl div{display:flex;justify-content:space-between;gap:20px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.fares dt{font:700 1.1rem/1.3 var(--sign-face)}
+.fares dd{margin:0;font:600 1.3rem/1 var(--mono-face)}
+.fares p{grid-column:2;color:var(--ink-2);font-size:.95rem;margin:8px 0 0}
+@media (max-width:900px){.fares{grid-template-columns:1fr}.fares p{grid-column:1}}
 .limits{display:grid;grid-template-columns:repeat(3,1fr);gap:0 40px;margin:0;padding:0;list-style:none}
 .limits li{padding:18px 0;border-top:1px solid var(--rule)}
-.limits b{display:block;font:700 1.2rem/1.2 var(--sign-face);margin-bottom:4px}
+.limits b{display:block;font:700 1.2rem/1.3 var(--sign-face);margin-bottom:4px}
 .limits span{color:var(--ink-2)}
 @media (max-width:900px){.limits{grid-template-columns:1fr}}
 
 /* end of the line */
 .terminus{margin-top:clamp(72px,10vw,128px);background:var(--panel);color:var(--panel-ink)}
 .terminus .wrap{display:grid;grid-template-columns:7fr 5fr;gap:40px;padding:72px 0 40px}
-.terminus h2{font-size:clamp(2.4rem,5vw,4rem)}
+.terminus h2{font-size:clamp(2.4rem,5vw,4rem);margin-bottom:22px}
 .terminus p{color:var(--panel-ink-2)}
 .terminus .btn-primary{background:var(--enamel);color:var(--ink)}
 .terminus small{grid-column:1/-1;border-top:1px solid color-mix(in srgb,var(--panel-ink) 16%,transparent);padding-top:20px;color:var(--panel-ink-2);font-size:.86rem;line-height:1.6}
 .terminus small a{color:var(--panel-ink)}
 .terminus nav{display:grid;gap:10px;align-content:start}
-.terminus nav a{font:700 1.1rem/1.2 var(--sign-face);text-decoration:none;display:flex;align-items:center;gap:12px}
+.terminus nav a{font:700 1.1rem/1.3 var(--sign-face);text-decoration:none;display:flex;align-items:center;gap:12px}
 .terminus nav a::before{content:"";width:12px;height:12px;border-radius:50%;border:3px solid var(--panel-ink)}
 .terminus nav a:hover{text-decoration:underline}
 @media (max-width:900px){.terminus .wrap{grid-template-columns:1fr}}
@@ -219,9 +229,9 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="AI E-Mail Assistant, home">
-      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="11.5" fill="none" stroke="currentColor" stroke-width="5"/><rect x="0" y="12.5" width="30" height="5" rx="2.5" fill="var(--signal)"/></svg>
-      AI E-Mail Assistant
+    <a class="brand" href="./" aria-label="AI Mail Assistant, home">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="11.5" fill="none" stroke="currentColor" stroke-width="5"/><rect x="0" y="12.5" width="30" height="5" rx="2.5" fill="var(--l-meeting-invite)"/></svg>
+      AI Mail Assistant
     </a>
     <nav aria-label="Main">
       <a href="#how">How it works</a>
@@ -241,10 +251,10 @@ section{padding:clamp(72px,10vw,128px) 0 0}
       <h1><span>Every message,</span><span>routed.</span></h1>
       <p class="lead">Rules sort your Gmail every hour. A model reads <strong>only the mail no rule can place</strong>, requests become Google Tasks, and nothing moves until you say so.</p>
       <div class="actions">
-        <a class="btn btn-primary" href="docs/getting-started/install/"><span class="roundel" aria-hidden="true"></span>Install on macOS</a>
+        <a class="btn btn-primary" href="docs/getting-started/"><span class="roundel" aria-hidden="true"></span>Install on macOS</a>
         <a class="btn btn-ghost" href="#film"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v18l15-9z" fill="currentColor"/></svg>Watch the film</a>
       </div>
-      <p class="facts">Open source · MIT · Gmail + Google Tasks + Copilot CLI</p>
+      <p class="facts">Open source · MIT · Gmail · Copilot CLI or Claude Code</p>
     </div>
   </div>
   <ol class="strip" id="strip" aria-label="How the demo run routed its mail"></ol>
@@ -270,32 +280,32 @@ section{padding:clamp(72px,10vw,128px) 0 0}
     <p>Searching, tagging what a rule can match, sweeping old notifications, syncing finished tasks and writing the report are plain code. A model is called only for human mail that needs interpreting, and only after the rules have had their turn.</p>
   </div>
   <ol class="line reveal">
-    <li><span class="tag">Every run</span><h3>Sync tasks</h3><p>Finished Google Tasks archive their thread, if the tag says so.</p></li>
-    <li><span class="tag">rules.json</span><h3>Rules</h3><p>Your Gmail queries, in order. First match wins; the message never reaches a model.</p></li>
-    <li><span class="tag">Per tag</span><h3>Sweep</h3><p>Archive or mark read what is done: resolved alerts, yesterday's newsletters. Starred mail is left alone.</p></li>
-    <li class="model"><span class="tag">Cheap model</span><h3>First pass</h3><p>What is left goes in batches of 25, as untrusted data, to a lightweight model.</p></li>
-    <li class="model"><span class="tag">Stronger model</span><h3>Escalation</h3><p>Only low-confidence cases, with a bounded slice of the body, up to ten per run.</p></li>
-    <li><span class="tag">Code again</span><h3>Validate, then write</h3><p>IDs, tags, task policy and dates are checked, the inbox is rechecked, tasks come first, then labels.</p></li>
+    <li><h3>Sync tasks</h3><p>Every run starts here: finished Google Tasks archive their thread, if the tag says so.</p></li>
+    <li><h3>Rules</h3><p>Your Gmail queries in <code>rules.json</code>, in order. First match wins; the message never reaches a model.</p></li>
+    <li><h3>Sweep</h3><p>Per tag, archive or mark read what is done: resolved alerts, yesterday's newsletters. Starred mail is left alone.</p></li>
+    <li class="model"><h3>First pass</h3><p>What is left goes in batches of 25, as untrusted data, to a small, cheap model.</p></li>
+    <li class="model"><h3>Escalation</h3><p>Only low-confidence cases go to a stronger model, with a bounded slice of the body, up to ten per run.</p></li>
+    <li><h3>Validate, then write</h3><p>Plain code checks IDs, tags, task policy and dates, rechecks the inbox, then writes tasks first and labels second.</p></li>
   </ol>
 </section>
 
 <section id="demo" class="wrap">
   <div class="intro reveal">
     <h2>Your nine o'clock inbox.</h2>
-    <p>Thirty-eight messages arrive overnight in the demo mailbox: requests, invites, alerts, pull requests, newsletters, promotions. One applied run later, every message carries a label except one that waits for you, and four requests are tasks with due dates.</p>
+    <p>At eight, the demo inbox holds 38 unread messages. Thirty-seven arrived this week: requests, invites, alerts, pull requests, newsletters, promotions. The 38th is an older thread outside the seven-day window, so the run leaves it alone. One applied run later, every message from this week carries a label except one that waits for you, and four requests are tasks with due dates.</p>
   </div>
   <div class="ba">
     <figure class="shot reveal">
       <picture>
         <source srcset="docs/assets/screens/inbox-before-dark.webp" media="(prefers-color-scheme: dark)">
-        <img src="docs/assets/screens/inbox-before-light.webp" width="1440" height="1000" alt="The demo inbox before the run: thirty-eight unread messages, none labelled." loading="lazy">
+        <img src="docs/assets/screens/inbox-before-light.webp" width="2400" height="2260" alt="The demo inbox before the run: thirty-eight unread messages, none labelled." loading="lazy">
       </picture>
-      <figcaption><i aria-hidden="true"></i>Before <span>38 unread, no labels</span></figcaption>
+      <figcaption><i aria-hidden="true"></i>Before <span>38 unread: 37 this week, 1 older</span></figcaption>
     </figure>
     <figure class="shot reveal">
       <picture>
         <source srcset="docs/assets/screens/inbox-after-dark.webp" media="(prefers-color-scheme: dark)">
-        <img src="docs/assets/screens/inbox-after-light.webp" width="1440" height="1000" alt="The same inbox after one applied run: every message labelled AI/ something, eleven archived, one left unlabelled for review." loading="lazy">
+        <img src="docs/assets/screens/inbox-after-light.webp" width="2400" height="2260" alt="The same inbox after one applied run: every message labelled AI/ something, eleven archived, one left unlabelled for review." loading="lazy">
       </picture>
       <figcaption><i aria-hidden="true" style="--c:var(--l-fyi)"></i>After one run <span>labelled, swept, one waiting</span></figcaption>
     </figure>
@@ -304,7 +314,7 @@ section{padding:clamp(72px,10vw,128px) 0 0}
     <figure class="shot reveal">
       <picture>
         <source srcset="docs/assets/screens/tasks-dark.webp" media="(prefers-color-scheme: dark)">
-        <img src="docs/assets/screens/tasks-light.webp" width="1440" height="1000" alt="Four Google Tasks created from requests, each with a title, a due date and a link back to the mail thread." loading="lazy">
+        <img src="docs/assets/screens/tasks-light.webp" width="1800" height="730" alt="Four Google Tasks created from requests, each with a title, a due date and a link back to the mail thread." loading="lazy">
       </picture>
     </figure>
     <div class="reveal">
@@ -322,25 +332,31 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 <section id="cost" class="wrap">
   <div class="intro reveal">
     <h2>The express spur stays dark.</h2>
-    <p>The model is the expensive branch line, and most hours it carries nothing. Classifications are cached for the day, so applying a reviewed dry run costs no second call, and an hour with nothing new to read launches no model at all.</p>
+    <p>The model is the expensive branch line, and most hours it carries nothing. Classifications are cached for the day, so applying a reviewed dry run costs no second call, and an hour with nothing new to read launches no model at all. The classifier is the CLI you already pay for: the GitHub Copilot CLI or Claude Code.</p>
   </div>
   <div class="cost-grid">
     <table class="timetable reveal">
       <thead><tr><th scope="col">Run</th><th scope="col">What happened</th><th scope="col" class="hide-s">Spur</th><th scope="col" style="text-align:right">Model calls</th></tr></thead>
       <tbody>
-        <tr><td>runner.py</td><td class="run">Dry-run preview<small>27 routed by rules; 10 sent to the first pass, 3 of them escalated. Nothing in Gmail changes.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">2</td></tr>
-        <tr class="dark"><td>--apply</td><td class="run">Applied run<small>Reuses the preview's validated decisions: labels, sweeps and four tasks written.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">0</td></tr>
-        <tr class="dark"><td>next hour</td><td class="run">Scheduled run<small>Nothing new. The one message waiting for you is not re-sent today.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">0</td></tr>
-        <tr class="dark"><td>task done</td><td class="run">Scheduled run<small>You ticked "Approve the Q4 hiring plan"; its thread is archived.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">0</td></tr>
+        <tr><td><code>make classify</code></td><td class="run">Dry-run preview<small>27 routed by rules; 10 sent to the first pass, 3 of them escalated. Nothing in Gmail changes.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">2</td></tr>
+        <tr class="dark"><td><code>make apply</code></td><td class="run">Applied run<small>Reuses the preview's validated decisions: labels, sweeps and four tasks written.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">0</td></tr>
+        <tr class="dark"><td>Next hour</td><td class="run">Scheduled run<small>Nothing new. The one message waiting for you is not re-sent today.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">0</td></tr>
+        <tr class="dark"><td>Task done</td><td class="run">Scheduled run<small>You ticked "Approve the Q4 hiring plan"; its thread is archived.</small></td><td class="hide-s"><span class="spur"></span></td><td class="calls">0</td></tr>
       </tbody>
     </table>
     <figure class="shot reveal">
-      <picture>
-        <source srcset="docs/assets/screens/terminal-usage-dark.webp" media="(prefers-color-scheme: dark)">
-        <img src="docs/assets/screens/terminal-usage-light.webp" width="1440" height="1000" alt="Terminal output of runner.py --usage-report: one call per model, with token totals." loading="lazy">
-      </picture>
-      <figcaption><span>Every call is logged to <code>state/usage.jsonl</code>. In the demo, a stand-in CLI estimates tokens from text length.</span></figcaption>
+      <div class="term" role="region" aria-label="Output of make usage on the demo run"><pre id="usage-term"></pre></div>
+      <figcaption><span>Every call is logged to <code>state/usage.jsonl</code>; <code>make usage</code> totals it. In the demo, a stand-in CLI estimates tokens from text length.</span></figcaption>
     </figure>
+  </div>
+  <div class="fares reveal">
+    <h3>What a month costs</h3>
+    <dl>
+      <div><dt>Rules and cache resolve everything</dt><dd>$0</dd></div>
+      <div><dt>Two small-model calls a day</dt><dd>$0.15</dd></div>
+      <div><dt>Twelve small-model calls and one escalation a day</dt><dd>$2.46</dd></div>
+    </dl>
+    <p>Illustrative estimates over 22 workdays at Copilot rates, from the project's <a href="docs/costs/">cost guide</a>. Not caps: your real numbers come from <code>make usage</code>.</p>
   </div>
 </section>
 
@@ -350,18 +366,15 @@ section{padding:clamp(72px,10vw,128px) 0 0}
     <p>Every command that would change your mailbox is a preview until you add <code>--apply</code>. The model proposes; plain code decides whether the proposal is even allowed.</p>
   </div>
   <ul class="signs reveal">
-    <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg></span><div><h3>Dry run by default</h3><p>Previews write the exact plan to <code>state/plan.json</code>; <code>apply-plan --apply</code> replays it without searching again.</p></div></li>
-    <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><h3>Journalled, undoable</h3><p>Applied label changes go to a journal; <code>triage.py undo</code> reverts the last batches.</p></div></li>
+    <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg></span><div><h3>Dry run by default</h3><p><code>make preview</code> and <code>make classify</code> change nothing and write the exact plan to <code>state/plan.json</code>. <code>make apply</code> asks before it touches mail.</p></div></li>
+    <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><h3>Journalled, undoable</h3><p>Applied label changes and trash go to a journal; <code>triage.py undo</code> reverts the last batches. Nothing is ever sent, forwarded or permanently deleted.</p></div></li>
     <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M8.5 12l2.4 2.4 4.6-4.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><h3>Validated before written</h3><p>Exactly the requested IDs, known tags, allowed tasks, real dates. Anything else and the batch is refused.</p></div></li>
     <li class="sig"><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 7v6M12 16.5v.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></span><div><h3>Unsure stays in the inbox</h3><p>No "FYI" fallback, no automatic archive. Unresolved mail is listed in <code>summary.json</code> and left for you.</p></div></li>
     <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/></svg></span><div><h3>Starred mail is protected</h3><p>Sweeps skip starred messages by default, through a guard you can edit.</p></div></li>
-    <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></span><div><h3>Private by construction</h3><p>Mail stays in a local <code>state/</code> folder only you can read. Logs record counts, never content, and mail text is treated as data, never as instructions.</p></div></li>
+    <li><span class="pict" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></span><div><h3>Least privilege, local state</h3><p>Only the Gmail-modify and Tasks scopes. The model runs with no tools, in a temporary folder, mail on stdin. Everything else stays in a <code>state/</code> folder only you can read.</p></div></li>
   </ul>
   <figure class="shot safety-shot reveal">
-    <picture>
-      <source srcset="docs/assets/screens/terminal-dry-run-dark.webp" media="(prefers-color-scheme: dark)">
-      <img src="docs/assets/screens/terminal-dry-run-light.webp" width="1440" height="1000" alt="Terminal output of triage.py run in dry-run mode: each planned tag and sweep listed as DRY, ending with the saved plan." loading="lazy">
-    </picture>
+    <div class="term" role="region" aria-label="Output of a dry run on the demo mailbox"><pre id="dry-term"></pre></div>
     <figcaption><span>A dry run on the demo mailbox: every planned label and sweep, nothing applied.</span></figcaption>
   </figure>
 </section>
@@ -375,7 +388,7 @@ section{padding:clamp(72px,10vw,128px) 0 0}
     </div>
   </div>
   <div class="screen reveal">
-    <video id="film-v" src="docs/assets/video/film.en.mp4" poster="docs/assets/video/film.en.webp" playsinline preload="none" controls>
+    <video id="film-v" src="docs/assets/video/film.en.mp4" poster="docs/assets/video/film.en.webp" playsinline preload="none">
       <track id="film-t" kind="subtitles" src="docs/assets/video/film.en.vtt" srclang="en" label="English">
     </video>
     <button class="play" id="play" type="button" aria-label="Play the film"><span><i><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z" fill="#fff"/></svg></i>Play the film</span></button>
@@ -385,24 +398,25 @@ section{padding:clamp(72px,10vw,128px) 0 0}
 
 <section id="start" class="wrap">
   <div class="intro reveal">
-    <h2>Board in three commands.</h2>
-    <p>The setup script installs what is missing with Homebrew, signs you in with only the Gmail-modify and Tasks scopes, then runs the tests and a read-only, model-free dry run. It never changes mail and never installs the schedule.</p>
+    <h2>Board with one command.</h2>
+    <p><code>make setup</code> installs what is missing with Homebrew, creates your private rules and state, signs you in to Google (Gmail and Tasks only) and to your classifier CLI, then runs the tests and a read-only preview. It is safe to re-run, and it never changes mail or installs the schedule.</p>
   </div>
   <div class="start">
     <ol class="reveal">
-      <li><div><b>Clone, then preview the setup.</b><p><code>--dry-run</code> prints every command before anything runs.</p></div></li>
-      <li><div><b>Personalise your rules.</b><p>The <code>mail-setup</code> skill reads at most 200 recent messages, read-only, and proposes sender rules for you to approve.</p></div></li>
-      <li><div><b>Schedule it when the dry run looks right.</b><p><code>schedule.py install</code> runs weekdays, hourly, 08:00 to 19:00.</p></div></li>
+      <li><div><b>Set up, then check.</b><p><code>make setup-preview</code> prints every command first; <code>make doctor</code> ticks off every install and login.</p></div></li>
+      <li><div><b>Personalise your rules.</b><p>The <code>mail-setup</code> skill, in Copilot or Claude Code, reads at most 200 recent messages, read-only, and proposes sender rules for you to approve.</p></div></li>
+      <li><div><b>Preview, apply, schedule.</b><p><code>make preview</code>, then <code>make apply</code> when it looks right, then <code>make schedule-install</code>: weekdays, hourly, 08:00 to 19:00.</p></div></li>
     </ol>
     <div class="term reveal" role="region" aria-label="Install commands">
-<pre><span class="c"># macOS, Python 3.10+</span>
+<pre><span class="c"># a Mac with Homebrew</span>
 <span class="p">$</span> git clone https://github.com/mmornati/ai-email-assistant.git
 <span class="p">$</span> cd ai-email-assistant
-<span class="p">$</span> scripts/setup-macos.sh --dry-run
-<span class="p">$</span> scripts/setup-macos.sh
+<span class="p">$</span> make setup          <span class="c"># or: bash scripts/setup-macos.sh --cli claude</span>
+<span class="p">$</span> make doctor
+<span class="p">$</span> make preview        <span class="c"># read-only, no model</span>
 
 <span class="c"># or try it with no account at all</span>
-<span class="p">$</span> python3 demo/run_demo.py</pre>
+<span class="p">$</span> make demo</pre>
     </div>
   </div>
 </section>
@@ -414,11 +428,11 @@ section{padding:clamp(72px,10vw,128px) 0 0}
   </div>
   <ul class="limits reveal">
     <li><b>Gmail only</b><span>Through the Google Workspace CLI, with Google Tasks for the to-do side.</span></li>
+    <li><b>Your CLI, your subscription</b><span>Classification runs through the GitHub Copilot CLI or Claude Code; you need one of them.</span></li>
     <li><b>Polling, not push</b><span>Each run looks at a time window (7 days by default); there is no history cursor.</span></li>
     <li><b>macOS for the schedule</b><span>The schedule is a launchd calendar job; the Mac must be on and you logged in.</span></li>
     <li><b>Confidence is not calibrated</b><span>It is what the model reports. Review real output before trusting unattended runs with important mail.</span></li>
     <li><b>No silent cleanup</b><span>The starter rules archive and trash nothing. Every cleanup action is one you add.</span></li>
-    <li><b>Not affiliated</b><span>An independent project; not endorsed by Google or GitHub.</span></li>
   </ul>
 </section>
 </main>
@@ -431,14 +445,15 @@ section{padding:clamp(72px,10vw,128px) 0 0}
       <div class="actions"><a class="btn btn-primary" href="docs/"><span class="roundel" aria-hidden="true"></span>Read the documentation</a></div>
     </div>
     <nav aria-label="Footer">
-      <a href="docs/getting-started/install/">Install</a>
-      <a href="docs/guide/how-it-works/">How it works</a>
-      <a href="docs/guide/rules/">Writing rules</a>
+      <a href="docs/getting-started/">Install</a>
+      <a href="docs/how-it-works/">How it works</a>
+      <a href="docs/configuration/">Configuration</a>
+      <a href="docs/classifier-cli/">Copilot or Claude Code</a>
       <a href="docs/guide/safety/">Safety and undo</a>
       <a href="docs/faq/">FAQ</a>
       <a href="https://github.com/mmornati/ai-email-assistant">Source on GitHub</a>
     </nav>
-    <small>MIT licence. Every person, company, address and message on this site is invented: the demo runs the real engine against a fictional mailbox through stand-in <code>gws</code> and <code>copilot</code> commands. Gmail and Google Tasks are trademarks of Google LLC; GitHub Copilot is a trademark of GitHub, Inc. This project is not affiliated with either.</small>
+    <small>MIT licence. Every person, company, address and message on this site is invented: the demo runs the real engine against a fictional mailbox through stand-in <code>gws</code> and <code>copilot</code> commands. Gmail and Google Tasks are trademarks of Google LLC; GitHub Copilot is a trademark of GitHub, Inc.; Claude is a trademark of Anthropic. This project is not affiliated with any of them.</small>
   </div>
 </footer>
 
@@ -466,6 +481,14 @@ const setBoard = () => {
   $("#board-note").textContent = `The real engine, run on an invented mailbox: ${t.rules} by rules + ${t.model} by the model = ${t.arrived} arrived, in ${t.calls} model calls.`;
 };
 setBoard();
+
+// the two terminals are the demo run's own output
+const esc = (x) => x.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+const termHtml = (r, filter = () => true) => `<span class="p">$</span> ${esc(r.command)}\n` +
+  r.output.split("\n").filter(filter).map((l) => esc(l).replace(/^(\s+)DRY/, '$1<span class="dry">DRY</span>')).join("\n");
+const pv = snap.steps.find((x) => x.name === "preview"), ap = snap.steps.find((x) => x.name === "apply");
+$("#dry-term").innerHTML = termHtml(pv.transcript[0], (l) => !l.startsWith("[report]"));
+$("#usage-term").innerHTML = termHtml({ ...ap.transcript[1], command: "make usage" });
 
 // narrow screens: the strip map
 const bullet = (tag) => `<span class="bullet"${DARK_TEXT.has(tag) ? " data-dark" : ""} style="--c:${lineVar(tag)}">${tag}</span>`;
@@ -497,8 +520,8 @@ const setFilm = (lang) => {
 };
 $$(".lang button").forEach((b) => b.addEventListener("click", () => setFilm(b.dataset.lang)));
 if ((navigator.language || "").startsWith("fr")) setFilm("fr");
-play.addEventListener("click", () => { play.hidden = true; v.play(); });
-v.addEventListener("play", () => { play.hidden = true; });
+play.addEventListener("click", () => { play.hidden = true; v.controls = true; v.play(); });
+v.addEventListener("play", () => { play.hidden = true; v.controls = true; });
 </script>
 </body>
 </html>

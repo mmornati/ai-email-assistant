@@ -1,4 +1,8 @@
-# Commands
+# Commands and flags
+
+For everyday use, run the `make` targets: `make help` lists them, and
+[Operations](../operations.md#command-reference) maps each one to the command it
+runs. This page is the complete flag reference for the scripts underneath.
 
 Run every command from the project folder. Every command that can change Gmail or
 Google Tasks is a dry run unless `--apply` is given.
@@ -18,7 +22,9 @@ python3 runner.py [options]
 | `--no-model` | off | Rules and cache only; never invoke a model. Uncached pending mail stays for review. |
 | `--retry-review` | off | Retry mail held for review today (a paid retry). |
 | `--scheduled` | off | Exit 0 without scanning if run outside weekdays 08:00-19:59 local time. Used by the schedule. |
-| `--usage-report` | off | Print recorded token totals per model from `state/usage.jsonl`; no scan, no model call. |
+| `--usage-report` | off | Print recorded token totals per `cli/model` from `state/usage.jsonl`; no scan, no model call. (`make usage`) |
+| `--cli {copilot,claude}` | `cli` from `classifier.json` | Use this classifier CLI for this run only; the file is unchanged. |
+| `--select-cli {copilot,claude}` | | Set `cli` in `classifier.json` (only that key is rewritten) and exit; no scan, no model call. |
 | `--config PATH` | `classifier.json` | Classifier configuration. |
 | `--rules PATH` | `rules.json` | Rules file. |
 | `--window QUERY` | `default_window` from rules | Gmail time filter. `''` means the whole inbox. |
@@ -27,11 +33,12 @@ python3 runner.py [options]
 Examples:
 
 ```bash
-python3 runner.py --no-model                 # free preview
-python3 runner.py                            # preview with classification (may cost)
-python3 runner.py --apply                    # real run
+python3 runner.py --no-model                 # free preview (make preview)
+python3 runner.py                            # preview with classification, may cost (make classify)
+python3 runner.py --apply                    # real run (make apply, after a prompt)
 python3 runner.py --window '' --limit 8000   # preview whole-inbox processing
-python3 runner.py --usage-report
+python3 runner.py --usage-report             # make usage
+python3 runner.py --select-cli claude        # switch the classifier CLI
 ```
 
 Output: one line of status and counts. Writes `state/summary.json` on every run.
@@ -108,8 +115,12 @@ python3 schedule.py {render,install,status,uninstall} [options]
 | `--no-model` | off | Install a strictly model-free schedule (`runner.py --no-model`). |
 | `--dry-run` | off | Schedule previews instead of mailbox changes (omits `--apply`). |
 
-`install` requires the interpreter to exist, `gws` on `PATH`, and `copilot` on
-`PATH` unless `--no-model`.
+The `make schedule-render`, `make schedule-install`, `make schedule-status` and
+`make schedule-uninstall` targets run these commands with default options.
+
+`install` requires the interpreter to exist, `gws` on `PATH`, and, unless
+`--no-model`, the classifier CLI selected in `classifier.json` on `PATH`. It
+refuses Claude Code with `"auth": "api_key"`. See [Scheduling](../scheduling.md).
 
 ## `mail_setup.py`
 
@@ -135,12 +146,13 @@ python3 mail_setup.py {discover,preview,approve} [options]
 | `--selections PATH` | `state/setup-selections.json` | | Reviewed selections file. |
 | `--apply` | off | `approve` only | Save the approved rules. |
 
-## `share.py`
+## `tools/share.py`
 
-Build a clean ZIP from an explicit file allowlist. See [Sharing](../guide/sharing.md).
+Build a clean ZIP from an explicit file allowlist (`make share`). See
+[Sharing a ZIP](../sharing.md).
 
 ```bash
-python3 share.py [--output PATH]
+python3 tools/share.py [--output PATH]
 ```
 
 | Option | Default | Effect |
@@ -149,7 +161,9 @@ python3 share.py [--output PATH]
 
 ## `scripts/setup-macos.sh`
 
-Install, authenticate and verify on macOS. See [Install](../getting-started/install.md).
+Install, authenticate and verify on macOS (`make setup`; `make setup-preview` adds
+`--dry-run`, `make doctor` adds `--check`). See
+[Getting started](../getting-started.md#1-install-and-configure).
 
 ```bash
 scripts/setup-macos.sh [options]
@@ -159,15 +173,19 @@ scripts/setup-macos.sh [options]
 | --- | --- |
 | `-y`, `--yes` | Answer yes to every prompt (still opens browser logins). |
 | `-n`, `--dry-run` | Print the commands that would run; change nothing. |
+| `-c`, `--check` | Health check only; change nothing. Exits 1 if anything required is missing. |
 | `--project ID` | Use an existing Google Cloud project for `gws auth setup`. |
+| `--task-list NAME` | Google Tasks list written into a new `rules.json` (default `My Tasks`). |
 | `--skip-auth` | Install tools and local files only; no logins. |
-| `--skip-copilot` | Do not install or log in to the Copilot CLI. |
+| `--cli NAME` | Classifier CLI to install, log in to and select in `classifier.json`: `copilot` or `claude`. Default: the `cli` already set. |
+| `--no-model-cli` | Do not install or log in to any classifier CLI (model-free use only). `--skip-copilot` is the older name. |
 | `--skip-verify` | Do not run the tests or the read-only dry run. |
 | `-h`, `--help` | Show help. |
 
 ## `demo/run_demo.py`
 
-Run the real engine on an invented mailbox with stand-in `gws` and `copilot`. See
+Run the real engine on an invented mailbox with stand-in `gws` and `copilot`
+programs. The demo always uses the Copilot path. See
 [Try the demo](../getting-started/demo.md).
 
 ```bash
@@ -180,12 +198,13 @@ python3 demo/run_demo.py [--out PATH] [--workspace DIR] [--quiet]
 | `--workspace DIR` | Keep the workspace in this new or empty folder. |
 | `--quiet` | Print nothing. |
 
-## `benchmark.py` (optional)
+## `tools/benchmark.py` (optional)
 
-A read-only research benchmark comparing the local Laya runtime with the cheap
-model, described in [ADR 0001](../adr/0001-laya-vs-luna.md). It never applies
-decisions. It needs the isolated dependencies in `requirements-benchmark.lock`; the
-scheduled runner does not.
+A read-only research benchmark comparing the local Laya runtime with the small
+model of the selected classifier CLI, described in [ADR 0001](../adr/0001-laya-vs-luna.md) and
+[Operations](../operations.md#local-model-evaluation-laya). It never applies
+decisions. It needs the isolated dependencies pinned in
+`tools/benchmark/requirements.lock`; the scheduled runner does not.
 
 | Option | Default | Effect |
 | --- | --- | --- |

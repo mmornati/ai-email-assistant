@@ -1,5 +1,11 @@
 {
-  "_doc": "Pronunciation fixes, applied to the spoken text only (subtitles keep the original). Keys are whole words, case-sensitive. Checked with the narration-lexicon skill.",
+  "_doc": "Pronunciation fixes, applied to the spoken text only (subtitles keep the original). Keys are whole words, case-sensitive. Checked with the narration-lexicon skill: the French voice reads the English brand and command as French words without IPA.",
   "en": {},
-  "fr": {}
+  "fr": {
+    "AI": "[[ˌeɪˈaɪ]]",
+    "Mail": "[[mˈeɪl]]",
+    "make": "[[mˈeɪk]]",
+    "setup": "[[sˈɛtʌp]]",
+    "AI Mail Assistant": "[[ˌeɪˈaɪ mˈeɪl əsˈɪstənt]]"
+  }
 }

@@ -10,7 +10,7 @@ effect immediately without reinstalling the schedule.
 
 ## `rules.json`
 
-Created by `make setup` from [`rules.example.json`](../rules.example.json). The
+Created by `make setup` from [`rules.example.json`](https://github.com/mmornati/ai-email-assistant/blob/main/rules.example.json). The
 starter preserves the tag taxonomy and task policies, but has no sender-specific
 matching, sweeps, archive/read/trash actions, or task-completion actions. With it,
 model-free runs leave mail pending; model-enabled applied runs can label mail and

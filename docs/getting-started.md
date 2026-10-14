@@ -20,7 +20,7 @@ make setup-preview   # print every command first; changes nothing
 make setup           # install, authenticate, verify
 ```
 
-`make setup` runs [`scripts/setup-macos.sh`](../scripts/setup-macos.sh). It is
+`make setup` runs [`scripts/setup-macos.sh`](https://github.com/mmornati/ai-email-assistant/blob/main/scripts/setup-macos.sh). It is
 idempotent and safe to re-run. It:
 
 1. installs Python 3.10+ (if needed), the

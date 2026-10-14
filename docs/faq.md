@@ -33,40 +33,57 @@ A run that rules and the same-day cache resolve completely makes **zero model
 calls**, so it costs no model tokens. Gmail and Tasks API calls still take time and
 use your normal Google quota.
 
-When the classifier runs, the cost depends on your Copilot plan, the models'
-rates, how many messages need classification, and how many escalate. The project
-does not publish costs from real mailboxes. The README gives the per-token rates it
-checked on 2026-10-07, two synthetic single-call probes, and clearly labeled
-illustrative monthly scenarios; see its
-[costs section](https://github.com/mmornati/ai-email-assistant#costs-and-token-estimates).
-Prices and your organization's billing can change.
+When the classifier runs, the cost depends on your Copilot or Claude plan, the
+models' rates, how many messages need classification, and how many escalate. The
+project does not publish costs from real mailboxes. [Costs](costs.md) gives the
+per-token rates it checked for both classifier CLIs, measured overhead from
+synthetic probes, and clearly labeled illustrative monthly scenarios. Prices and
+your organization's billing can change.
 
-To see your own usage, run `python3 runner.py --usage-report` and reconcile with your
-Copilot usage view. The per-run limits in `classifier.json` bound the workload, not
+To see your own usage, run `make usage` (`python3 runner.py --usage-report`) and
+reconcile with your Copilot usage view, your Claude plan's usage page or the
+Anthropic Console. The per-run limits in `classifier.json` bound the workload, not
 the bill.
 
-Running the job as a Copilot app automation instead of the launchd schedule costs
-more: the app starts an agent session on every tick, even when the inbox is empty.
+Running the job as an app automation instead of the launchd schedule costs more:
+the app starts an agent session on every tick, even when the inbox is empty. See
+[Scheduling](scheduling.md#app-only-automation-alternative).
+
+## Copilot CLI or Claude Code?
+
+Either. `classifier.json` selects the classifier CLI with `"cli"`: `copilot` (the
+default) or `claude`. Choose at install time with
+`bash scripts/setup-macos.sh --cli claude`, or later with
+`python3 runner.py --select-cli claude`. Either way the call has no tools, runs in
+a temporary directory and receives mail on stdin, and its answer goes through the
+same validation. [Choosing the classifier CLI](classifier-cli.md) has the
+details, and [ADR 0002](adr/0002-selectable-classifier-cli.md) the reasoning.
 
 ## Which models does it use?
 
-By default `gpt-6-luna` for the first pass and `gpt-6.1-sol` for escalations,
-through the GitHub Copilot CLI and your Copilot account. You can name other models
-in `classifier.json`, as long as your account and organization policy allow them.
-The model selected in the Copilot app does not change what the runner uses.
+| Classifier CLI | First pass | Escalation |
+| --- | --- | --- |
+| GitHub Copilot CLI | `gpt-6-luna` | `gpt-6.1-sol` |
+| Claude Code | `claude-haiku-5-5` | `claude-sonnet-5-5` |
+
+You can name other models in `classifier.json`, as long as your account and
+organization policy allow them. The model selected in the Copilot app or in Claude
+Code does not change what the runner uses.
 
 [ADR 0001](adr/0001-laya-vs-luna.md) explains why a local model was evaluated and
 not adopted.
 
 ## Can I run it without a model?
 
-Yes. `python3 runner.py --no-model` uses rules and the same-day cache only and never
-starts the Copilot CLI. `python3 schedule.py install --no-model` schedules exactly
-that, and `scripts/setup-macos.sh --skip-copilot` installs without the Copilot CLI.
+Yes. `make preview` (`python3 runner.py --no-model`) uses rules and the same-day
+cache only and never starts a classifier CLI. `python3 schedule.py install
+--no-model` schedules exactly that, and `bash scripts/setup-macos.sh --no-model-cli`
+installs without any classifier CLI.
 
 Without a model, mail no rule matches stays untagged in the inbox, and runs exit
 with code 2 while any is pending. `triage.py` also works entirely without a model,
-and you can classify pending mail yourself with a [decisions file](guide/review.md).
+and you can classify pending mail yourself with a
+[decisions file](interactive-review.md#interactive-review-recommended-app-use).
 
 ## Why macOS only?
 
@@ -85,7 +102,8 @@ the Google Workspace CLI. There is no support for other mail providers.
 
 Polling. The schedule runs hourly on weekdays from 08:00 to 19:00 and looks at the
 recent inbox each time. There is no Gmail push subscription or history cursor, so
-new mail waits until the next run (or until you run `runner.py` yourself).
+new mail waits until the next run (or until you run it yourself, for example with
+`make apply`).
 
 ## What if the model is wrong?
 
@@ -120,8 +138,10 @@ configure it (recoverable for 30 days).
 
 - Mail metadata, decisions, plans and logs stay in the local `state/` folder,
   owner-only and **not encrypted** by the tool; use FileVault.
-- Classification requests go to GitHub Copilot under your account, and are subject
-  to GitHub's and the model provider's retention policies.
+- Classification requests go to the classifier CLI you selected, under your
+  account: GitHub Copilot (subject to GitHub's and the model provider's retention
+  policies) or Claude Code (subject to Anthropic's, which differ between a Claude
+  subscription and API-key use).
 - Gmail and Tasks access goes through the Google Workspace CLI with your own OAuth
   client and the `gmail.modify` and `tasks` scopes.
 - Routine schedule logs contain counts, not subjects or bodies.
@@ -139,6 +159,6 @@ propose a bounded task. See [Safety](guide/safety.md#email-is-untrusted-data).
 
 Nothing in the code distinguishes personal and work accounts. It needs a Gmail
 account you can authorize with the `gmail.modify` and `tasks` scopes, and a Copilot
-account allowed to use the configured models (unless you run model-free). Your
+or Claude account allowed to use the configured models (unless you run model-free). Your
 organization may restrict OAuth clients, mailbox automation or AI processing of
 email. You are responsible for following those policies.

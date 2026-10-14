@@ -1,7 +1,7 @@
 # What it does not do
 
 Knowing the limits is part of using this safely. Everything below follows from the
-code and the README.
+code and the guides.
 
 ## Mail actions
 
@@ -15,6 +15,9 @@ code and the README.
 
 - **Gmail only**, through the Google Workspace CLI. No other mail providers.
 - **Google Tasks only** for to-dos.
+- **Two classifier CLIs.** Models are called only through the GitHub Copilot CLI
+  or Claude Code. There is no direct model API integration and no other provider.
+  See [Choosing the classifier CLI](classifier-cli.md).
 - **macOS only** for the schedule and the setup script.
 - **Polling, not push.** It checks the inbox on a schedule (hourly on weekdays,
   08:00-19:00, by default). There is no Gmail push subscription or history cursor.
@@ -45,8 +48,8 @@ code and the README.
 - A dry run with classification still costs model usage.
 - Large backlogs are processed over several runs, or with an explicit window and
   limit.
-- Running the job as a Copilot app automation pays for an agent session on every
-  tick, even when nothing needs classifying.
+- Running the job as an app automation pays for an agent session on every tick,
+  even when nothing needs classifying. See [Costs](costs.md).
 
 ## Learning
 
@@ -69,13 +72,15 @@ code and the README.
 
 - `state/` is owner-only but **not encrypted** by the tool. Use FileVault and a
   protected account.
-- Data sent for classification goes to GitHub Copilot and is subject to GitHub's and
-  the model provider's retention policies.
+- Data sent for classification goes to the selected classifier CLI's provider:
+  GitHub Copilot (GitHub's and the model provider's retention policies) or Claude
+  Code (Anthropic's, which differ between a Claude subscription and API-key use).
 - Gmail queries and task titles are visible in the local process list while a `gws`
   call runs. Use a single-user machine.
-- The Copilot call is isolated from tools, MCP servers and custom instructions, but
-  account-level CLI context or plugins may still apply. It is not a bare model API
-  call.
+- The classifier call is isolated from tools, MCP servers and custom instructions,
+  but account-level CLI context may still apply; with subscription auth, Claude
+  Code adds a short account section with your sign-in email. It is not a bare
+  model API call.
 
 ## Project status
 

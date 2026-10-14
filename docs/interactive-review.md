@@ -12,8 +12,8 @@ Two skills ship with the project, as identical copies in `.github/skills/`
 
 | Skill | Use it for |
 | --- | --- |
-| [`mail-setup`](../.github/skills/mail-setup/SKILL.md) | First-run, read-only discovery of recurring senders and approved rule updates ([guide](getting-started.md#4-personalize-your-rules-mail-setup)) |
-| [`mail-triage`](../.github/skills/mail-triage/SKILL.md) | Interactive review of pending mail, manual classification and task correction |
+| [`mail-setup`](https://github.com/mmornati/ai-email-assistant/blob/main/.github/skills/mail-setup/SKILL.md) | First-run, read-only discovery of recurring senders and approved rule updates ([guide](getting-started.md#4-personalize-your-rules-mail-setup)) |
+| [`mail-triage`](https://github.com/mmornati/ai-email-assistant/blob/main/.github/skills/mail-triage/SKILL.md) | Interactive review of pending mail, manual classification and task correction |
 
 ## Interactive review (recommended app use)
 

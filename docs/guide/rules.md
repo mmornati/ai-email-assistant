@@ -4,8 +4,10 @@
 decide is never sent to a model. It is read on every run, so edits take effect on
 the next run without reinstalling anything.
 
-`rules.json` is your personal file: it is created from `rules.example.json` by the
-setup script, excluded from Git, and never included in a shared ZIP.
+`rules.json` is your personal file: `make setup` creates it from
+`rules.example.json`, it is excluded from Git, and it is never included in a
+shared ZIP. This page explains how rules behave; the field-by-field reference for
+`rules.json` and `classifier.json` is [Configuration](../configuration.md).
 
 ## Anatomy
 
@@ -183,8 +185,8 @@ What happened in the demo run on the invented mailbox:
 ## Writing good rules
 
 - Prefer exact senders (`from:alerts@vendor.example`) over domains. The
-  [`mail-setup`](../getting-started/personal-rules.md) skill only ever proposes
-  exact senders.
+  [`mail-setup`](#sender-rules-from-mail-setup) skill only ever proposes exact
+  senders.
 - Keep `Action` and `FYI` free of `match` queries unless you are sure. Whether a
   person is asking you for something is exactly what rules cannot see.
 - Add cleanup (`on_tag`, `sweep`) only for mail you would never want to miss in
@@ -195,6 +197,50 @@ What happened in the demo run on the invented mailbox:
   gave it. The runner never edits `rules.json` itself.
 
 Changing `rules.json` invalidates the current pending batch and the
-classification cache, because both are tied to a hash of the rules.
+classification cache, because both are tied to a hash of the rules. A model-free
+preview (`make preview`) shows the effect of a change.
 
-For the complete field list, see [Configuration](../reference/configuration.md).
+## Sender rules from `mail-setup`
+
+The starter rules have no sender queries, so at first every message goes to the
+classifier. The `mail-setup` skill proposes exact-sender rules for the automated
+mail you receive regularly. How to run it, in Copilot or Claude Code, is in
+[Getting started](../getting-started.md#4-personalize-your-rules-mail-setup).
+This section adds what the scripts check along the way.
+
+**Discovery** (`make discover`, `python3 mail_setup.py discover`) searches received
+mail from the last 30 days, excluding sent, drafts, spam and trash, up to 200
+messages. For each one it fetches only the From, Subject, Date, List-Id,
+List-Unsubscribe and Precedence headers and Gmail's snippet. It groups messages by
+exact sender address, keeps senders with at least three messages (up to 20 groups
+by default), and sets aside up to three development and two validation examples
+per group. A group is **eligible** only if every sampled message from that sender
+has bulk or mailing-list headers and both example sets are complete. The result
+goes to the private `state/setup-discovery.json`.
+
+**Preview** (`make rules-preview`) writes the proposed ruleset to
+`state/setup-rules.preview.json` and prints the changes; `rules.json` is not
+touched.
+
+**Approval** (`python3 mail_setup.py approve --apply`) saves the rules only if:
+
+- the discovery is less than 24 hours old and was made with the current rules;
+- every selected group is eligible;
+- every development and validation example was given the selected tag;
+- the tag is not `Action`, `FYI` or `Backlog`;
+- the exact query does not already exist under a different tag.
+
+It then backs up the previous rules to a private
+`state/rules.before-setup-<id>.json` and saves `rules.json` with the new
+`from:address` queries appended to each tag's `match` list. It cannot add cleanup
+actions or domain-wide queries.
+
+!!! warning "New rules inherit existing cleanup"
+    On the starter rules no cleanup is enabled, so a new rule only tags mail. If
+    you have already added `on_tag` or `sweep` actions to a tag, a new sender query
+    under that tag inherits them on the next applied run. Review those before
+    approving.
+
+The validator rejects only exact duplicates. A broader, earlier query (for example
+a domain-wide one you wrote yourself) can still capture the sender first, because
+[the first match wins](#first-match-wins).

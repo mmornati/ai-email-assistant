@@ -22,9 +22,11 @@ In `rules.json`:
 ```
 
 `list`
-:   Name of the Google Tasks list to use. If it does not exist, the first applied
-    run that needs it creates it. If `list` is missing, the name `Mail Triage` is
-    used.
+:   Name of the Google Tasks list to use. `make setup` asks for it when it creates
+    `rules.json` (default `My Tasks`; or pass `--task-list NAME` to
+    `scripts/setup-macos.sh`). If the list does not exist, the first applied run
+    that needs it creates it. If `list` is missing from the file, the name
+    `Mail Triage` is used.
 
 `default_due_business_days`
 :   Due date for tasks without an explicit deadline, counted in business days
@@ -127,5 +129,6 @@ message stays untagged in the inbox and is retried on the next run. Gmail and
 Google Tasks are separate services; a partial failure is possible, so inspect
 errors.
 
-`triage.py undo` reverts label changes and trash. It does **not** delete tasks.
+`triage.py undo` ([Operations](../operations.md#reports-journal-and-undo))
+reverts label changes and trash. It does **not** delete tasks.
 Delete unwanted tasks in Google Tasks yourself.

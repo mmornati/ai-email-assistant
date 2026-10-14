@@ -20,7 +20,8 @@ FILES = (
     "tools/benchmark/requirements.txt", "tools/benchmark/requirements.lock",
     "tests/__init__.py", "tests/test_triage.py", "tests/test_benchmark.py", "tests/test_share.py",
     "tests/test_mail_setup.py", "tests/test_schedule.py", "tests/test_setup_script.py",
-    "tests/test_engine.py", "tests/test_providers.py",
+    "tests/test_engine.py", "tests/test_providers.py", "tests/test_demo.py",
+    "demo/run_demo.py", "demo/demo_mailbox.py", "demo/fakes/gws", "demo/fakes/copilot",
     ".github/skills/mail-setup/SKILL.md", ".github/skills/mail-triage/SKILL.md",
     # Identical copies for Claude Code, which reads skills from .claude/skills/.
     ".claude/skills/mail-setup/SKILL.md", ".claude/skills/mail-triage/SKILL.md",

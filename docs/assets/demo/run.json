@@ -135,18 +135,12 @@
   }
  ],
  "classifier": {
-  "version": 1,
+  "cli": "copilot",
   "cheap_model": "gpt-6-luna",
   "escalation_model": "gpt-6.1-sol",
-  "confidence_threshold": 0.85,
-  "escalation_threshold": 0.9,
   "batch_size": 25,
-  "max_batches": 4,
-  "max_escalations": 10,
-  "context_chars": 4000,
-  "timeout_seconds": 180,
-  "copilot_binary": "copilot",
-  "disabled_mcp_servers": []
+  "confidence_threshold": 0.85,
+  "escalation_threshold": 0.9
  },
  "routes": {
   "91f25fe8324d47c9": "rule",
@@ -671,7 +665,7 @@
     }
    ],
    "summary": {
-    "started": 1792007213.341608,
+    "started": 1792008584.538099,
     "apply": false,
     "status": "needs_review",
     "pending": 10,
@@ -736,7 +730,7 @@
       "requires_approval": true
      }
     ],
-    "finished": 1792007214.467249
+    "finished": 1792008585.544108
    },
    "model_calls": [
     {
@@ -1222,11 +1216,11 @@
     {
      "command": "python3 runner.py --usage-report",
      "exit": 0,
-     "output": "{\n  \"gpt-6-luna\": {\n    \"calls\": 1,\n    \"errors\": 0,\n    \"missing_usage\": 0,\n    \"tokens\": {\n      \"input\": 1433,\n      \"output\": 317\n    }\n  },\n  \"gpt-6.1-sol\": {\n    \"calls\": 1,\n    \"errors\": 0,\n    \"missing_usage\": 0,\n    \"tokens\": {\n      \"input\": 967,\n      \"output\": 151\n    }\n  }\n}"
+     "output": "{\n  \"copilot/gpt-6-luna\": {\n    \"calls\": 1,\n    \"errors\": 0,\n    \"missing_usage\": 0,\n    \"tokens\": {\n      \"input\": 1433,\n      \"output\": 317\n    }\n  },\n  \"copilot/gpt-6.1-sol\": {\n    \"calls\": 1,\n    \"errors\": 0,\n    \"missing_usage\": 0,\n    \"tokens\": {\n      \"input\": 967,\n      \"output\": 151\n    }\n  }\n}"
     }
    ],
    "summary": {
-    "started": 1792007214.514579,
+    "started": 1792008585.596771,
     "apply": true,
     "status": "needs_review",
     "pending": 10,
@@ -1291,7 +1285,7 @@
       "requires_approval": true
      }
     ],
-    "finished": 1792007216.690389
+    "finished": 1792008587.25761
    },
    "model_calls": [],
    "mailbox": [
@@ -1858,7 +1852,7 @@
     }
    ],
    "summary": {
-    "started": 1792007216.785179,
+    "started": 1792008587.361644,
     "apply": true,
     "status": "needs_review",
     "pending": 1,
@@ -1875,7 +1869,7 @@
     "tasks_created": 0,
     "tasks": [],
     "rule_candidates": [],
-    "finished": 1792007217.321186
+    "finished": 1792008587.754417
    },
    "model_calls": [],
    "mailbox": [
@@ -2442,7 +2436,7 @@
     }
    ],
    "summary": {
-    "started": 1792007217.369078,
+    "started": 1792008587.8067389,
     "apply": true,
     "status": "needs_review",
     "pending": 1,
@@ -2461,7 +2455,7 @@
     "tasks_created": 0,
     "tasks": [],
     "rule_candidates": [],
-    "finished": 1792007217.9782379
+    "finished": 1792008588.236083
    },
    "model_calls": [],
    "mailbox": [

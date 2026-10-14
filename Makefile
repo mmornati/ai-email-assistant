@@ -18,7 +18,7 @@ SETUP := scripts/setup-macos.sh
 	preview classify apply review retry-review usage summary \
 	discover rules-preview \
 	schedule-render schedule-install schedule-status schedule-uninstall \
-	share check-python
+	share demo check-python
 
 ##@ Install and configure
 
@@ -78,6 +78,9 @@ schedule-uninstall: check-python ## Remove the schedule; mail is untouched
 	@$(PYTHON) schedule.py uninstall
 
 ##@ Development
+
+demo: check-python ## Run the real engine on an invented mailbox: no account, no model, no changes
+	@$(PYTHON) demo/run_demo.py
 
 test: check-python ## Offline test suite (no mailbox, no model calls)
 	@$(PYTHON) -m unittest discover -q -s tests -t .

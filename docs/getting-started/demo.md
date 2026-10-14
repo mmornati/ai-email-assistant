@@ -1,8 +1,15 @@
 # Try the demo
 
 The demo runs the production engine end to end on an invented mailbox. It needs no
-Google account, no Copilot account and no network access, and it makes no paid
-model calls.
+Google account, no Copilot or Claude account and no network access, and it makes
+no paid model calls.
+
+!!! note "The demo uses the Copilot path"
+    The demo's stand-in classifier imitates the GitHub Copilot CLI, so the demo
+    always runs with `"cli": "copilot"`, whatever your own `classifier.json`
+    selects. A real installation can classify with Claude Code instead; see
+    [Choosing the classifier CLI](../classifier-cli.md). The engine, the
+    validation and everything after the model call are the same for both.
 
 You can also step through a recorded run in the browser:
 [open the online demo console](https://mmornati.github.io/ai-email-assistant/demo/).
@@ -17,7 +24,7 @@ python3 demo/run_demo.py
 
 The engine needs Python 3.10 or newer. macOS ships Python 3.9 as `python3`; if the
 demo stops with `the engine needs Python 3.10+`, run it with a newer interpreter,
-for example the one the [setup script](install.md) installs.
+for example the one `make setup` installs (see [Getting started](../getting-started.md)).
 
 Options:
 
@@ -33,8 +40,9 @@ the end.
 ## What is real and what is fake
 
 The demo copies `triage.py`, `runner.py` and `classifier.json` into a temporary
-workspace, writes the demo `rules.json` there, and puts `demo/fakes/` first on
-`PATH`. Two programs in that folder stand in for the real CLIs:
+workspace, sets `"cli": "copilot"` in that copy, and writes the demo `rules.json`
+there. It copies the two programs in `demo/fakes/` into the workspace's `bin/`
+folder and puts that folder first on `PATH`. They stand in for the real CLIs:
 
 `demo/fakes/gws`
 :   A stand-in for the Google Workspace CLI. It serves the invented mailbox from a

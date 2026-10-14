@@ -2,7 +2,7 @@
 # the root of https://mmornati.github.io/ai-email-assistant/ and this documentation under /docs/. Every screenshot is
 # made by demo/ on an invented mailbox, never on real mail.
 
-site_name: AI E-Mail Assistant
+site_name: AI Mail Assistant
 site_description: "Gmail triage for macOS: deterministic rules first, a model only for the mail rules cannot place, and nothing changes until you approve it."
 site_author: Marco Mornati
 site_url: https://mmornati.github.io/ai-email-assistant/docs/
@@ -13,7 +13,7 @@ edit_uri: edit/main/docs/
 
 copyright: >-
   MIT licence. Every person, company, address and message in these pages is invented (the demo mailbox).
-  Not affiliated with Google or GitHub.
+  Not affiliated with Google, GitHub or Anthropic.
 
 theme:
   name: material
@@ -103,34 +103,33 @@ plugins:
 
 exclude_docs: |
   overrides/
+  /README.md
+  /plans/
 
 nav:
   - Home: index.md
   - Getting started:
-    - getting-started/index.md
+    - getting-started.md
     - Try the demo: getting-started/demo.md
-    - Install on macOS: getting-started/install.md
-    - Your first run: getting-started/first-run.md
-    - Personal rules: getting-started/personal-rules.md
-  - Guide:
-    - guide/index.md
-    - How it works: guide/how-it-works.md
+  - Guides:
+    - How it works: how-it-works.md
+    - Configuration: configuration.md
     - Rules: guide/rules.md
-    - Model routing: guide/model-routing.md
+    - Choosing the classifier CLI: classifier-cli.md
     - Tasks: guide/tasks.md
-    - Schedule: guide/schedule.md
-    - Manual review: guide/review.md
+    - Scheduling: scheduling.md
+    - Interactive review: interactive-review.md
     - Safety: guide/safety.md
-    - Sharing: guide/sharing.md
+    - Costs: costs.md
+    - Sharing a ZIP: sharing.md
   - Reference:
-    - reference/index.md
-    - Commands: reference/cli.md
-    - Configuration: reference/configuration.md
+    - Operations: operations.md
+    - Commands and flags: reference/cli.md
     - State files: reference/state-files.md
     - Exit codes: reference/exit-codes.md
   - Film: video.md
   - FAQ: faq.md
   - What it does not do: limits.md
   - Decisions:
-    - adr/index.md
     - "ADR 0001: Laya versus Luna": adr/0001-laya-vs-luna.md
+    - "ADR 0002: Selectable classifier CLI": adr/0002-selectable-classifier-cli.md
