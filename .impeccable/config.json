@@ -1,0 +1,32 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(.34, 1.56, .64, 1)",
+        "createdAt": "2026-10-14T20:35:51.128Z",
+        "reason": "direction contract: destination-blind snap-step raise (.impeccable/surfaces/website-index-html.md); finish reviewer accepted it"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "website/index.html"
+        ],
+        "createdAt": "2026-10-14T20:35:51.147Z",
+        "reason": "false positive: .sign has clamp(22px,2.4vw,36px) padding and .screen is a full-bleed video frame; finish reviewer confirmed"
+      },
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "website/index.html"
+        ],
+        "createdAt": "2026-10-14T20:35:51.164Z",
+        "reason": "departures-board caption, a short label in the board idiom; finish reviewer accepted it"
+      }
+    ]
+  }
+}

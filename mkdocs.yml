@@ -1,0 +1,135 @@
+# Documentation site (MkDocs Material). Built by scripts/build-site.sh: the landing page and demo console (website/) at
+# the root of https://mmornati.github.io/ai-email-assistant/ and this documentation under /docs/. Every screenshot is
+# made by demo/ on an invented mailbox, never on real mail.
+
+site_name: AI Mail Assistant
+site_description: "Gmail triage for macOS: deterministic rules first, a model only for the mail rules cannot place, and nothing changes until you approve it."
+site_author: Marco Mornati
+site_url: https://mmornati.github.io/ai-email-assistant/docs/
+
+repo_name: mmornati/ai-email-assistant
+repo_url: https://github.com/mmornati/ai-email-assistant
+edit_uri: edit/main/docs/
+
+copyright: >-
+  MIT licence. Every person, company, address and message in these pages is invented (the demo mailbox).
+  Not affiliated with Google, GitHub or Anthropic.
+
+theme:
+  name: material
+  language: en
+  custom_dir: docs/overrides
+  font: false
+  logo: assets/brand/mark.svg
+  favicon: assets/brand/favicon.svg
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+    - content.action.edit
+
+extra:
+  homepage: https://mmornati.github.io/ai-email-assistant/
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mmornati/ai-email-assistant
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      separator: '[\s\-\.]+'
+
+exclude_docs: |
+  overrides/
+  /README.md
+  /plans/
+
+nav:
+  - Home: index.md
+  - Getting started:
+    - getting-started.md
+    - Try the demo: getting-started/demo.md
+  - Guides:
+    - How it works: how-it-works.md
+    - Configuration: configuration.md
+    - Rules: guide/rules.md
+    - Choosing the classifier CLI: classifier-cli.md
+    - Tasks: guide/tasks.md
+    - Scheduling: scheduling.md
+    - Interactive review: interactive-review.md
+    - Safety: guide/safety.md
+    - Costs: costs.md
+    - Sharing a ZIP: sharing.md
+  - Reference:
+    - Operations: operations.md
+    - Commands and flags: reference/cli.md
+    - State files: reference/state-files.md
+    - Exit codes: reference/exit-codes.md
+  - Film: video.md
+  - FAQ: faq.md
+  - What it does not do: limits.md
+  - Decisions:
+    - "ADR 0001: Laya versus Luna": adr/0001-laya-vs-luna.md
+    - "ADR 0002: Selectable classifier CLI": adr/0002-selectable-classifier-cli.md

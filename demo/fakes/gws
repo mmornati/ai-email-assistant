@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""Stand-in for the Google Workspace CLI, serving the demo's invented mailbox from a JSON file.
+
+It answers the exact calls triage.py makes (Gmail messages/threads/labels, Google Tasks lists/tasks),
+with a small Gmail query evaluator. State lives in $DEMO_STATE; nothing leaves the machine.
+"""
+from __future__ import annotations
+
+import base64
+import fcntl
+import json
+import os
+import re
+import sys
+import time
+from pathlib import Path
+
+STATE = Path(os.environ["DEMO_STATE"])
+SYSTEM = ["INBOX", "UNREAD", "STARRED", "IMPORTANT", "TRASH", "SENT"]
+
+
+def tokens(q):
+    out, i = [], 0
+    while i < len(q):
+        c = q[i]
+        if c.isspace():
+            i += 1
+        elif c in "()":
+            out.append(c)
+            i += 1
+        else:
+            j, quoted = i, False
+            while j < len(q) and (quoted or (not q[j].isspace() and q[j] not in "()")):
+                quoted ^= q[j] == '"'
+                j += 1
+            out.append(q[i:j])
+            i = j
+    return out
+
+
+def label_key(name):
+    return name.lower().replace("/", "-").replace(" ", "-")
+
+
+def term(tok, msg, names):
+    neg = tok.startswith("-")
+    tok = tok[1:] if neg else tok
+    key, _, val = tok.partition(":")
+    val = val.strip('"').lower()
+    now, age = time.time() * 1000, None
+    labels = msg["labelIds"]
+    h = {k.lower(): v for k, v in msg["headers"].items()}
+    if not _:
+        hit = tok.strip('"').lower() in (h.get("subject", "") + " " + msg["snippet"]).lower()
+    elif key == "in":
+        hit = val.upper() in labels
+    elif key == "is":
+        hit = val.upper() in labels
+    elif key == "label":
+        hit = any(label_key(names.get(l, l)) == val for l in labels)
+    elif key in ("from", "to", "subject"):
+        hit = val in h.get(key, "").lower()
+    elif key in ("newer_than", "older_than"):
+        age = (now - msg["internalDate"]) / 86400000
+        days = int(val[:-1]) * {"d": 1, "m": 30, "y": 365}[val[-1]]
+        hit = age < days if key == "newer_than" else age > days
+    else:
+        raise SystemExit(f"demo gws: unsupported query term {tok}")
+    return hit != neg
+
+
+def matches(q, msg, names):
+    toks = tokens(q)
+    pos = 0
+
+    def expr():  # OR-separated sequences of AND-ed terms
+        nonlocal pos
+        result = seq()
+        while pos < len(toks) and toks[pos] == "OR":
+            pos += 1
+            result = seq() or result
+        return result
+
+    def seq():
+        nonlocal pos
+        result = True
+        while pos < len(toks) and toks[pos] not in (")", "OR"):
+            if toks[pos] in ("(", "-("):
+                pos += 1
+                value = expr()
+                pos += 1  # ')'
+            else:
+                value = term(toks[pos], msg, names)
+                pos += 1
+            while pos < len(toks) and toks[pos] == "OR":  # binds tighter than the implicit AND
+                pos += 1
+                if toks[pos] == "(":
+                    pos += 1
+                    other = expr()
+                    pos += 1
+                else:
+                    other = term(toks[pos], msg, names)
+                    pos += 1
+                value = value or other
+            result = result and value
+        return result
+
+    return expr()
+
+
+def main():
+    argv = sys.argv[1:]
+    params = json.loads(argv[argv.index("--params") + 1]) if "--params" in argv else {}
+    body = json.loads(argv[argv.index("--json") + 1]) if "--json" in argv else {}
+    path = tuple(a for a in argv if not a.startswith("--") and not a.startswith("{"))
+    with open(STATE.with_suffix(".lock"), "a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        db = json.loads(STATE.read_text())
+        out, changed = handle(path, params, body, db)
+        if changed:
+            db["calls"].append({"ts": time.time(), "call": " ".join(path[1:])})
+            STATE.write_text(json.dumps(db, ensure_ascii=False, indent=1))
+    print(json.dumps(out, ensure_ascii=False))
+
+
+def handle(path, params, body, db):
+    msgs = {m["id"]: m for m in db["messages"]}
+    names = {l["id"]: l["name"] for l in db["labels"]}
+    if path == ("gmail", "users", "labels", "list"):
+        return {"labels": [{"id": l["id"], "name": l["name"]} for l in db["labels"]]}, False
+    if path == ("gmail", "users", "labels", "create"):
+        label = {"id": f"Label_{len(db['labels']) + 1}", "name": body["name"]}
+        db["labels"].append(label)
+        return label, True
+    if path == ("gmail", "users", "messages", "list"):
+        hits = [m for m in db["messages"] if "TRASH" not in m["labelIds"] and matches(params["q"], m, names)]
+        hits.sort(key=lambda m: -m["internalDate"])
+        return {"messages": [{"id": m["id"]} for m in hits[:params.get("maxResults", 500)]]}, False
+    if path == ("gmail", "users", "messages", "get"):
+        m = msgs[params["id"]]
+        fmt = params.get("format")
+        if fmt == "minimal":
+            return {"id": m["id"], "labelIds": m["labelIds"]}, False
+        if fmt == "full":
+            data = base64.urlsafe_b64encode(m.get("body", m["snippet"]).encode()).decode().rstrip("=")
+            return {"payload": {"mimeType": "multipart/alternative", "parts": [
+                {"mimeType": "text/plain", "body": {"data": data}}]}}, False
+        wanted = {h.lower() for h in params.get("metadataHeaders", [])}
+        headers = [{"name": k, "value": v} for k, v in m["headers"].items() if k.lower() in wanted]
+        return {"id": m["id"], "threadId": m["threadId"], "labelIds": m["labelIds"], "snippet": m["snippet"],
+                "internalDate": str(m["internalDate"]), "payload": {"headers": headers}}, False
+    if path == ("gmail", "users", "messages", "batchModify"):
+        for mid in body["ids"]:
+            labels = msgs[mid]["labelIds"]
+            labels[:] = [l for l in labels if l not in body.get("removeLabelIds", [])]
+            labels += [l for l in body.get("addLabelIds", []) if l not in labels]
+        return {}, True
+    if path in (("gmail", "users", "messages", "trash"), ("gmail", "users", "messages", "untrash")):
+        labels = msgs[params["id"]]["labelIds"]
+        if path[-1] == "trash":
+            labels[:] = [l for l in labels if l != "INBOX"] + ["TRASH"]
+        else:
+            labels[:] = [l for l in labels if l != "TRASH"] + ["INBOX"]
+        return {"id": params["id"]}, True
+    if path == ("gmail", "users", "threads", "get"):
+        return {"messages": [{"id": m["id"], "labelIds": m["labelIds"]}
+                             for m in db["messages"] if m["threadId"] == params["id"]]}, False
+    if path == ("tasks", "tasklists", "list"):
+        return {"items": [{"id": t["id"], "title": t["title"]} for t in db["tasklists"]]}, False
+    if path == ("tasks", "tasklists", "insert"):
+        tl = {"id": f"list{len(db['tasklists']) + 1}", "title": body["title"]}
+        db["tasklists"].append(tl)
+        return tl, True
+    if path == ("tasks", "tasks", "list"):
+        return {"items": [t for t in db["tasks"] if t["list"] == params["tasklist"]]}, False
+    if path == ("tasks", "tasks", "insert"):
+        task = {**body, "id": f"task{len(db['tasks']) + 1}", "status": "needsAction", "list": params["tasklist"]}
+        db["tasks"].append(task)
+        return task, True
+    raise SystemExit(f"demo gws: unsupported call {' '.join(path)}")
+
+
+if __name__ == "__main__":
+    main()

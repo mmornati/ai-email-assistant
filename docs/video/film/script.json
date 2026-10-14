@@ -1,0 +1,159 @@
+{
+  "_doc": "Scenes and narration of the AI Mail Assistant film. Numbers in words. Every figure comes from the demo run in docs/assets/demo/run.json (real engine, invented mailbox). Re-narrate after any change.",
+  "langs": [
+    "en",
+    "fr"
+  ],
+  "scenes": [
+    {
+      "id": "morning",
+      "min": 8,
+      "lead": 0.6,
+      "chapter": {
+        "en": "Eight a.m.",
+        "fr": "Huit heures"
+      },
+      "en": [
+        "Eight in the morning.",
+        "Thirty-seven new messages arrived this week.",
+        "Requests, invites, alerts, newsletters, all in one pile."
+      ],
+      "fr": [
+        "Huit heures.",
+        "Trente-sept nouveaux messages sont arrivés cette semaine.",
+        "Des demandes, des invitations, des alertes, des newsletters, tout en vrac."
+      ]
+    },
+    {
+      "id": "rules",
+      "min": 9,
+      "chapter": {
+        "en": "Rules first",
+        "fr": "Les règles d'abord"
+      },
+      "en": [
+        "Most of it is routine.",
+        "Plain rules, your own Gmail searches, route twenty-seven messages.",
+        "No AI is involved, and nothing is sent anywhere."
+      ],
+      "fr": [
+        "L'essentiel, c'est de la routine.",
+        "De simples règles, vos propres recherches Gmail, aiguillent vingt-sept messages.",
+        "Aucune intelligence artificielle n'intervient, et rien n'est envoyé nulle part."
+      ]
+    },
+    {
+      "id": "model",
+      "min": 10,
+      "chapter": {
+        "en": "The model last",
+        "fr": "Le modèle en dernier"
+      },
+      "en": [
+        "Only ten need someone to read them.",
+        "A small, cheap model, through the Copilot CLI or Claude Code, takes them in a single batch.",
+        "The three it is unsure about go to a stronger model, with a short slice of the message."
+      ],
+      "fr": [
+        "Seuls dix messages demandent vraiment à être lus.",
+        "Un petit modèle peu coûteux, via Copilot ou Claude Code, les traite en un seul lot.",
+        "Les trois qui le font hésiter passent à un modèle plus puissant, avec un court extrait du message."
+      ]
+    },
+    {
+      "id": "validate",
+      "min": 7,
+      "chapter": {
+        "en": "Checked by code",
+        "fr": "Vérifié par le code"
+      },
+      "en": [
+        "Then plain code checks every answer.",
+        "The right messages, known labels, real dates.",
+        "Anything else is refused before it touches your inbox."
+      ],
+      "fr": [
+        "Ensuite, du code ordinaire vérifie chaque réponse.",
+        "Les bons messages, des étiquettes connues, des dates valides.",
+        "Tout le reste est refusé avant de toucher votre boîte."
+      ]
+    },
+    {
+      "id": "result",
+      "min": 11,
+      "chapter": {
+        "en": "Your inbox at nine",
+        "fr": "Votre boîte à neuf heures"
+      },
+      "en": [
+        "Every message gets a label.",
+        "Four requests become Google Tasks, with their deadlines.",
+        "Eleven finished messages are archived.",
+        "And one, are you around on Friday, stays in your inbox, because no model was sure."
+      ],
+      "fr": [
+        "Chaque message reçoit un libellé.",
+        "Quatre demandes deviennent des tâches Google, avec leur échéance.",
+        "Onze messages traités sont archivés.",
+        "Et un seul, tu es là vendredi, reste dans votre boîte, parce qu'aucun modèle n'était sûr."
+      ]
+    },
+    {
+      "id": "quiet",
+      "min": 7,
+      "chapter": {
+        "en": "Quiet hours",
+        "fr": "Les heures calmes"
+      },
+      "en": [
+        "At nine, the schedule runs again.",
+        "Nothing new to read, so no model is called.",
+        "Most hours cost nothing at all."
+      ],
+      "fr": [
+        "À neuf heures, le planning repasse.",
+        "Rien de nouveau à lire, donc aucun modèle n'est appelé.",
+        "La plupart des heures ne coûtent rien."
+      ]
+    },
+    {
+      "id": "safety",
+      "min": 8,
+      "chapter": {
+        "en": "Your say-so",
+        "fr": "Votre accord"
+      },
+      "en": [
+        "Nothing moves without your say-so.",
+        "Every change is a dry run first, written to a plan you can read.",
+        "Applied changes are journalled, and you can undo them."
+      ],
+      "fr": [
+        "Rien ne bouge sans votre accord.",
+        "Chaque changement est d'abord une simulation, écrite dans un plan lisible.",
+        "Les changements appliqués sont journalisés, et vous pouvez les annuler."
+      ]
+    },
+    {
+      "id": "end",
+      "min": 9,
+      "tail": 1.6,
+      "chapter": {
+        "en": "Every message, routed",
+        "fr": "Chaque message trouve sa voie"
+      },
+      "en": [
+        "AI Mail Assistant.",
+        "Open source, for your Mac and Gmail.",
+        "One command sets it up: make setup.",
+        "Every message, routed."
+      ],
+      "fr": [
+        "AI Mail Assistant.",
+        "Open source, pour votre Mac et Gmail.",
+        "Une seule commande pour l'installer : make setup.",
+        "Chaque message trouve sa voie."
+      ]
+    }
+  ]
+}

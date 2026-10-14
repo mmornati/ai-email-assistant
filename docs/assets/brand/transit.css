@@ -1,0 +1,109 @@
+/* Transit line map: the shared visual system of the landing page, the demo console and the docs skin.
+   Enamel ground, signage black, one line colour per tag. Signal red belongs to mail that needs a person. */
+
+@font-face { font-family: "Barlow Semi Condensed"; font-weight: 600; font-display: swap;
+  src: url("../fonts/barlow-semi-condensed-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Semi Condensed"; font-weight: 700; font-display: swap;
+  src: url("../fonts/barlow-semi-condensed-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Semi Condensed"; font-weight: 800; font-display: swap;
+  src: url("../fonts/barlow-semi-condensed-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap;
+  src: url("../fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-style: italic; font-display: swap;
+  src: url("../fonts/atkinson-hyperlegible-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap;
+  src: url("../fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap;
+  src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 600; font-display: swap;
+  src: url("../fonts/jetbrains-mono-latin-600-normal.woff2") format("woff2"); }
+
+:root {
+  --sign-face: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
+  --read-face: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono-face: "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  --enamel: #f4f2ec;
+  --enamel-2: #e9e6dc;
+  --enamel-3: #dcd8cb;
+  --ink: #121417;
+  --ink-2: #474b51;
+  --ink-3: #6b6f75;
+  --rule: #cfcabc;
+  --panel: #121417;
+  --panel-2: #1f2328;
+  --panel-ink: #f4f2ec;
+  --panel-ink-2: #b9bcc0;
+  --signal: #e4002b;
+  --signal-ink: #ffffff;
+  --focus: #0072ce;
+
+  /* one line per tag */
+  --l-action: #e4002b;
+  --l-alerts: #ff6a13;
+  --l-github-admin: #5b6770;
+  --l-meeting-invite: #0072ce;
+  --l-meeting-notes: #41b6e6;
+  --l-shares: #009b8d;
+  --l-admin: #8c5a2b;
+  --l-internal-comms: #7a3e9d;
+  --l-newsletter: #ffb500;
+  --l-promo: #e8559a;
+  --l-fyi: #00a650;
+  --l-backlog: #a3a39c;
+  --l-trunk: #121417;
+  --l-hollow: #f4f2ec;
+
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --step: cubic-bezier(.34, 1.56, .64, 1); /* destination-blind step: overshoot, settle */
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --enamel: #101214; --enamel-2: #171a1d; --enamel-3: #22262a;
+    --ink: #eceae4; --ink-2: #b8bbbf; --ink-3: #8d9196; --rule: #2c3035;
+    --panel: #f4f2ec; --panel-2: #e3e0d6; --panel-ink: #121417; --panel-ink-2: #474b51;
+    --l-trunk: #eceae4; --l-hollow: #101214; --l-github-admin: #8a98a3; --l-admin: #b07a45;
+    --l-internal-comms: #a46bc6; --focus: #41b6e6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --enamel: #101214; --enamel-2: #171a1d; --enamel-3: #22262a;
+  --ink: #eceae4; --ink-2: #b8bbbf; --ink-3: #8d9196; --rule: #2c3035;
+  --panel: #f4f2ec; --panel-2: #e3e0d6; --panel-ink: #121417; --panel-ink-2: #474b51;
+  --l-trunk: #eceae4; --l-hollow: #101214; --l-github-admin: #8a98a3; --l-admin: #b07a45;
+  --l-internal-comms: #a46bc6; --focus: #41b6e6;
+  color-scheme: dark;
+}
+
+/* ---------------------------------------------------------------- line bullets (tag chips) */
+.bullet {
+  display: inline-flex; align-items: center; gap: .35em;
+  font: 700 .78rem/1 var(--sign-face); letter-spacing: .02em;
+  padding: .32em .6em .3em; border-radius: 999px;
+  background: var(--c, var(--ink)); color: #fff; white-space: nowrap;
+}
+.bullet[data-dark] { color: #121417; }
+.bullet--blind { animation: blind .42s var(--step) both; }
+@keyframes blind {
+  0% { transform: translateY(-110%); clip-path: inset(100% 0 0 0); }
+  100% { transform: none; clip-path: inset(0 0 0 0); }
+}
+@media (prefers-reduced-motion: reduce) { .bullet--blind { animation: none; } }
+
+/* ---------------------------------------------------------------- the line map */
+.linemap { display: block; width: 100%; height: auto; overflow: visible; }
+.linemap .ln { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.linemap .st { fill: var(--enamel); stroke: var(--l-trunk); }
+.linemap .lbl { font: 700 17px var(--sign-face); fill: var(--ink); letter-spacing: .01em; }
+.linemap .lbl-s { font: 600 13px var(--sign-face); fill: var(--ink-2); letter-spacing: .04em; text-transform: uppercase; }
+.linemap .lbl-xs { font-size: 11px; letter-spacing: .06em; }
+.linemap .num { font: 600 15px var(--mono-face); fill: var(--ink); font-variant-numeric: tabular-nums; }
+.linemap .num-dim { fill: var(--ink-3); }
+.linemap .spur-off { opacity: .22; transition: opacity .6s var(--ease-out); }
+.linemap .dot { fill: var(--enamel); stroke: var(--l-trunk); stroke-width: 2.5; }
+.linemap .dot.is-signal { fill: var(--signal); stroke: var(--signal); }
+
+::selection { background: var(--l-newsletter); color: #121417; }

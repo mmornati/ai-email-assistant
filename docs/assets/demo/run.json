@@ -1,0 +1,3015 @@
+{
+ "generated": "2026-10-14",
+ "weekday": "Wednesday",
+ "synthetic": "Every person, company, address and message in this run is invented.",
+ "owner": "Sam Rivera <sam@harbor.example>",
+ "rules": [
+  {
+   "name": "Action",
+   "match": [],
+   "on_tag": [],
+   "sweep": [],
+   "task": "always"
+  },
+  {
+   "name": "Alerts",
+   "match": [
+    "from:status@monitor.example"
+   ],
+   "on_tag": [],
+   "sweep": [
+    {
+     "when": "subject:RESOLVED",
+     "do": [
+      "archive",
+      "mark_read"
+     ]
+    }
+   ],
+   "task": "optional"
+  },
+  {
+   "name": "GitHub-Admin",
+   "match": [
+    "from:notifications@code.example"
+   ],
+   "on_tag": [],
+   "sweep": [
+    {
+     "when": "older_than:1d",
+     "do": [
+      "archive",
+      "mark_read"
+     ]
+    }
+   ],
+   "task": "optional"
+  },
+  {
+   "name": "Meeting/Invite",
+   "match": [
+    "from:calendar@harbor.example"
+   ],
+   "on_tag": [],
+   "sweep": [],
+   "task": "never"
+  },
+  {
+   "name": "Meeting/Notes",
+   "match": [
+    "from:notes-bot@meet.example"
+   ],
+   "on_tag": [],
+   "sweep": [],
+   "task": "optional"
+  },
+  {
+   "name": "Shares",
+   "match": [
+    "from:drive-shares@docs.example"
+   ],
+   "on_tag": [],
+   "sweep": [],
+   "task": "optional"
+  },
+  {
+   "name": "Admin",
+   "match": [
+    "from:receipts@travel.example OR from:billing@cloud.example OR from:payroll@harbor.example"
+   ],
+   "on_tag": [],
+   "sweep": [],
+   "task": "optional"
+  },
+  {
+   "name": "Internal-Comms",
+   "match": [
+    "from:all-hands@harbor.example"
+   ],
+   "on_tag": [],
+   "sweep": [],
+   "task": "optional"
+  },
+  {
+   "name": "Newsletter",
+   "match": [
+    "from:hello@weeklybyte.example OR from:digest@productnotes.example OR from:hello@designsystems.example"
+   ],
+   "on_tag": [],
+   "sweep": [
+    {
+     "when": "older_than:1d",
+     "do": [
+      "archive",
+      "mark_read"
+     ]
+    }
+   ],
+   "task": "never"
+  },
+  {
+   "name": "Promo",
+   "match": [
+    "from:shop@deals.example"
+   ],
+   "on_tag": [
+    "archive",
+    "mark_read"
+   ],
+   "sweep": [],
+   "task": "never"
+  },
+  {
+   "name": "FYI",
+   "match": [],
+   "on_tag": [],
+   "sweep": [],
+   "task": "optional"
+  },
+  {
+   "name": "Backlog",
+   "match": [],
+   "on_tag": [],
+   "sweep": [],
+   "task": "never"
+  }
+ ],
+ "classifier": {
+  "cli": "copilot",
+  "cheap_model": "gpt-6-luna",
+  "escalation_model": "gpt-6.1-sol",
+  "batch_size": 25,
+  "confidence_threshold": 0.85,
+  "escalation_threshold": 0.9
+ },
+ "routes": {
+  "91f25fe8324d47c9": "rule",
+  "1d7c350f170a9aa0": "model",
+  "416e611915518d53": "rule",
+  "47e15d520314dee3": "rule",
+  "ac224ec4661cb46d": "rule",
+  "33c2f3be0b47522d": "rule",
+  "bc560a5eacc6a061": "model",
+  "dba4578e1a79e9a2": "rule",
+  "6b01c344dbe5827b": "escalated",
+  "8634e75f07c0a502": "rule",
+  "c4b8874158675113": "model",
+  "bb10624e4f880ff3": "rule",
+  "85961c6be2cfc730": "escalated",
+  "e7ddddbd4a08418b": "rule",
+  "9c10e84ca14bf15c": "model",
+  "bac127345da9a3bd": "rule",
+  "4151b79f04eb2692": "rule",
+  "6e2a988ab3aa13bf": "rule",
+  "cb5fa66d9cf90156": "rule",
+  "0a5d8bcc49c89b9d": "waiting",
+  "a386c9fec4060707": "model",
+  "1025b441f75f2834": "rule",
+  "ca170affe3f339a3": "rule",
+  "97ec9a80ba62246a": "rule",
+  "884fe18c7d0a37a5": "model",
+  "8d563ee703c8ea91": "rule",
+  "b63ae61e278c3607": "rule",
+  "efced93df185a88a": "rule",
+  "1c36aaa909769d7d": "rule",
+  "c4d9936661620613": "rule",
+  "6ded1a3096bf8995": "model",
+  "dc51504721124237": "rule",
+  "562f2de0187ca23c": "rule",
+  "aa9c738267b590b7": "rule",
+  "288ab95c90a08d0c": "rule",
+  "c700980362a1c3a9": "rule",
+  "c6362882ebd97f07": "rule",
+  "44fed3ab58d22852": "outside"
+ },
+ "steps": [
+  {
+   "name": "arrive",
+   "title": "The inbox before the first run",
+   "transcript": [],
+   "summary": null,
+   "model_calls": [],
+   "mailbox": [
+    {
+     "id": "91f25fe8324d47c9",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Pricing review @ Wed 10:00",
+     "snippet": "Priya Nair has invited you to Pricing review.",
+     "hours": 1.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "1d7c350f170a9aa0",
+     "from": "Priya Nair",
+     "address": "priya@harbor.example",
+     "subject": "Q4 hiring plan: need your sign-off by Thursday",
+     "snippet": "Hi Sam, the Q4 plan is final on our side. Can you approve the two senior roles before Thursday so recruiting can open them on Friday?",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "416e611915518d53",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Review requested: Rate-limit the export endpoint (#482)",
+     "snippet": "Léa requested your review on this pull request.",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "47e15d520314dee3",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[RESOLVED] api p95 latency above 800 ms",
+     "snippet": "Alert resolved after 41 minutes.",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "ac224ec4661cb46d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Updated invitation: 1:1 Sam / Léa @ Thu 15:00",
+     "snippet": "This event has been updated.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "33c2f3be0b47522d",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[FIRING] api p95 latency above 800 ms",
+     "snippet": "Alert started 09:12. Region eu-west.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "bc560a5eacc6a061",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Webinar: shipping AI features safely (Oct 28)",
+     "snippet": "Join our panel on guardrails, evaluation and rollout. Free, 45 minutes.",
+     "hours": 4.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "dba4578e1a79e9a2",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "48h only: 30% off everything",
+     "snippet": "Our biggest sale of the season.",
+     "hours": 4.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "6b01c344dbe5827b",
+     "from": "Jonas Weber",
+     "address": "jonas.weber@client.example",
+     "subject": "Re: renewal",
+     "snippet": "Thanks for the call. Attached is the version legal is happy with, see my note on clause 7.",
+     "hours": 5.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "8634e75f07c0a502",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] CI failed on main",
+     "snippet": "The workflow run failed for commit 3fe1c09.",
+     "hours": 6.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c4b8874158675113",
+     "from": "Léa Dubois",
+     "address": "lea@harbor.example",
+     "subject": "Onboarding deck for Monday",
+     "snippet": "Could you review the onboarding deck before Monday's call? Mostly slides 4 to 9, the pricing part.",
+     "hours": 7.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "bb10624e4f880ff3",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Priya Nair shared \"Q4 Plan\" with you",
+     "snippet": "Priya Nair has invited you to edit.",
+     "hours": 8.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "85961c6be2cfc730",
+     "from": "Tom Okafor",
+     "address": "tom@partner.example",
+     "subject": "quick one",
+     "snippet": "Hey Sam, saw the new tiers on the site. One thing I could not work out from the page",
+     "hours": 9.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "e7ddddbd4a08418b",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "This week at Harbor: offsite dates, new parental leave policy",
+     "snippet": "Three things to know.",
+     "hours": 10.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "9c10e84ca14bf15c",
+     "from": "Marta Silva",
+     "address": "marta@harbor.example",
+     "subject": "Notes from the vendor call",
+     "snippet": "Sharing my notes from today's call with the logistics vendor: pricing holds, SLA moves to 99.9, next check-in in two weeks.",
+     "hours": 11.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "bac127345da9a3bd",
+     "from": "Travel desk",
+     "address": "receipts@travel.example",
+     "subject": "Your receipt: train to Lyon",
+     "snippet": "Booking HX42 confirmed. Total paid on the company card.",
+     "hours": 12.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "4151b79f04eb2692",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #212: smaller models, bigger wins",
+     "snippet": "This week: distillation in practice.",
+     "hours": 13.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "6e2a988ab3aa13bf",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Accepted: Launch retro @ Fri 11:00",
+     "snippet": "Daniel Kim has accepted this invitation.",
+     "hours": 14.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "cb5fa66d9cf90156",
+     "from": "Meeting Notes",
+     "address": "notes-bot@meet.example",
+     "subject": "Summary: Weekly product sync",
+     "snippet": "Decisions: ship the pricing page Tuesday.",
+     "hours": 15.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "0a5d8bcc49c89b9d",
+     "from": "Ana Costa",
+     "address": "ana@harbor.example",
+     "subject": "Friday?",
+     "snippet": "Are you around on Friday?",
+     "hours": 20.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "a386c9fec4060707",
+     "from": "Daniel Kim",
+     "address": "daniel@harbor.example",
+     "subject": "Moved the launch retro to the 3rd floor",
+     "snippet": "Small change: the launch retro is now in Room 3B, same time. No action needed.",
+     "hours": 26.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "1025b441f75f2834",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Léa Dubois commented on \"Onboarding deck\"",
+     "snippet": "\"Can we simplify slide 6?\"",
+     "hours": 27.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "ca170affe3f339a3",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "Your cart misses you",
+     "snippet": "Complete your order today.",
+     "hours": 28.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "97ec9a80ba62246a",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/web] Merged: New pricing page (#311)",
+     "snippet": "Pull request merged by Daniel Kim.",
+     "hours": 29.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "884fe18c7d0a37a5",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Last seats: the platform engineering roundtable",
+     "snippet": "A few seats are left for Thursday's roundtable.",
+     "hours": 30.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "8d563ee703c8ea91",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Dependabot: bump urllib3",
+     "snippet": "Bumps urllib3 to the latest patch.",
+     "hours": 33.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "b63ae61e278c3607",
+     "from": "Cloud Billing",
+     "address": "billing@cloud.example",
+     "subject": "Invoice for September is available",
+     "snippet": "Your invoice is ready to download.",
+     "hours": 36.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "efced93df185a88a",
+     "from": "Product Notes",
+     "address": "digest@productnotes.example",
+     "subject": "Product Notes: onboarding teardown",
+     "snippet": "We looked at twenty onboarding flows.",
+     "hours": 37.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "1c36aaa909769d7d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Quarterly planning @ Mon 09:30",
+     "snippet": "Marta Silva has invited you.",
+     "hours": 40.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c4d9936661620613",
+     "from": "Payroll",
+     "address": "payroll@harbor.example",
+     "subject": "Your October payslip is available",
+     "snippet": "Log in to the HR portal to view it.",
+     "hours": 48.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "6ded1a3096bf8995",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Your weekly events digest",
+     "snippet": "Five events picked for you this week.",
+     "hours": 50.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "dc51504721124237",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "New arrivals picked for you",
+     "snippet": "Fresh styles just landed.",
+     "hours": 52.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "562f2de0187ca23c",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/infra] Issue closed: flaky deploy step",
+     "snippet": "Closed as completed.",
+     "hours": 55.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "aa9c738267b590b7",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "Office closed on the 1st",
+     "snippet": "The office will be closed for the public holiday.",
+     "hours": 58.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "288ab95c90a08d0c",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "Certificate for status.harbor.example expires in 14 days",
+     "snippet": "Renew before the 31st.",
+     "hours": 60.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c700980362a1c3a9",
+     "from": "Design Systems Weekly",
+     "address": "hello@designsystems.example",
+     "subject": "Tokens, themes and dark mode",
+     "snippet": "A field guide to theming at scale.",
+     "hours": 61.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c6362882ebd97f07",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #211: the evaluation issue",
+     "snippet": "The issue everyone forwarded.",
+     "hours": 84.0,
+     "inbox": true,
+     "unread": true,
+     "starred": true,
+     "tags": []
+    },
+    {
+     "id": "44fed3ab58d22852",
+     "from": "Old Thread",
+     "address": "someone@elsewhere.example",
+     "subject": "Lunch next month?",
+     "snippet": "Old mail stays where it is.",
+     "hours": 288.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    }
+   ],
+   "tasks": []
+  },
+  {
+   "name": "preview",
+   "title": "Dry run: rules plan, the model classifies what rules cannot",
+   "transcript": [
+    {
+     "command": "python3 triage.py run",
+     "exit": 0,
+     "output": "[sync] list 'My Tasks'\n[tag] window: newer_than:7d\n  DRY       3 msgs  tag AI/Alerts  +['<new:AI/Alerts>'] -[]\n  DRY       5 msgs  tag AI/GitHub-Admin  +['<new:AI/GitHub-Admin>'] -[]\n  DRY       4 msgs  tag AI/Meeting/Invite  +['<new:AI/Meeting/Invite>'] -[]\n  DRY       1 msgs  tag AI/Meeting/Notes  +['<new:AI/Meeting/Notes>'] -[]\n  DRY       2 msgs  tag AI/Shares  +['<new:AI/Shares>'] -[]\n  DRY       3 msgs  tag AI/Admin  +['<new:AI/Admin>'] -[]\n  DRY       2 msgs  tag AI/Internal-Comms  +['<new:AI/Internal-Comms>'] -[]\n  DRY       4 msgs  tag AI/Newsletter  +['<new:AI/Newsletter>'] -[]\n  DRY       3 msgs  tag AI/Promo  +['<new:AI/Promo>'] -['INBOX', 'UNREAD']\n[sweep]\n  DRY       1 msgs  sweep AI/Alerts [subject:RESOLVED]  +[] -['INBOX', 'UNREAD']\n  DRY       3 msgs  sweep AI/GitHub-Admin [older_than:1d]  +[] -['INBOX', 'UNREAD']\n  DRY       2 msgs  sweep AI/Newsletter [older_than:1d]  +[] -['INBOX', 'UNREAD']\n[pending] 10 untagged messages -> state/pending.json\n[report] 37 messages -> state/dry-run.csv\n[plan] 12 operations -> state/plan.json  (apply with: triage.py apply-plan --apply)\n(dry run — re-run with --apply to modify Gmail)"
+    },
+    {
+     "command": "python3 runner.py",
+     "exit": 2,
+     "output": "[runner] dry-run needs_review: 9 classified, 11 archived, 1 unresolved; summary: ~/ai-email-assistant/state/summary.json"
+    }
+   ],
+   "summary": {
+    "started": 1792008584.538099,
+    "apply": false,
+    "status": "needs_review",
+    "pending": 10,
+    "classified": 9,
+    "cached": 0,
+    "unresolved_ids": [
+     "0a5d8bcc49c89b9d"
+    ],
+    "tags": {
+     "Alerts": 3,
+     "GitHub-Admin": 5,
+     "Meeting/Invite": 4,
+     "Meeting/Notes": 2,
+     "Shares": 2,
+     "Admin": 3,
+     "Internal-Comms": 2,
+     "Newsletter": 7,
+     "Promo": 3,
+     "Action": 4,
+     "?": 1,
+     "FYI": 1
+    },
+    "actions": {
+     "archive+mark_read": 11
+    },
+    "archived": 11,
+    "tasks_created": 4,
+    "tasks": [
+     {
+      "title": "Approve the Q4 hiring plan (two senior roles)",
+      "due": "2026-10-16",
+      "thread": "1d7c350f170a9aa0",
+      "link": "https://mail.google.com/mail/u/0/#all/1d7c350f170a9aa0"
+     },
+     {
+      "title": "Confirm the revised renewal terms to Jonas (clause 7)",
+      "due": "2026-10-20",
+      "thread": "6b01c344dbe5827b",
+      "link": "https://mail.google.com/mail/u/0/#all/6b01c344dbe5827b"
+     },
+     {
+      "title": "Review the onboarding deck (slides 4-9) before Monday",
+      "due": "2026-10-19",
+      "thread": "c4b8874158675113",
+      "link": "https://mail.google.com/mail/u/0/#all/c4b8874158675113"
+     },
+     {
+      "title": "Tell Tom whether the Team plan includes API access",
+      "due": "2026-10-16",
+      "thread": "85961c6be2cfc730",
+      "link": "https://mail.google.com/mail/u/0/#all/85961c6be2cfc730"
+     }
+    ],
+    "rule_candidates": [
+     {
+      "sender": "events@summit.example",
+      "count": 3,
+      "query": "from:events@summit.example",
+      "classified_tags": [
+       "Newsletter"
+      ],
+      "requires_approval": true
+     }
+    ],
+    "finished": 1792008585.544108
+   },
+   "model_calls": [
+    {
+     "model": "gpt-6-luna",
+     "messages": 10,
+     "prompt_chars": 5734
+    },
+    {
+     "model": "gpt-6.1-sol",
+     "messages": 3,
+     "prompt_chars": 3868
+    }
+   ],
+   "mailbox": [
+    {
+     "id": "91f25fe8324d47c9",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Pricing review @ Wed 10:00",
+     "snippet": "Priya Nair has invited you to Pricing review.",
+     "hours": 1.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "1d7c350f170a9aa0",
+     "from": "Priya Nair",
+     "address": "priya@harbor.example",
+     "subject": "Q4 hiring plan: need your sign-off by Thursday",
+     "snippet": "Hi Sam, the Q4 plan is final on our side. Can you approve the two senior roles before Thursday so recruiting can open them on Friday?",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "416e611915518d53",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Review requested: Rate-limit the export endpoint (#482)",
+     "snippet": "Léa requested your review on this pull request.",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "47e15d520314dee3",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[RESOLVED] api p95 latency above 800 ms",
+     "snippet": "Alert resolved after 41 minutes.",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "ac224ec4661cb46d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Updated invitation: 1:1 Sam / Léa @ Thu 15:00",
+     "snippet": "This event has been updated.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "33c2f3be0b47522d",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[FIRING] api p95 latency above 800 ms",
+     "snippet": "Alert started 09:12. Region eu-west.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "bc560a5eacc6a061",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Webinar: shipping AI features safely (Oct 28)",
+     "snippet": "Join our panel on guardrails, evaluation and rollout. Free, 45 minutes.",
+     "hours": 4.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "dba4578e1a79e9a2",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "48h only: 30% off everything",
+     "snippet": "Our biggest sale of the season.",
+     "hours": 4.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "6b01c344dbe5827b",
+     "from": "Jonas Weber",
+     "address": "jonas.weber@client.example",
+     "subject": "Re: renewal",
+     "snippet": "Thanks for the call. Attached is the version legal is happy with, see my note on clause 7.",
+     "hours": 5.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "8634e75f07c0a502",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] CI failed on main",
+     "snippet": "The workflow run failed for commit 3fe1c09.",
+     "hours": 6.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c4b8874158675113",
+     "from": "Léa Dubois",
+     "address": "lea@harbor.example",
+     "subject": "Onboarding deck for Monday",
+     "snippet": "Could you review the onboarding deck before Monday's call? Mostly slides 4 to 9, the pricing part.",
+     "hours": 7.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "bb10624e4f880ff3",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Priya Nair shared \"Q4 Plan\" with you",
+     "snippet": "Priya Nair has invited you to edit.",
+     "hours": 8.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "85961c6be2cfc730",
+     "from": "Tom Okafor",
+     "address": "tom@partner.example",
+     "subject": "quick one",
+     "snippet": "Hey Sam, saw the new tiers on the site. One thing I could not work out from the page",
+     "hours": 9.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "e7ddddbd4a08418b",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "This week at Harbor: offsite dates, new parental leave policy",
+     "snippet": "Three things to know.",
+     "hours": 10.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "9c10e84ca14bf15c",
+     "from": "Marta Silva",
+     "address": "marta@harbor.example",
+     "subject": "Notes from the vendor call",
+     "snippet": "Sharing my notes from today's call with the logistics vendor: pricing holds, SLA moves to 99.9, next check-in in two weeks.",
+     "hours": 11.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "bac127345da9a3bd",
+     "from": "Travel desk",
+     "address": "receipts@travel.example",
+     "subject": "Your receipt: train to Lyon",
+     "snippet": "Booking HX42 confirmed. Total paid on the company card.",
+     "hours": 12.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "4151b79f04eb2692",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #212: smaller models, bigger wins",
+     "snippet": "This week: distillation in practice.",
+     "hours": 13.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "6e2a988ab3aa13bf",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Accepted: Launch retro @ Fri 11:00",
+     "snippet": "Daniel Kim has accepted this invitation.",
+     "hours": 14.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "cb5fa66d9cf90156",
+     "from": "Meeting Notes",
+     "address": "notes-bot@meet.example",
+     "subject": "Summary: Weekly product sync",
+     "snippet": "Decisions: ship the pricing page Tuesday.",
+     "hours": 15.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "0a5d8bcc49c89b9d",
+     "from": "Ana Costa",
+     "address": "ana@harbor.example",
+     "subject": "Friday?",
+     "snippet": "Are you around on Friday?",
+     "hours": 20.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "a386c9fec4060707",
+     "from": "Daniel Kim",
+     "address": "daniel@harbor.example",
+     "subject": "Moved the launch retro to the 3rd floor",
+     "snippet": "Small change: the launch retro is now in Room 3B, same time. No action needed.",
+     "hours": 26.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "1025b441f75f2834",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Léa Dubois commented on \"Onboarding deck\"",
+     "snippet": "\"Can we simplify slide 6?\"",
+     "hours": 27.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "ca170affe3f339a3",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "Your cart misses you",
+     "snippet": "Complete your order today.",
+     "hours": 28.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "97ec9a80ba62246a",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/web] Merged: New pricing page (#311)",
+     "snippet": "Pull request merged by Daniel Kim.",
+     "hours": 29.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "884fe18c7d0a37a5",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Last seats: the platform engineering roundtable",
+     "snippet": "A few seats are left for Thursday's roundtable.",
+     "hours": 30.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "8d563ee703c8ea91",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Dependabot: bump urllib3",
+     "snippet": "Bumps urllib3 to the latest patch.",
+     "hours": 33.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "b63ae61e278c3607",
+     "from": "Cloud Billing",
+     "address": "billing@cloud.example",
+     "subject": "Invoice for September is available",
+     "snippet": "Your invoice is ready to download.",
+     "hours": 36.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "efced93df185a88a",
+     "from": "Product Notes",
+     "address": "digest@productnotes.example",
+     "subject": "Product Notes: onboarding teardown",
+     "snippet": "We looked at twenty onboarding flows.",
+     "hours": 37.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "1c36aaa909769d7d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Quarterly planning @ Mon 09:30",
+     "snippet": "Marta Silva has invited you.",
+     "hours": 40.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c4d9936661620613",
+     "from": "Payroll",
+     "address": "payroll@harbor.example",
+     "subject": "Your October payslip is available",
+     "snippet": "Log in to the HR portal to view it.",
+     "hours": 48.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "6ded1a3096bf8995",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Your weekly events digest",
+     "snippet": "Five events picked for you this week.",
+     "hours": 50.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "dc51504721124237",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "New arrivals picked for you",
+     "snippet": "Fresh styles just landed.",
+     "hours": 52.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "562f2de0187ca23c",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/infra] Issue closed: flaky deploy step",
+     "snippet": "Closed as completed.",
+     "hours": 55.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "aa9c738267b590b7",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "Office closed on the 1st",
+     "snippet": "The office will be closed for the public holiday.",
+     "hours": 58.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "288ab95c90a08d0c",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "Certificate for status.harbor.example expires in 14 days",
+     "snippet": "Renew before the 31st.",
+     "hours": 60.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c700980362a1c3a9",
+     "from": "Design Systems Weekly",
+     "address": "hello@designsystems.example",
+     "subject": "Tokens, themes and dark mode",
+     "snippet": "A field guide to theming at scale.",
+     "hours": 61.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "c6362882ebd97f07",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #211: the evaluation issue",
+     "snippet": "The issue everyone forwarded.",
+     "hours": 84.0,
+     "inbox": true,
+     "unread": true,
+     "starred": true,
+     "tags": []
+    },
+    {
+     "id": "44fed3ab58d22852",
+     "from": "Old Thread",
+     "address": "someone@elsewhere.example",
+     "subject": "Lunch next month?",
+     "snippet": "Old mail stays where it is.",
+     "hours": 288.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    }
+   ],
+   "tasks": []
+  },
+  {
+   "name": "apply",
+   "title": "Applied run: cached decisions reused, labels and tasks written",
+   "transcript": [
+    {
+     "command": "python3 runner.py --apply",
+     "exit": 2,
+     "output": "[runner] apply needs_review: 9 classified, 11 archived, 1 unresolved; summary: ~/ai-email-assistant/state/summary.json"
+    },
+    {
+     "command": "python3 runner.py --usage-report",
+     "exit": 0,
+     "output": "{\n  \"copilot/gpt-6-luna\": {\n    \"calls\": 1,\n    \"errors\": 0,\n    \"missing_usage\": 0,\n    \"tokens\": {\n      \"input\": 1433,\n      \"output\": 317\n    }\n  },\n  \"copilot/gpt-6.1-sol\": {\n    \"calls\": 1,\n    \"errors\": 0,\n    \"missing_usage\": 0,\n    \"tokens\": {\n      \"input\": 967,\n      \"output\": 151\n    }\n  }\n}"
+    }
+   ],
+   "summary": {
+    "started": 1792008585.596771,
+    "apply": true,
+    "status": "needs_review",
+    "pending": 10,
+    "classified": 9,
+    "cached": 9,
+    "unresolved_ids": [
+     "0a5d8bcc49c89b9d"
+    ],
+    "tags": {
+     "Alerts": 3,
+     "GitHub-Admin": 5,
+     "Meeting/Invite": 4,
+     "Meeting/Notes": 2,
+     "Shares": 2,
+     "Admin": 3,
+     "Internal-Comms": 2,
+     "Newsletter": 7,
+     "Promo": 3,
+     "Action": 4,
+     "?": 1,
+     "FYI": 1
+    },
+    "actions": {
+     "archive+mark_read": 11
+    },
+    "archived": 11,
+    "tasks_created": 4,
+    "tasks": [
+     {
+      "title": "Approve the Q4 hiring plan (two senior roles)",
+      "due": "2026-10-16",
+      "thread": "1d7c350f170a9aa0",
+      "link": "https://mail.google.com/mail/u/0/#all/1d7c350f170a9aa0"
+     },
+     {
+      "title": "Confirm the revised renewal terms to Jonas (clause 7)",
+      "due": "2026-10-20",
+      "thread": "6b01c344dbe5827b",
+      "link": "https://mail.google.com/mail/u/0/#all/6b01c344dbe5827b"
+     },
+     {
+      "title": "Review the onboarding deck (slides 4-9) before Monday",
+      "due": "2026-10-19",
+      "thread": "c4b8874158675113",
+      "link": "https://mail.google.com/mail/u/0/#all/c4b8874158675113"
+     },
+     {
+      "title": "Tell Tom whether the Team plan includes API access",
+      "due": "2026-10-16",
+      "thread": "85961c6be2cfc730",
+      "link": "https://mail.google.com/mail/u/0/#all/85961c6be2cfc730"
+     }
+    ],
+    "rule_candidates": [
+     {
+      "sender": "events@summit.example",
+      "count": 3,
+      "query": "from:events@summit.example",
+      "classified_tags": [
+       "Newsletter"
+      ],
+      "requires_approval": true
+     }
+    ],
+    "finished": 1792008587.25761
+   },
+   "model_calls": [],
+   "mailbox": [
+    {
+     "id": "91f25fe8324d47c9",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Pricing review @ Wed 10:00",
+     "snippet": "Priya Nair has invited you to Pricing review.",
+     "hours": 1.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "1d7c350f170a9aa0",
+     "from": "Priya Nair",
+     "address": "priya@harbor.example",
+     "subject": "Q4 hiring plan: need your sign-off by Thursday",
+     "snippet": "Hi Sam, the Q4 plan is final on our side. Can you approve the two senior roles before Thursday so recruiting can open them on Friday?",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "416e611915518d53",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Review requested: Rate-limit the export endpoint (#482)",
+     "snippet": "Léa requested your review on this pull request.",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "47e15d520314dee3",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[RESOLVED] api p95 latency above 800 ms",
+     "snippet": "Alert resolved after 41 minutes.",
+     "hours": 2.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "ac224ec4661cb46d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Updated invitation: 1:1 Sam / Léa @ Thu 15:00",
+     "snippet": "This event has been updated.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "33c2f3be0b47522d",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[FIRING] api p95 latency above 800 ms",
+     "snippet": "Alert started 09:12. Region eu-west.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "bc560a5eacc6a061",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Webinar: shipping AI features safely (Oct 28)",
+     "snippet": "Join our panel on guardrails, evaluation and rollout. Free, 45 minutes.",
+     "hours": 4.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "dba4578e1a79e9a2",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "48h only: 30% off everything",
+     "snippet": "Our biggest sale of the season.",
+     "hours": 4.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "6b01c344dbe5827b",
+     "from": "Jonas Weber",
+     "address": "jonas.weber@client.example",
+     "subject": "Re: renewal",
+     "snippet": "Thanks for the call. Attached is the version legal is happy with, see my note on clause 7.",
+     "hours": 5.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "8634e75f07c0a502",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] CI failed on main",
+     "snippet": "The workflow run failed for commit 3fe1c09.",
+     "hours": 6.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "c4b8874158675113",
+     "from": "Léa Dubois",
+     "address": "lea@harbor.example",
+     "subject": "Onboarding deck for Monday",
+     "snippet": "Could you review the onboarding deck before Monday's call? Mostly slides 4 to 9, the pricing part.",
+     "hours": 7.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "bb10624e4f880ff3",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Priya Nair shared \"Q4 Plan\" with you",
+     "snippet": "Priya Nair has invited you to edit.",
+     "hours": 8.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Shares"
+     ]
+    },
+    {
+     "id": "85961c6be2cfc730",
+     "from": "Tom Okafor",
+     "address": "tom@partner.example",
+     "subject": "quick one",
+     "snippet": "Hey Sam, saw the new tiers on the site. One thing I could not work out from the page",
+     "hours": 9.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "e7ddddbd4a08418b",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "This week at Harbor: offsite dates, new parental leave policy",
+     "snippet": "Three things to know.",
+     "hours": 10.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Internal-Comms"
+     ]
+    },
+    {
+     "id": "9c10e84ca14bf15c",
+     "from": "Marta Silva",
+     "address": "marta@harbor.example",
+     "subject": "Notes from the vendor call",
+     "snippet": "Sharing my notes from today's call with the logistics vendor: pricing holds, SLA moves to 99.9, next check-in in two weeks.",
+     "hours": 11.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Notes"
+     ]
+    },
+    {
+     "id": "bac127345da9a3bd",
+     "from": "Travel desk",
+     "address": "receipts@travel.example",
+     "subject": "Your receipt: train to Lyon",
+     "snippet": "Booking HX42 confirmed. Total paid on the company card.",
+     "hours": 12.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "4151b79f04eb2692",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #212: smaller models, bigger wins",
+     "snippet": "This week: distillation in practice.",
+     "hours": 13.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "6e2a988ab3aa13bf",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Accepted: Launch retro @ Fri 11:00",
+     "snippet": "Daniel Kim has accepted this invitation.",
+     "hours": 14.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "cb5fa66d9cf90156",
+     "from": "Meeting Notes",
+     "address": "notes-bot@meet.example",
+     "subject": "Summary: Weekly product sync",
+     "snippet": "Decisions: ship the pricing page Tuesday.",
+     "hours": 15.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Notes"
+     ]
+    },
+    {
+     "id": "0a5d8bcc49c89b9d",
+     "from": "Ana Costa",
+     "address": "ana@harbor.example",
+     "subject": "Friday?",
+     "snippet": "Are you around on Friday?",
+     "hours": 20.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "a386c9fec4060707",
+     "from": "Daniel Kim",
+     "address": "daniel@harbor.example",
+     "subject": "Moved the launch retro to the 3rd floor",
+     "snippet": "Small change: the launch retro is now in Room 3B, same time. No action needed.",
+     "hours": 26.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "FYI"
+     ]
+    },
+    {
+     "id": "1025b441f75f2834",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Léa Dubois commented on \"Onboarding deck\"",
+     "snippet": "\"Can we simplify slide 6?\"",
+     "hours": 27.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Shares"
+     ]
+    },
+    {
+     "id": "ca170affe3f339a3",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "Your cart misses you",
+     "snippet": "Complete your order today.",
+     "hours": 28.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "97ec9a80ba62246a",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/web] Merged: New pricing page (#311)",
+     "snippet": "Pull request merged by Daniel Kim.",
+     "hours": 29.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "884fe18c7d0a37a5",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Last seats: the platform engineering roundtable",
+     "snippet": "A few seats are left for Thursday's roundtable.",
+     "hours": 30.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "8d563ee703c8ea91",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Dependabot: bump urllib3",
+     "snippet": "Bumps urllib3 to the latest patch.",
+     "hours": 33.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "b63ae61e278c3607",
+     "from": "Cloud Billing",
+     "address": "billing@cloud.example",
+     "subject": "Invoice for September is available",
+     "snippet": "Your invoice is ready to download.",
+     "hours": 36.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "efced93df185a88a",
+     "from": "Product Notes",
+     "address": "digest@productnotes.example",
+     "subject": "Product Notes: onboarding teardown",
+     "snippet": "We looked at twenty onboarding flows.",
+     "hours": 37.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "1c36aaa909769d7d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Quarterly planning @ Mon 09:30",
+     "snippet": "Marta Silva has invited you.",
+     "hours": 40.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "c4d9936661620613",
+     "from": "Payroll",
+     "address": "payroll@harbor.example",
+     "subject": "Your October payslip is available",
+     "snippet": "Log in to the HR portal to view it.",
+     "hours": 48.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "6ded1a3096bf8995",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Your weekly events digest",
+     "snippet": "Five events picked for you this week.",
+     "hours": 50.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "dc51504721124237",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "New arrivals picked for you",
+     "snippet": "Fresh styles just landed.",
+     "hours": 52.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "562f2de0187ca23c",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/infra] Issue closed: flaky deploy step",
+     "snippet": "Closed as completed.",
+     "hours": 55.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "aa9c738267b590b7",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "Office closed on the 1st",
+     "snippet": "The office will be closed for the public holiday.",
+     "hours": 58.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Internal-Comms"
+     ]
+    },
+    {
+     "id": "288ab95c90a08d0c",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "Certificate for status.harbor.example expires in 14 days",
+     "snippet": "Renew before the 31st.",
+     "hours": 60.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "c700980362a1c3a9",
+     "from": "Design Systems Weekly",
+     "address": "hello@designsystems.example",
+     "subject": "Tokens, themes and dark mode",
+     "snippet": "A field guide to theming at scale.",
+     "hours": 61.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "c6362882ebd97f07",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #211: the evaluation issue",
+     "snippet": "The issue everyone forwarded.",
+     "hours": 84.0,
+     "inbox": true,
+     "unread": true,
+     "starred": true,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "44fed3ab58d22852",
+     "from": "Old Thread",
+     "address": "someone@elsewhere.example",
+     "subject": "Lunch next month?",
+     "snippet": "Old mail stays where it is.",
+     "hours": 288.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    }
+   ],
+   "tasks": [
+    {
+     "title": "Approve the Q4 hiring plan (two senior roles)",
+     "due": "2026-10-16",
+     "status": "needsAction"
+    },
+    {
+     "title": "Confirm the revised renewal terms to Jonas (clause 7)",
+     "due": "2026-10-20",
+     "status": "needsAction"
+    },
+    {
+     "title": "Review the onboarding deck (slides 4-9) before Monday",
+     "due": "2026-10-19",
+     "status": "needsAction"
+    },
+    {
+     "title": "Tell Tom whether the Team plan includes API access",
+     "due": "2026-10-16",
+     "status": "needsAction"
+    }
+   ]
+  },
+  {
+   "name": "quiet",
+   "title": "The next hour: nothing new, no model call",
+   "transcript": [
+    {
+     "command": "python3 runner.py --apply",
+     "exit": 2,
+     "output": "[runner] apply needs_review: 0 classified, 0 archived, 1 unresolved; summary: ~/ai-email-assistant/state/summary.json"
+    }
+   ],
+   "summary": {
+    "started": 1792008587.361644,
+    "apply": true,
+    "status": "needs_review",
+    "pending": 1,
+    "classified": 0,
+    "cached": 0,
+    "unresolved_ids": [
+     "0a5d8bcc49c89b9d"
+    ],
+    "tags": {
+     "?": 1
+    },
+    "actions": {},
+    "archived": 0,
+    "tasks_created": 0,
+    "tasks": [],
+    "rule_candidates": [],
+    "finished": 1792008587.754417
+   },
+   "model_calls": [],
+   "mailbox": [
+    {
+     "id": "91f25fe8324d47c9",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Pricing review @ Wed 10:00",
+     "snippet": "Priya Nair has invited you to Pricing review.",
+     "hours": 1.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "1d7c350f170a9aa0",
+     "from": "Priya Nair",
+     "address": "priya@harbor.example",
+     "subject": "Q4 hiring plan: need your sign-off by Thursday",
+     "snippet": "Hi Sam, the Q4 plan is final on our side. Can you approve the two senior roles before Thursday so recruiting can open them on Friday?",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "416e611915518d53",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Review requested: Rate-limit the export endpoint (#482)",
+     "snippet": "Léa requested your review on this pull request.",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "47e15d520314dee3",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[RESOLVED] api p95 latency above 800 ms",
+     "snippet": "Alert resolved after 41 minutes.",
+     "hours": 2.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "ac224ec4661cb46d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Updated invitation: 1:1 Sam / Léa @ Thu 15:00",
+     "snippet": "This event has been updated.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "33c2f3be0b47522d",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[FIRING] api p95 latency above 800 ms",
+     "snippet": "Alert started 09:12. Region eu-west.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "bc560a5eacc6a061",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Webinar: shipping AI features safely (Oct 28)",
+     "snippet": "Join our panel on guardrails, evaluation and rollout. Free, 45 minutes.",
+     "hours": 4.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "dba4578e1a79e9a2",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "48h only: 30% off everything",
+     "snippet": "Our biggest sale of the season.",
+     "hours": 4.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "6b01c344dbe5827b",
+     "from": "Jonas Weber",
+     "address": "jonas.weber@client.example",
+     "subject": "Re: renewal",
+     "snippet": "Thanks for the call. Attached is the version legal is happy with, see my note on clause 7.",
+     "hours": 5.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "8634e75f07c0a502",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] CI failed on main",
+     "snippet": "The workflow run failed for commit 3fe1c09.",
+     "hours": 6.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "c4b8874158675113",
+     "from": "Léa Dubois",
+     "address": "lea@harbor.example",
+     "subject": "Onboarding deck for Monday",
+     "snippet": "Could you review the onboarding deck before Monday's call? Mostly slides 4 to 9, the pricing part.",
+     "hours": 7.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "bb10624e4f880ff3",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Priya Nair shared \"Q4 Plan\" with you",
+     "snippet": "Priya Nair has invited you to edit.",
+     "hours": 8.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Shares"
+     ]
+    },
+    {
+     "id": "85961c6be2cfc730",
+     "from": "Tom Okafor",
+     "address": "tom@partner.example",
+     "subject": "quick one",
+     "snippet": "Hey Sam, saw the new tiers on the site. One thing I could not work out from the page",
+     "hours": 9.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "e7ddddbd4a08418b",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "This week at Harbor: offsite dates, new parental leave policy",
+     "snippet": "Three things to know.",
+     "hours": 10.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Internal-Comms"
+     ]
+    },
+    {
+     "id": "9c10e84ca14bf15c",
+     "from": "Marta Silva",
+     "address": "marta@harbor.example",
+     "subject": "Notes from the vendor call",
+     "snippet": "Sharing my notes from today's call with the logistics vendor: pricing holds, SLA moves to 99.9, next check-in in two weeks.",
+     "hours": 11.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Notes"
+     ]
+    },
+    {
+     "id": "bac127345da9a3bd",
+     "from": "Travel desk",
+     "address": "receipts@travel.example",
+     "subject": "Your receipt: train to Lyon",
+     "snippet": "Booking HX42 confirmed. Total paid on the company card.",
+     "hours": 12.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "4151b79f04eb2692",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #212: smaller models, bigger wins",
+     "snippet": "This week: distillation in practice.",
+     "hours": 13.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "6e2a988ab3aa13bf",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Accepted: Launch retro @ Fri 11:00",
+     "snippet": "Daniel Kim has accepted this invitation.",
+     "hours": 14.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "cb5fa66d9cf90156",
+     "from": "Meeting Notes",
+     "address": "notes-bot@meet.example",
+     "subject": "Summary: Weekly product sync",
+     "snippet": "Decisions: ship the pricing page Tuesday.",
+     "hours": 15.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Notes"
+     ]
+    },
+    {
+     "id": "0a5d8bcc49c89b9d",
+     "from": "Ana Costa",
+     "address": "ana@harbor.example",
+     "subject": "Friday?",
+     "snippet": "Are you around on Friday?",
+     "hours": 20.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "a386c9fec4060707",
+     "from": "Daniel Kim",
+     "address": "daniel@harbor.example",
+     "subject": "Moved the launch retro to the 3rd floor",
+     "snippet": "Small change: the launch retro is now in Room 3B, same time. No action needed.",
+     "hours": 26.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "FYI"
+     ]
+    },
+    {
+     "id": "1025b441f75f2834",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Léa Dubois commented on \"Onboarding deck\"",
+     "snippet": "\"Can we simplify slide 6?\"",
+     "hours": 27.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Shares"
+     ]
+    },
+    {
+     "id": "ca170affe3f339a3",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "Your cart misses you",
+     "snippet": "Complete your order today.",
+     "hours": 28.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "97ec9a80ba62246a",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/web] Merged: New pricing page (#311)",
+     "snippet": "Pull request merged by Daniel Kim.",
+     "hours": 29.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "884fe18c7d0a37a5",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Last seats: the platform engineering roundtable",
+     "snippet": "A few seats are left for Thursday's roundtable.",
+     "hours": 30.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "8d563ee703c8ea91",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Dependabot: bump urllib3",
+     "snippet": "Bumps urllib3 to the latest patch.",
+     "hours": 33.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "b63ae61e278c3607",
+     "from": "Cloud Billing",
+     "address": "billing@cloud.example",
+     "subject": "Invoice for September is available",
+     "snippet": "Your invoice is ready to download.",
+     "hours": 36.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "efced93df185a88a",
+     "from": "Product Notes",
+     "address": "digest@productnotes.example",
+     "subject": "Product Notes: onboarding teardown",
+     "snippet": "We looked at twenty onboarding flows.",
+     "hours": 37.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "1c36aaa909769d7d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Quarterly planning @ Mon 09:30",
+     "snippet": "Marta Silva has invited you.",
+     "hours": 40.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "c4d9936661620613",
+     "from": "Payroll",
+     "address": "payroll@harbor.example",
+     "subject": "Your October payslip is available",
+     "snippet": "Log in to the HR portal to view it.",
+     "hours": 48.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "6ded1a3096bf8995",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Your weekly events digest",
+     "snippet": "Five events picked for you this week.",
+     "hours": 50.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "dc51504721124237",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "New arrivals picked for you",
+     "snippet": "Fresh styles just landed.",
+     "hours": 52.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "562f2de0187ca23c",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/infra] Issue closed: flaky deploy step",
+     "snippet": "Closed as completed.",
+     "hours": 55.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "aa9c738267b590b7",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "Office closed on the 1st",
+     "snippet": "The office will be closed for the public holiday.",
+     "hours": 58.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Internal-Comms"
+     ]
+    },
+    {
+     "id": "288ab95c90a08d0c",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "Certificate for status.harbor.example expires in 14 days",
+     "snippet": "Renew before the 31st.",
+     "hours": 60.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "c700980362a1c3a9",
+     "from": "Design Systems Weekly",
+     "address": "hello@designsystems.example",
+     "subject": "Tokens, themes and dark mode",
+     "snippet": "A field guide to theming at scale.",
+     "hours": 61.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "c6362882ebd97f07",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #211: the evaluation issue",
+     "snippet": "The issue everyone forwarded.",
+     "hours": 84.0,
+     "inbox": true,
+     "unread": true,
+     "starred": true,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "44fed3ab58d22852",
+     "from": "Old Thread",
+     "address": "someone@elsewhere.example",
+     "subject": "Lunch next month?",
+     "snippet": "Old mail stays where it is.",
+     "hours": 288.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    }
+   ],
+   "tasks": [
+    {
+     "title": "Approve the Q4 hiring plan (two senior roles)",
+     "due": "2026-10-16",
+     "status": "needsAction"
+    },
+    {
+     "title": "Confirm the revised renewal terms to Jonas (clause 7)",
+     "due": "2026-10-20",
+     "status": "needsAction"
+    },
+    {
+     "title": "Review the onboarding deck (slides 4-9) before Monday",
+     "due": "2026-10-19",
+     "status": "needsAction"
+    },
+    {
+     "title": "Tell Tom whether the Team plan includes API access",
+     "due": "2026-10-16",
+     "status": "needsAction"
+    }
+   ]
+  },
+  {
+   "name": "done",
+   "title": "A completed task archives its thread",
+   "transcript": [
+    {
+     "command": "python3 runner.py --apply",
+     "exit": 2,
+     "output": "[runner] apply needs_review: 0 classified, 1 archived, 1 unresolved; summary: ~/ai-email-assistant/state/summary.json"
+    }
+   ],
+   "summary": {
+    "started": 1792008587.8067389,
+    "apply": true,
+    "status": "needs_review",
+    "pending": 1,
+    "classified": 0,
+    "cached": 0,
+    "unresolved_ids": [
+     "0a5d8bcc49c89b9d"
+    ],
+    "tags": {
+     "?": 1
+    },
+    "actions": {
+     "archive": 1
+    },
+    "archived": 1,
+    "tasks_created": 0,
+    "tasks": [],
+    "rule_candidates": [],
+    "finished": 1792008588.236083
+   },
+   "model_calls": [],
+   "mailbox": [
+    {
+     "id": "91f25fe8324d47c9",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Pricing review @ Wed 10:00",
+     "snippet": "Priya Nair has invited you to Pricing review.",
+     "hours": 1.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "1d7c350f170a9aa0",
+     "from": "Priya Nair",
+     "address": "priya@harbor.example",
+     "subject": "Q4 hiring plan: need your sign-off by Thursday",
+     "snippet": "Hi Sam, the Q4 plan is final on our side. Can you approve the two senior roles before Thursday so recruiting can open them on Friday?",
+     "hours": 2.0,
+     "inbox": false,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "416e611915518d53",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Review requested: Rate-limit the export endpoint (#482)",
+     "snippet": "Léa requested your review on this pull request.",
+     "hours": 2.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "47e15d520314dee3",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[RESOLVED] api p95 latency above 800 ms",
+     "snippet": "Alert resolved after 41 minutes.",
+     "hours": 2.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "ac224ec4661cb46d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Updated invitation: 1:1 Sam / Léa @ Thu 15:00",
+     "snippet": "This event has been updated.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "33c2f3be0b47522d",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "[FIRING] api p95 latency above 800 ms",
+     "snippet": "Alert started 09:12. Region eu-west.",
+     "hours": 3.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "bc560a5eacc6a061",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Webinar: shipping AI features safely (Oct 28)",
+     "snippet": "Join our panel on guardrails, evaluation and rollout. Free, 45 minutes.",
+     "hours": 4.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "dba4578e1a79e9a2",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "48h only: 30% off everything",
+     "snippet": "Our biggest sale of the season.",
+     "hours": 4.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "6b01c344dbe5827b",
+     "from": "Jonas Weber",
+     "address": "jonas.weber@client.example",
+     "subject": "Re: renewal",
+     "snippet": "Thanks for the call. Attached is the version legal is happy with, see my note on clause 7.",
+     "hours": 5.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "8634e75f07c0a502",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] CI failed on main",
+     "snippet": "The workflow run failed for commit 3fe1c09.",
+     "hours": 6.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "c4b8874158675113",
+     "from": "Léa Dubois",
+     "address": "lea@harbor.example",
+     "subject": "Onboarding deck for Monday",
+     "snippet": "Could you review the onboarding deck before Monday's call? Mostly slides 4 to 9, the pricing part.",
+     "hours": 7.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "bb10624e4f880ff3",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Priya Nair shared \"Q4 Plan\" with you",
+     "snippet": "Priya Nair has invited you to edit.",
+     "hours": 8.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Shares"
+     ]
+    },
+    {
+     "id": "85961c6be2cfc730",
+     "from": "Tom Okafor",
+     "address": "tom@partner.example",
+     "subject": "quick one",
+     "snippet": "Hey Sam, saw the new tiers on the site. One thing I could not work out from the page",
+     "hours": 9.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Action"
+     ]
+    },
+    {
+     "id": "e7ddddbd4a08418b",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "This week at Harbor: offsite dates, new parental leave policy",
+     "snippet": "Three things to know.",
+     "hours": 10.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Internal-Comms"
+     ]
+    },
+    {
+     "id": "9c10e84ca14bf15c",
+     "from": "Marta Silva",
+     "address": "marta@harbor.example",
+     "subject": "Notes from the vendor call",
+     "snippet": "Sharing my notes from today's call with the logistics vendor: pricing holds, SLA moves to 99.9, next check-in in two weeks.",
+     "hours": 11.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Notes"
+     ]
+    },
+    {
+     "id": "bac127345da9a3bd",
+     "from": "Travel desk",
+     "address": "receipts@travel.example",
+     "subject": "Your receipt: train to Lyon",
+     "snippet": "Booking HX42 confirmed. Total paid on the company card.",
+     "hours": 12.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "4151b79f04eb2692",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #212: smaller models, bigger wins",
+     "snippet": "This week: distillation in practice.",
+     "hours": 13.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "6e2a988ab3aa13bf",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Accepted: Launch retro @ Fri 11:00",
+     "snippet": "Daniel Kim has accepted this invitation.",
+     "hours": 14.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "cb5fa66d9cf90156",
+     "from": "Meeting Notes",
+     "address": "notes-bot@meet.example",
+     "subject": "Summary: Weekly product sync",
+     "snippet": "Decisions: ship the pricing page Tuesday.",
+     "hours": 15.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Notes"
+     ]
+    },
+    {
+     "id": "0a5d8bcc49c89b9d",
+     "from": "Ana Costa",
+     "address": "ana@harbor.example",
+     "subject": "Friday?",
+     "snippet": "Are you around on Friday?",
+     "hours": 20.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    },
+    {
+     "id": "a386c9fec4060707",
+     "from": "Daniel Kim",
+     "address": "daniel@harbor.example",
+     "subject": "Moved the launch retro to the 3rd floor",
+     "snippet": "Small change: the launch retro is now in Room 3B, same time. No action needed.",
+     "hours": 26.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "FYI"
+     ]
+    },
+    {
+     "id": "1025b441f75f2834",
+     "from": "Docs",
+     "address": "drive-shares@docs.example",
+     "subject": "Léa Dubois commented on \"Onboarding deck\"",
+     "snippet": "\"Can we simplify slide 6?\"",
+     "hours": 27.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Shares"
+     ]
+    },
+    {
+     "id": "ca170affe3f339a3",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "Your cart misses you",
+     "snippet": "Complete your order today.",
+     "hours": 28.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "97ec9a80ba62246a",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/web] Merged: New pricing page (#311)",
+     "snippet": "Pull request merged by Daniel Kim.",
+     "hours": 29.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "884fe18c7d0a37a5",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Last seats: the platform engineering roundtable",
+     "snippet": "A few seats are left for Thursday's roundtable.",
+     "hours": 30.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "8d563ee703c8ea91",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/api] Dependabot: bump urllib3",
+     "snippet": "Bumps urllib3 to the latest patch.",
+     "hours": 33.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "b63ae61e278c3607",
+     "from": "Cloud Billing",
+     "address": "billing@cloud.example",
+     "subject": "Invoice for September is available",
+     "snippet": "Your invoice is ready to download.",
+     "hours": 36.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "efced93df185a88a",
+     "from": "Product Notes",
+     "address": "digest@productnotes.example",
+     "subject": "Product Notes: onboarding teardown",
+     "snippet": "We looked at twenty onboarding flows.",
+     "hours": 37.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "1c36aaa909769d7d",
+     "from": "Calendar",
+     "address": "calendar@harbor.example",
+     "subject": "Invitation: Quarterly planning @ Mon 09:30",
+     "snippet": "Marta Silva has invited you.",
+     "hours": 40.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Meeting/Invite"
+     ]
+    },
+    {
+     "id": "c4d9936661620613",
+     "from": "Payroll",
+     "address": "payroll@harbor.example",
+     "subject": "Your October payslip is available",
+     "snippet": "Log in to the HR portal to view it.",
+     "hours": 48.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Admin"
+     ]
+    },
+    {
+     "id": "6ded1a3096bf8995",
+     "from": "Summit Events",
+     "address": "events@summit.example",
+     "subject": "Your weekly events digest",
+     "snippet": "Five events picked for you this week.",
+     "hours": 50.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "dc51504721124237",
+     "from": "Deals",
+     "address": "shop@deals.example",
+     "subject": "New arrivals picked for you",
+     "snippet": "Fresh styles just landed.",
+     "hours": 52.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Promo"
+     ]
+    },
+    {
+     "id": "562f2de0187ca23c",
+     "from": "Code Review",
+     "address": "notifications@code.example",
+     "subject": "[harbor/infra] Issue closed: flaky deploy step",
+     "snippet": "Closed as completed.",
+     "hours": 55.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "GitHub-Admin"
+     ]
+    },
+    {
+     "id": "aa9c738267b590b7",
+     "from": "Harbor All-Hands",
+     "address": "all-hands@harbor.example",
+     "subject": "Office closed on the 1st",
+     "snippet": "The office will be closed for the public holiday.",
+     "hours": 58.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Internal-Comms"
+     ]
+    },
+    {
+     "id": "288ab95c90a08d0c",
+     "from": "Status",
+     "address": "status@monitor.example",
+     "subject": "Certificate for status.harbor.example expires in 14 days",
+     "snippet": "Renew before the 31st.",
+     "hours": 60.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": [
+      "Alerts"
+     ]
+    },
+    {
+     "id": "c700980362a1c3a9",
+     "from": "Design Systems Weekly",
+     "address": "hello@designsystems.example",
+     "subject": "Tokens, themes and dark mode",
+     "snippet": "A field guide to theming at scale.",
+     "hours": 61.0,
+     "inbox": false,
+     "unread": false,
+     "starred": false,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "c6362882ebd97f07",
+     "from": "The Weekly Byte",
+     "address": "hello@weeklybyte.example",
+     "subject": "The Weekly Byte #211: the evaluation issue",
+     "snippet": "The issue everyone forwarded.",
+     "hours": 84.0,
+     "inbox": true,
+     "unread": true,
+     "starred": true,
+     "tags": [
+      "Newsletter"
+     ]
+    },
+    {
+     "id": "44fed3ab58d22852",
+     "from": "Old Thread",
+     "address": "someone@elsewhere.example",
+     "subject": "Lunch next month?",
+     "snippet": "Old mail stays where it is.",
+     "hours": 288.0,
+     "inbox": true,
+     "unread": true,
+     "starred": false,
+     "tags": []
+    }
+   ],
+   "tasks": [
+    {
+     "title": "Approve the Q4 hiring plan (two senior roles)",
+     "due": "2026-10-16",
+     "status": "completed"
+    },
+    {
+     "title": "Confirm the revised renewal terms to Jonas (clause 7)",
+     "due": "2026-10-20",
+     "status": "needsAction"
+    },
+    {
+     "title": "Review the onboarding deck (slides 4-9) before Monday",
+     "due": "2026-10-19",
+     "status": "needsAction"
+    },
+    {
+     "title": "Tell Tom whether the Team plan includes API access",
+     "due": "2026-10-16",
+     "status": "needsAction"
+    }
+   ]
+  }
+ ]
+}

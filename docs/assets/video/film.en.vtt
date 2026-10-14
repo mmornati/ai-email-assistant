@@ -1,0 +1,105 @@
+WEBVTT
+
+1
+00:00:00.600 --> 00:00:01.938
+Eight in the morning.
+
+2
+00:00:02.038 --> 00:00:04.933
+Thirty-seven new messages arrived this week.
+
+3
+00:00:05.033 --> 00:00:08.739
+Requests, invites, alerts, newsletters, all in one pile.
+
+4
+00:00:09.589 --> 00:00:11.290
+Most of it is routine.
+
+5
+00:00:11.390 --> 00:00:15.800
+Plain rules, your own Gmail searches, route twenty-seven messages.
+
+6
+00:00:15.900 --> 00:00:19.158
+No AI is involved, and nothing is sent anywhere.
+
+7
+00:00:20.008 --> 00:00:22.263
+Only ten need someone to read them.
+
+8
+00:00:22.363 --> 00:00:28.181
+A small, cheap model, through the Copilot CLI or Claude Code, takes them in a single batch.
+
+9
+00:00:28.281 --> 00:00:33.310
+The three it is unsure about go to a stronger model, with a short slice of the message.
+
+10
+00:00:34.160 --> 00:00:36.437
+Then plain code checks every answer.
+
+11
+00:00:36.537 --> 00:00:39.432
+The right messages, known labels, real dates.
+
+12
+00:00:39.532 --> 00:00:42.939
+Anything else is refused before it touches your inbox.
+
+13
+00:00:43.789 --> 00:00:45.660
+Every message gets a label.
+
+14
+00:00:45.760 --> 00:00:49.338
+Four requests become Google Tasks, with their deadlines.
+
+15
+00:00:49.438 --> 00:00:52.035
+Eleven finished messages are archived.
+
+16
+00:00:52.135 --> 00:00:57.228
+And one, are you around on Friday, stays in your inbox, because no model was sure.
+
+17
+00:00:58.078 --> 00:01:00.291
+At nine, the schedule runs again.
+
+18
+00:01:00.391 --> 00:01:03.201
+Nothing new to read, so no model is called.
+
+19
+00:01:03.301 --> 00:01:05.364
+Most hours cost nothing at all.
+
+20
+00:01:06.214 --> 00:01:08.320
+Nothing moves without your say-so.
+
+21
+00:01:08.420 --> 00:01:12.617
+Every change is a dry run first, written to a plan you can read.
+
+22
+00:01:12.717 --> 00:01:15.889
+Applied changes are journalled, and you can undo them.
+
+23
+00:01:16.739 --> 00:01:18.397
+AI Mail Assistant.
+
+24
+00:01:18.497 --> 00:01:20.966
+Open source, for your Mac and Gmail.
+
+25
+00:01:21.066 --> 00:01:23.556
+One command sets it up: make setup.
+
+26
+00:01:23.656 --> 00:01:25.442
+Every message, routed.
