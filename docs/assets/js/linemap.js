@@ -116,8 +116,10 @@ export function drawLineMap(svg, snap, { label = "Line map of the demo run", lay
   // the express spur to the stronger model: a hollow line, dark when nothing escalates
   const spur = el("g", { class: t.escalated ? "" : "spur-off" }, lines);
   const spurPts = [[X.classify, TRUNK], [X.classify + 40, SPUR], [X.validate - 40, SPUR], [X.validate, TRUNK]];
+  // hollow while waiting; once the run has escalated mail it is drawn in service (solid), as the board reports
   stroke(spurPts, "var(--l-trunk)", 10, spur);
-  stroke(spurPts, "var(--l-hollow)", 4, spur);
+  const core = stroke(spurPts, "var(--l-hollow)", 4, spur);
+  const light = (on) => core.setAttribute("stroke", on ? "var(--l-trunk)" : "var(--l-hollow)");
 
   const st = el("g", {}, svg);
   const pill = (x, y0, y1) => el("rect", { class: "st", x: x - 13, y: y0 - 13, width: 26, height: y1 - y0 + 26, rx: 13, "stroke-width": 4 }, st);
@@ -179,6 +181,7 @@ export function drawLineMap(svg, snap, { label = "Line map of the demo run", lay
 
   function settle() {
     cancelAnimationFrame(raf);
+    light(t.escalated > 0);
     dots.replaceChildren();
     for (const c of Object.values(counters)) { c.now = c.total; c.node.textContent = c.total; }
   }
@@ -188,6 +191,7 @@ export function drawLineMap(svg, snap, { label = "Line map of the demo run", lay
     cancelAnimationFrame(raf);
     dots.replaceChildren();
     for (const c of Object.values(counters)) { c.now = 0; c.node.textContent = "0"; }
+    light(false);
     const live = trips.map((trip) => ({ ...trip, node: null, done: false }));
     const speed = 0.62; // px per ms
     const t0 = performance.now();

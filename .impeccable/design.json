@@ -1,0 +1,669 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T20:41:43+00:00",
+  "title": "Design System: AI Mail Assistant",
+  "extensions": {
+    "colorMeta": {
+      "signage-black": {
+        "role": "primary",
+        "displayName": "Signage Black",
+        "canonical": "#121417",
+        "oklch": "oklch(19.0% 0.007 258.4)",
+        "tonalRamp": [
+          "#090b0e",
+          "#232528",
+          "#404246",
+          "#5f6165",
+          "#808286",
+          "#a2a5a9",
+          "#c6c9ce",
+          "#eceff3"
+        ],
+        "cssVar": "--ink / --panel / --l-trunk",
+        "dark": "#eceae4 (text) / #f4f2ec (panel)"
+      },
+      "panel-lift": {
+        "role": "primary",
+        "displayName": "Panel Lift",
+        "canonical": "#1f2328",
+        "oklch": "oklch(25.4% 0.011 254.0)",
+        "tonalRamp": [
+          "#080b10",
+          "#21252a",
+          "#3e4248",
+          "#5d6268",
+          "#7e8389",
+          "#a0a6ac",
+          "#c4cad0",
+          "#e9eff6"
+        ],
+        "cssVar": "--panel-2",
+        "dark": "#e3e0d6"
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Ink Secondary",
+        "canonical": "#474b51",
+        "oklch": "oklch(41.1% 0.011 258.4)",
+        "tonalRamp": [
+          "#080b10",
+          "#22252b",
+          "#3e4248",
+          "#5d6168",
+          "#7e8389",
+          "#a1a5ac",
+          "#c5c9d1",
+          "#eaeff6"
+        ],
+        "cssVar": "--ink-2",
+        "dark": "#b8bbbf"
+      },
+      "ink-tertiary": {
+        "role": "neutral",
+        "displayName": "Ink Tertiary",
+        "canonical": "#6b6f75",
+        "oklch": "oklch(54.0% 0.011 258.4)",
+        "tonalRamp": [
+          "#080b10",
+          "#22252a",
+          "#3f4248",
+          "#5e6167",
+          "#7e8389",
+          "#a1a5ac",
+          "#c5c9d0",
+          "#eaeff6"
+        ],
+        "cssVar": "--ink-3",
+        "dark": "#8d9196"
+      },
+      "signal-red": {
+        "role": "secondary",
+        "displayName": "Signal Red",
+        "canonical": "#e4002b",
+        "oklch": "oklch(57.9% 0.234 23.9)",
+        "tonalRamp": [
+          "#330000",
+          "#5e0000",
+          "#8d0000",
+          "#be0017",
+          "#ec2537",
+          "#ff6463",
+          "#ff948f",
+          "#ffc3bb"
+        ],
+        "cssVar": "--signal"
+      },
+      "signal-ink": {
+        "role": "secondary",
+        "displayName": "Signal Ink",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ],
+        "cssVar": "--signal-ink"
+      },
+      "focus-blue": {
+        "role": "tertiary",
+        "displayName": "Focus Blue",
+        "canonical": "#0072ce",
+        "oklch": "oklch(55.0% 0.166 252.2)",
+        "tonalRamp": [
+          "#000335",
+          "#00215e",
+          "#004089",
+          "#0061b6",
+          "#2c84dd",
+          "#5fa9fa",
+          "#8dceff",
+          "#bbf4ff"
+        ],
+        "cssVar": "--focus",
+        "dark": "#41b6e6"
+      },
+      "enamel": {
+        "role": "neutral",
+        "displayName": "Enamel",
+        "canonical": "#f4f2ec",
+        "oklch": "oklch(96.1% 0.008 91.5)",
+        "tonalRamp": [
+          "#0c0b07",
+          "#262521",
+          "#43423d",
+          "#63615c",
+          "#84827d",
+          "#a7a59f",
+          "#cbc9c3",
+          "#f0eee8"
+        ],
+        "cssVar": "--enamel / --l-hollow",
+        "dark": "#101214"
+      },
+      "enamel-deep": {
+        "role": "neutral",
+        "displayName": "Enamel Deep",
+        "canonical": "#e9e6dc",
+        "oklch": "oklch(92.5% 0.014 93.0)",
+        "tonalRamp": [
+          "#0d0b05",
+          "#27251e",
+          "#44423a",
+          "#646159",
+          "#858279",
+          "#a8a59c",
+          "#ccc9bf",
+          "#f1eee4"
+        ],
+        "cssVar": "--enamel-2",
+        "dark": "#171a1d"
+      },
+      "enamel-worn": {
+        "role": "neutral",
+        "displayName": "Enamel Worn",
+        "canonical": "#dcd8cb",
+        "oklch": "oklch(88.2% 0.018 92.7)",
+        "tonalRamp": [
+          "#0e0b04",
+          "#28251b",
+          "#454237",
+          "#656156",
+          "#868276",
+          "#a9a599",
+          "#cdc9bc",
+          "#f3eee1"
+        ],
+        "cssVar": "--enamel-3",
+        "dark": "#22262a"
+      },
+      "rule-line": {
+        "role": "neutral",
+        "displayName": "Rule Line",
+        "canonical": "#cfcabc",
+        "oklch": "oklch(83.9% 0.020 90.6)",
+        "tonalRamp": [
+          "#0e0b03",
+          "#29251a",
+          "#464236",
+          "#656155",
+          "#878275",
+          "#aaa597",
+          "#cec9bb",
+          "#f3eee0"
+        ],
+        "cssVar": "--rule",
+        "dark": "#2c3035"
+      },
+      "panel-ink-secondary": {
+        "role": "neutral",
+        "displayName": "Panel Ink Secondary",
+        "canonical": "#b9bcc0",
+        "oklch": "oklch(79.4% 0.007 255.5)",
+        "tonalRamp": [
+          "#090b0e",
+          "#232528",
+          "#404245",
+          "#5f6165",
+          "#808386",
+          "#a2a5a9",
+          "#c6c9cd",
+          "#eceff3"
+        ],
+        "cssVar": "--panel-ink-2",
+        "dark": "#474b51"
+      },
+      "line-action": {
+        "role": "tertiary",
+        "displayName": "Action Line",
+        "canonical": "#e4002b",
+        "oklch": "oklch(57.9% 0.234 23.9)",
+        "tonalRamp": [
+          "#330000",
+          "#5e0000",
+          "#8d0000",
+          "#be0017",
+          "#ec2537",
+          "#ff6463",
+          "#ff948f",
+          "#ffc3bb"
+        ],
+        "cssVar": "--l-action"
+      },
+      "line-alerts": {
+        "role": "tertiary",
+        "displayName": "Alerts Line",
+        "canonical": "#ff6a13",
+        "oklch": "oklch(70.1% 0.200 43.7)",
+        "tonalRamp": [
+          "#280000",
+          "#4f0000",
+          "#7a1a00",
+          "#a73600",
+          "#d75200",
+          "#ff7225",
+          "#ff9f63",
+          "#ffcb97"
+        ],
+        "cssVar": "--l-alerts"
+      },
+      "line-github-admin": {
+        "role": "tertiary",
+        "displayName": "Github Admin Line",
+        "canonical": "#5b6770",
+        "oklch": "oklch(50.7% 0.021 240.3)",
+        "tonalRamp": [
+          "#060c10",
+          "#1e262c",
+          "#3a434b",
+          "#57636c",
+          "#79848d",
+          "#9ca7af",
+          "#c1cbd2",
+          "#e7f0f6"
+        ],
+        "cssVar": "--l-github-admin",
+        "dark": "#8a98a3"
+      },
+      "line-meeting-invite": {
+        "role": "tertiary",
+        "displayName": "Meeting Invite Line",
+        "canonical": "#0072ce",
+        "oklch": "oklch(55.0% 0.166 252.2)",
+        "tonalRamp": [
+          "#000335",
+          "#00215e",
+          "#004089",
+          "#0061b6",
+          "#2c84dd",
+          "#5fa9fa",
+          "#8dceff",
+          "#bbf4ff"
+        ],
+        "cssVar": "--l-meeting-invite"
+      },
+      "line-meeting-notes": {
+        "role": "tertiary",
+        "displayName": "Meeting Notes Line",
+        "canonical": "#41b6e6",
+        "oklch": "oklch(73.1% 0.123 229.5)",
+        "tonalRamp": [
+          "#000e1f",
+          "#002a40",
+          "#004966",
+          "#036b8d",
+          "#248eb7",
+          "#3fb3e2",
+          "#74d7ff",
+          "#a6fcff"
+        ],
+        "cssVar": "--l-meeting-notes"
+      },
+      "line-shares": {
+        "role": "tertiary",
+        "displayName": "Shares Line",
+        "canonical": "#009b8d",
+        "oklch": "oklch(61.9% 0.110 183.7)",
+        "tonalRamp": [
+          "#00120e",
+          "#003029",
+          "#005047",
+          "#007367",
+          "#009789",
+          "#4fb9ac",
+          "#83dccf",
+          "#b3fff4"
+        ],
+        "cssVar": "--l-shares"
+      },
+      "line-admin": {
+        "role": "tertiary",
+        "displayName": "Admin Line",
+        "canonical": "#8c5a2b",
+        "oklch": "oklch(51.3% 0.091 61.6)",
+        "tonalRamp": [
+          "#1c0300",
+          "#3c1b00",
+          "#60370b",
+          "#855426",
+          "#a6774d",
+          "#c79b75",
+          "#e9c09f",
+          "#ffe7ca"
+        ],
+        "cssVar": "--l-admin",
+        "dark": "#b07a45"
+      },
+      "line-internal-comms": {
+        "role": "tertiary",
+        "displayName": "Internal Comms Line",
+        "canonical": "#7a3e9d",
+        "oklch": "oklch(48.3% 0.155 311.1)",
+        "tonalRamp": [
+          "#19002b",
+          "#380550",
+          "#592477",
+          "#7d41a0",
+          "#9d68be",
+          "#be8edd",
+          "#dfb6fc",
+          "#ffdeff"
+        ],
+        "cssVar": "--l-internal-comms",
+        "dark": "#a46bc6"
+      },
+      "line-newsletter": {
+        "role": "tertiary",
+        "displayName": "Newsletter Line",
+        "canonical": "#ffb500",
+        "oklch": "oklch(82.2% 0.171 79.0)",
+        "tonalRamp": [
+          "#190500",
+          "#3a1d00",
+          "#5e3900",
+          "#855700",
+          "#ae7600",
+          "#d89700",
+          "#ffba1d",
+          "#ffe26d"
+        ],
+        "cssVar": "--l-newsletter"
+      },
+      "line-promo": {
+        "role": "tertiary",
+        "displayName": "Promo Line",
+        "canonical": "#e8559a",
+        "oklch": "oklch(66.3% 0.193 354.6)",
+        "tonalRamp": [
+          "#26000e",
+          "#4d0028",
+          "#760f46",
+          "#a22c66",
+          "#d14789",
+          "#f96dac",
+          "#ff99cf",
+          "#ffc5f4"
+        ],
+        "cssVar": "--l-promo"
+      },
+      "line-fyi": {
+        "role": "tertiary",
+        "displayName": "Fyi Line",
+        "canonical": "#00a650",
+        "oklch": "oklch(63.4% 0.171 150.9)",
+        "tonalRamp": [
+          "#001400",
+          "#003200",
+          "#005416",
+          "#007730",
+          "#009d4a",
+          "#4ac070",
+          "#7fe399",
+          "#b0ffc4"
+        ],
+        "cssVar": "--l-fyi"
+      },
+      "line-backlog": {
+        "role": "tertiary",
+        "displayName": "Backlog Line",
+        "canonical": "#a3a39c",
+        "oklch": "oklch(71.3% 0.010 106.6)",
+        "tonalRamp": [
+          "#0c0b07",
+          "#252520",
+          "#42423c",
+          "#62625b",
+          "#83837c",
+          "#a5a59e",
+          "#cacac2",
+          "#efefe7"
+        ],
+        "cssVar": "--l-backlog"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Station Sign",
+        "purpose": "The hero headline on the black station sign only."
+      },
+      "headline": {
+        "displayName": "Section Heading",
+        "purpose": "Section headings; balanced wrap."
+      },
+      "title": {
+        "displayName": "Station Name",
+        "purpose": "Station names, signage rows, timetable runs, button labels."
+      },
+      "body": {
+        "displayName": "Reading",
+        "purpose": "Reading copy, max 66ch, tabular figures."
+      },
+      "label": {
+        "displayName": "Board Label",
+        "purpose": "Uppercase tracked captions and column headers attached to the data they name."
+      },
+      "data": {
+        "displayName": "Readout",
+        "purpose": "Counts from the demo run; mono, tabular."
+      },
+      "command": {
+        "displayName": "Command",
+        "purpose": "Terminal blocks and inline code only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "Panels are flat enamel; no soft drop shadows."
+      },
+      {
+        "name": "ghost-outline",
+        "value": "inset 0 0 0 2px color-mix(in srgb, var(--panel-ink) 35%, transparent)",
+        "purpose": "Ghost button outline on black panels; solid panel-ink on hover."
+      },
+      {
+        "name": "hollow-swatch",
+        "value": "inset 0 0 0 2.5px var(--panel-ink)",
+        "purpose": "Hollow express-spur swatch on the board."
+      },
+      {
+        "name": "interchange-ring",
+        "value": "0 0 0 4px var(--enamel), 0 0 0 7px var(--l-trunk)",
+        "purpose": "Double-ring roundel for model stations in the line sequence."
+      }
+    ],
+    "motion": [
+      {
+        "name": "step",
+        "value": "cubic-bezier(.34, 1.56, .64, 1)",
+        "purpose": "Destination-blind step: label and count changes clip-drop from above over .42 to .5s, overshoot and settle. The one motion signature."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Plain transitions: button lift (.25s), section reveal (.8s, 18px), spur dimming (.6s)."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Blind animation, reveals and button transitions switch off."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "strip-map",
+        "value": "1100px"
+      },
+      {
+        "name": "stack",
+        "value": "900px"
+      },
+      {
+        "name": "compact-nav",
+        "value": "760px"
+      },
+      {
+        "name": "phone",
+        "value": "600px"
+      }
+    ],
+    "lineStrokes": [
+      {
+        "name": "trunk",
+        "value": "10px",
+        "purpose": "Black trunk Inbox to Validate; Signal Red tail to Waiting for you."
+      },
+      {
+        "name": "branch",
+        "value": "8px",
+        "purpose": "One line per tag."
+      },
+      {
+        "name": "spur-core",
+        "value": "4px enamel inside 10px casing",
+        "purpose": "Hollow express spur while idle; solid once mail escalated; 22% opacity when nothing escalates."
+      }
+    ],
+    "darkMode": "Enamel and panel invert: ground #101214, panels #f4f2ec, ink #eceae4; via prefers-color-scheme or data-theme."
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Enamel signage plate on a black panel; the main call to action on the station sign and terminus band.",
+      "html": "<div class=\"ds-sign-bg\"><a class=\"ds-btn ds-btn-primary\" href=\"#\"><span class=\"ds-roundel\"></span>Install on macOS</a></div>",
+      "css": ".ds-sign-bg{background:var(--panel,#121417);padding:24px;border-radius:18px;display:inline-block} .ds-btn{display:inline-flex;align-items:center;gap:10px;font:700 1.05rem/1 \"Barlow Semi Condensed\",\"Arial Narrow\",sans-serif;letter-spacing:.02em;text-decoration:none;padding:14px 18px 13px;border-radius:12px;transition:transform .25s cubic-bezier(.16,1,.3,1),background .2s} .ds-btn:hover{transform:translateY(-2px)} .ds-btn:active{transform:translateY(0)} .ds-btn:focus-visible{outline:3px solid var(--focus,#0072ce);outline-offset:3px} .ds-btn-primary{background:var(--enamel,#f4f2ec);color:var(--ink,#121417)} .ds-roundel{width:20px;height:20px;border-radius:50%;border:5px solid var(--l-trunk,#121417)}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action on a black panel: inset outline, no fill.",
+      "html": "<div class=\"ds-sign-bg\"><a class=\"ds-btn ds-btn-ghost\" href=\"#\">Watch the film</a></div>",
+      "css": ".ds-sign-bg{background:#121417;padding:24px;border-radius:18px;display:inline-block} .ds-btn{display:inline-flex;align-items:center;gap:10px;font:700 1.05rem/1 \"Barlow Semi Condensed\",\"Arial Narrow\",sans-serif;letter-spacing:.02em;text-decoration:none;padding:14px 18px 13px;border-radius:12px;transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .2s} .ds-btn:hover{transform:translateY(-2px)} .ds-btn:focus-visible{outline:3px solid #0072ce;outline-offset:3px} .ds-btn-ghost{color:#f4f2ec;box-shadow:inset 0 0 0 2px color-mix(in srgb,#f4f2ec 35%,transparent)} .ds-btn-ghost:hover{box-shadow:inset 0 0 0 2px #f4f2ec}"
+    },
+    {
+      "name": "Panel Button",
+      "kind": "button",
+      "refersTo": "button-panel",
+      "description": "Black signage plate on the enamel ground.",
+      "html": "<a class=\"ds-btn-panel\" href=\"#\">Open the demo console</a>",
+      "css": ".ds-btn-panel{display:inline-flex;align-items:center;gap:12px;font:700 1.1rem/1 \"Barlow Semi Condensed\",\"Arial Narrow\",sans-serif;text-decoration:none;padding:14px 20px;border-radius:12px;background:#121417;color:#f4f2ec;transition:background .2s} .ds-btn-panel:hover{background:#1f2328} .ds-btn-panel:focus-visible{outline:3px solid #0072ce;outline-offset:3px}"
+    },
+    {
+      "name": "Line Bullets",
+      "kind": "chip",
+      "refersTo": "line-bullet",
+      "description": "Tag chips in the tag's own line colour; dark text on the five light lines.",
+      "html": "<div class=\"ds-bullets\"><span class=\"ds-bullet\" style=\"--c:#e4002b\">Action</span><span class=\"ds-bullet\" style=\"--c:#0072ce\">Meeting/Invite</span><span class=\"ds-bullet ds-dark\" style=\"--c:#ffb500\">Newsletter</span><span class=\"ds-bullet\" style=\"--c:#00a650\">FYI</span><span class=\"ds-bullet ds-blind\" style=\"--c:#7a3e9d\">Internal-Comms</span></div>",
+      "css": ".ds-bullets{display:flex;flex-wrap:wrap;gap:6px} .ds-bullet{display:inline-flex;align-items:center;font:700 .78rem/1 \"Barlow Semi Condensed\",\"Arial Narrow\",sans-serif;letter-spacing:.02em;padding:.32em .6em .3em;border-radius:999px;background:var(--c,#121417);color:#fff;white-space:nowrap} .ds-dark{color:#121417} .ds-blind{animation:ds-blind .42s cubic-bezier(.34,1.56,.64,1) both} @keyframes ds-blind{0%{transform:translateY(-110%);clip-path:inset(100% 0 0 0)}100%{transform:none;clip-path:inset(0 0 0 0)}} @media (prefers-reduced-motion:reduce){.ds-blind{animation:none}}"
+    },
+    {
+      "name": "Departures Board",
+      "kind": "card",
+      "refersTo": "departures-board",
+      "description": "Black enamel board reading the run's counts; mono readouts, signal red only for waiting mail.",
+      "html": "<div class=\"ds-board\"><div class=\"ds-cap\">THIS RUN</div><div class=\"ds-row\"><span><i class=\"ds-sw\"></i>RULES</span><b>27</b></div><div class=\"ds-row\"><span><i class=\"ds-sw ds-hollow\"></i>EXPRESS SPUR</span><b>3</b></div><div class=\"ds-row ds-sig\"><span><i class=\"ds-sw\" style=\"background:#e4002b\"></i>WAITING FOR YOU</span><b>1</b></div></div>",
+      "css": ".ds-board{background:#121417;color:#f4f2ec;border-radius:16px;padding:8px 22px 6px;max-width:420px;font:600 1rem/1 \"Barlow Semi Condensed\",\"Arial Narrow\",sans-serif;letter-spacing:.04em} .ds-cap{font-weight:700;font-size:.8rem;letter-spacing:.14em;color:#b9bcc0;padding:12px 0 10px;border-bottom:1px solid color-mix(in srgb,#f4f2ec 16%,transparent)} .ds-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0 10px;border-bottom:1px solid color-mix(in srgb,#f4f2ec 10%,transparent)} .ds-row:last-child{border-bottom:0} .ds-row b{font:600 1.15rem/1 \"JetBrains Mono\",ui-monospace,monospace} .ds-sig,.ds-sig b{color:#e4002b} .ds-sw{display:inline-block;width:22px;height:8px;border-radius:4px;margin-right:12px;vertical-align:middle;background:#f4f2ec} .ds-hollow{background:#121417;box-shadow:inset 0 0 0 2.5px #f4f2ec}"
+    },
+    {
+      "name": "Enamel Panel",
+      "kind": "card",
+      "refersTo": "enamel-panel",
+      "description": "Demo console panel: enamel fill, 1px rule border, signage header with uppercase meta.",
+      "html": "<section class=\"ds-panel\"><header><h2>Inbox</h2><span class=\"ds-meta ds-sigm\">1 waiting for you</span></header><p>38 unread</p></section>",
+      "css": ".ds-panel{background:#f4f2ec;color:#121417;border:1px solid #cfcabc;border-radius:16px;overflow:hidden;max-width:460px} .ds-panel header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #cfcabc} .ds-panel h2{margin:0;font:800 1.25rem/1.05 \"Barlow Semi Condensed\",\"Arial Narrow\",sans-serif} .ds-meta{margin-left:auto;font:600 .88rem/1 \"Barlow Semi Condensed\",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#474b51} .ds-sigm{color:#e4002b} .ds-panel p{margin:0;padding:14px 18px;font:400 1rem/1.5 \"Atkinson Hyperlegible\",system-ui,sans-serif}"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Sticky enamel bar: roundel logo, signage pill links, black GitHub pill.",
+      "html": "<nav class=\"ds-top\"><a class=\"ds-brand\" href=\"#\"><svg width=\"30\" height=\"30\" viewBox=\"0 0 30 30\" aria-hidden=\"true\"><circle cx=\"15\" cy=\"15\" r=\"11.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"5\"/><rect x=\"0\" y=\"12.5\" width=\"30\" height=\"5\" rx=\"2.5\" fill=\"#0072ce\"/></svg>AI Mail Assistant</a><span class=\"ds-links\"><a href=\"#\">How it works</a><a href=\"#\">Demo</a><a class=\"ds-gh\" href=\"#\">GitHub</a></span></nav>",
+      "css": ".ds-top{display:flex;align-items:center;gap:24px;height:64px;padding:0 16px;background:#f4f2ec;color:#121417;border-bottom:1px solid #cfcabc} .ds-brand{display:flex;align-items:center;gap:10px;font:800 1.2rem/1 \"Barlow Semi Condensed\",\"Arial Narrow\",sans-serif;text-decoration:none;color:inherit} .ds-links{margin-left:auto;display:flex;gap:4px} .ds-links a{font:700 .98rem/1 \"Barlow Semi Condensed\",sans-serif;letter-spacing:.02em;text-decoration:none;color:inherit;padding:10px 12px;border-radius:999px} .ds-links a:hover{background:#e9e6dc} .ds-links a:focus-visible{outline:3px solid #0072ce;outline-offset:3px} .ds-links .ds-gh{background:#121417;color:#f4f2ec} .ds-links .ds-gh:hover{background:#1f2328}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Language switch: enamel-deep pill track, pressed option is a black pill.",
+      "html": "<div class=\"ds-lang\"><button aria-pressed=\"true\">EN</button><button aria-pressed=\"false\">FR</button></div>",
+      "css": ".ds-lang{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:#e9e6dc} .ds-lang button{border:0;background:none;color:#474b51;font:700 .95rem/1 \"Barlow Semi Condensed\",sans-serif;letter-spacing:.06em;padding:10px 18px;border-radius:999px;cursor:pointer} .ds-lang button:hover{color:#121417} .ds-lang button:focus-visible{outline:3px solid #0072ce;outline-offset:2px} .ds-lang button[aria-pressed=\"true\"]{background:#121417;color:#f4f2ec}"
+    },
+    {
+      "name": "Line Sequence",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Stations along a black trunk; model stations are double-ring interchanges.",
+      "html": "<ol class=\"ds-line\"><li><b>Rules</b></li><li><b>Sweep</b></li><li class=\"ds-model\"><b>First pass</b></li><li><b>Validate</b></li></ol>",
+      "css": ".ds-line{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:0;padding:0;list-style:none;font:700 1.15rem/1.1 \"Barlow Semi Condensed\",sans-serif;color:#121417} .ds-line::before{content:\"\";position:absolute;left:0;right:0;top:15px;height:10px;border-radius:5px;background:#121417} .ds-line li{position:relative;padding:56px 16px 0 0} .ds-line li::before{content:\"\";position:absolute;left:0;top:5px;width:30px;height:30px;border-radius:50%;background:#f4f2ec;border:5px solid #121417;box-sizing:border-box} .ds-line li.ds-model::before{box-shadow:0 0 0 4px #f4f2ec,0 0 0 7px #121417}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Transit Line Map",
+    "overview": "The inbox is a metro network. Mail rides one line from the Inbox terminus through Rules, Sweep and Classify, and alights at one of twelve tag terminals; the model is an express spur that is lit only when the rules cannot route. Every surface (the landing page, the demo console, the MkDocs skin and the canvas film) is drawn in the same transit-authority vocabulary: an off-white enamel ground, signage-black enamel panels, rounded-rect station signs, roundel station marks, and one flat line colour per tag.\n\nThe world is wayfinding, not decoration. Thick rounded strokes carry meaning (a coloured line is a tag; the black trunk is the run; the red tail is mail that waits for a person). Type is split by job exactly as a transit authority splits it: condensed signage for names and headings, a legibility face for reading, a monospace only where something is typed or counted. Numbers on a page are instrument readouts of one demo run, not marketing figures.\n\nDensity is calm and generous on the landing page (one idea per section, long section breaks) and tighter in the demo console, where panels sit in a 7/5 grid like a control room.",
+    "keyCharacteristics": [
+      "Enamel ground, signage-black panels, flat colour, no soft drop shadows.",
+      "One line colour per tag; the colour is the tag everywhere it appears.",
+      "Signal red is held back for Action, \"Waiting for you\" and refusals.",
+      "Thick round-capped strokes, straight segments, no curves.",
+      "Label changes snap like a destination blind; that overshoot step is the only motion signature.",
+      "Dark mode inverts the enamel: the ground goes near-black and the panels go enamel."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Rule",
+        "body": "Signal red means a person must act: the Action line, \"Waiting for you\", and refusals. It is never a brand accent, a button fill, or emphasis.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Line, One Colour Rule",
+        "body": "A tag's line colour is its identity across map, bullet, board swatch and film. Never reuse a line colour for anything that is not that tag (Meeting/Invite blue doubling as focus is the single sanctioned overlap).",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Is An Instrument Rule",
+        "body": "JetBrains Mono appears only for commands a person types and numbers a run produced. Never for headings, labels, or decoration.",
+        "section": "typography"
+      },
+      {
+        "name": "The Readout Rule",
+        "body": "Every number on a page is a readout of `docs/assets/demo/run.json` and must cross-check against it; counts rendered by script come from `tally()`, and any count written into prose must match the same run.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Enamel Rule",
+        "body": "Panels are flat enamel: no soft drop shadows, no gradients. If a surface needs separation, give it a tone change or a 1px rule.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Destination Blind Rule",
+        "body": "Label and count changes use one step: a clip-and-drop from above on cubic-bezier(.34, 1.56, .64, 1) over .42 to .5s, overshooting and settling like a roller blind. It is the only motion signature; everything else is a plain ease-out (cubic-bezier(.16, 1, .3, 1)) and all of it stops under reduced motion.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** draw every tag in its own line colour, and only that tag.",
+      "**Do** keep Signal Red for Action, \"Waiting for you\" and refusals.",
+      "**Do** separate surfaces with tone or a 1px Rule Line, never a soft shadow.",
+      "**Do** mark stations with roundels and interchanges with pills; draw lines as 8 to 10px round-capped straight segments.",
+      "**Do** source every on-page number from `docs/assets/demo/run.json` and cross-check prose against it.",
+      "**Do** animate label changes with the destination-blind step and honour prefers-reduced-motion.",
+      "**Do** invert enamel and panel in dark mode rather than inventing a second palette."
+    ],
+    "donts": [
+      "**Don't** use JetBrains Mono for anything but commands and data.",
+      "**Don't** add soft drop shadows or gradients to the enamel panels.",
+      "**Don't** use Signal Red as a brand accent, button fill or emphasis colour.",
+      "**Don't** draw curved lines or introduce a second easing signature.",
+      "**Don't** write a figure into the page that the demo run does not produce."
+    ]
+  }
+}
