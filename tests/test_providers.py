@@ -64,6 +64,33 @@ class ClaudeBackendTests(unittest.TestCase):
             with self.assertRaises(ValueError, msg=key):
                 runner.load_config(path)  # inactive blocks are validated too
 
+    def test_select_cli_rewrites_only_the_cli_key(self):
+        path = self.state / "classifier.json"
+        original = json.loads((triage.ROOT / "classifier.json").read_text())
+        triage.write_json(path, original)
+        path.chmod(0o640)
+        self.assertTrue(runner.select_cli(path, "claude"))
+        self.assertEqual(json.loads(path.read_text()), {**original, "cli": "claude"})
+        self.assertEqual(path.stat().st_mode & 0o777, 0o640)
+        self.assertFalse(runner.select_cli(path, "claude"))
+        del original["providers"]["copilot"]
+        triage.write_json(path, {**original, "cli": "claude"})
+        with self.assertRaises(ValueError):
+            runner.select_cli(path, "copilot")  # no settings to switch to
+        self.assertEqual(json.loads(path.read_text())["cli"], "claude")
+
+    def test_select_cli_on_legacy_format(self):
+        path = self.state / "legacy.json"
+        copilot = runner.load_config(triage.ROOT / "classifier.json")
+        legacy = {k: copilot[k] for k in runner.SHARED_KEYS}
+        legacy.update(cheap_model="m", escalation_model="n", copilot_binary="copilot", disabled_mcp_servers=[])
+        triage.write_json(path, legacy)
+        self.assertFalse(runner.select_cli(path, "copilot"))
+        with self.assertRaises(ValueError) as error:
+            runner.select_cli(path, "claude")
+        self.assertIn("providers.claude", str(error.exception))
+        self.assertEqual(json.loads(path.read_text()), legacy)
+
     def test_cache_key_follows_selected_cli_only(self):
         message = self.messages[0]
         copilot = runner.load_config(triage.ROOT / "classifier.json")

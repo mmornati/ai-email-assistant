@@ -1,5 +1,6 @@
 import contextlib
 import io
+import json
 import plistlib
 import sys
 import tempfile
@@ -22,7 +23,14 @@ class ScheduleTests(unittest.TestCase):
             p.start()
             self.addCleanup(p.stop)
         self.launchctl = patch.object(schedule, "launchctl", return_value="").start()
+        self.write_config("copilot")
         self.addCleanup(patch.stopall)
+
+    def write_config(self, cli, **claude):
+        raw = json.loads((Path(schedule.__file__).parent / "classifier.json").read_text())
+        raw["cli"] = cli
+        raw["providers"]["claude"].update(claude)
+        (self.root / "classifier.json").write_text(json.dumps(raw))
 
     def main(self, *argv):
         with patch.object(sys, "argv", ["schedule.py", *argv]), contextlib.redirect_stdout(io.StringIO()) as out:
@@ -62,9 +70,33 @@ class ScheduleTests(unittest.TestCase):
         self.assertFalse(self.target.exists())
 
     def test_model_free_install_does_not_need_copilot(self):
+        (self.root / "classifier.json").unlink()
         with patch.object(schedule.shutil, "which", side_effect=lambda name: name == "gws" or None):
             self.main("install", "--no-model")
         self.assertIn("--no-model", plistlib.loads(self.target.read_bytes())["ProgramArguments"])
+
+    def test_install_checks_the_configured_cli(self):
+        for cli in ("copilot", "claude"):
+            self.write_config(cli)
+            other = {"copilot": "claude", "claude": "copilot"}[cli]
+            with patch.object(schedule.shutil, "which", side_effect=lambda name: name != cli or None), \
+                    self.assertRaises(ValueError) as error:
+                self.main("install")
+            self.assertIn(f"({cli})", str(error.exception))
+            with patch.object(schedule.shutil, "which", side_effect=lambda name: name != other or None):
+                self.assertIn(f"({cli})", self.main("install"))
+            self.target.unlink()
+
+    def test_install_refuses_api_key_auth_and_invalid_config(self):
+        self.write_config("claude", auth="api_key")
+        with self.assertRaises(ValueError) as error:
+            self.main("install")
+        self.assertIn("subscription", str(error.exception))
+        (self.root / "classifier.json").write_text("{}")
+        with self.assertRaises(ValueError):
+            self.main("install")
+        self.assertFalse(self.target.exists())
+        self.assertIn("runner.py", self.main("render"))  # rendering never reads the classifier config
 
     def test_uninstall(self):
         with self.assertRaises(ValueError):

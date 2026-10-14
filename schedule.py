@@ -38,6 +38,20 @@ def definition(python, no_model=False, dry_run=False):
     }
 
 
+def classifier_check():
+    """Return a description of the configured classifier CLI, or raise if a scheduled run could not use it."""
+    import runner  # deferred: render/status/uninstall must not depend on classifier.json
+
+    cfg = runner.load_config(ROOT / "classifier.json")
+    label = runner.BACKENDS[cfg["cli"]].label
+    if not shutil.which(cfg["binary"]):
+        raise ValueError(f"{label} CLI ({cfg['binary']}) must be available on PATH")
+    if cfg["cli"] == "claude" and cfg["auth"] == "api_key":
+        # The job records only PATH; it never stores an API key in the plist.
+        raise ValueError('scheduled runs cannot use providers.claude.auth "api_key"; use "subscription"')
+    return f"{label} ({cfg['binary']})"
+
+
 def launchctl(*args):
     result = subprocess.run(["launchctl", *args], capture_output=True, text=True)
     if result.returncode:
@@ -64,8 +78,7 @@ def main():
     elif args.command == "install":
         if not Path(definition_["ProgramArguments"][0]).is_file() or not shutil.which("gws"):
             raise ValueError("a valid interpreter and gws on PATH are required")
-        if not args.no_model and not shutil.which("copilot"):
-            raise ValueError("Copilot CLI must be available on PATH")
+        classifier = "none (--no-model)" if args.no_model else classifier_check()
         if TARGET.exists():
             raise ValueError(f"{TARGET} already exists; inspect it, then uninstall before replacing")
         TARGET.parent.mkdir(parents=True, exist_ok=True)
@@ -79,6 +92,7 @@ def main():
             # Keep the generated file for diagnosis; do not pretend installation succeeded.
             raise
         print(f"Installed {TARGET}; weekdays hourly 08:00-19:00 local time; no immediate run.")
+        print(f"Classifier: {classifier}. Switching CLI later needs no reinstall if its binary is on this PATH.")
     else:
         if not TARGET.exists():
             raise ValueError(f"no installed schedule at {TARGET}")

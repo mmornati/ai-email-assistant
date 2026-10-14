@@ -75,6 +75,23 @@ def load_config(path, cli=None):
     return {**{k: raw[k] for k in SHARED_KEYS}, "cli": selected, **providers[selected]}
 
 
+def select_cli(path, cli):
+    """Set "cli" in classifier.json, keeping the rest of the file; return False if already set."""
+    raw = json.loads(path.read_text())
+    if isinstance(raw, dict) and "cli" not in raw and cli != "copilot":
+        raise ValueError("classifier.json uses the older Copilot-only format; move its CLI settings "
+                         f"under providers.copilot and add providers.{cli} first (see README)")
+    load_config(path, cli)  # the selected provider must exist and every block must be valid
+    if raw.get("cli", "copilot") == cli:
+        return False
+    raw["cli"] = cli
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(json.dumps(raw, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    os.chmod(temporary, path.stat().st_mode & 0o777)
+    temporary.replace(path)
+    return True
+
+
 def cache_key(message, rules, cfg):
     content = {
         "message": {k: message.get(k) for k in FIELDS},
@@ -537,6 +554,8 @@ def main():
     parser.add_argument("--scheduled", action="store_true", help="skip calendar catch-ups outside weekday 08:00-19:59")
     parser.add_argument("--usage-report", action="store_true", help="print recorded token totals; no scan or model call")
     parser.add_argument("--cli", choices=sorted(BACKENDS), help="override the classifier.json cli for this run")
+    parser.add_argument("--select-cli", choices=sorted(BACKENDS),
+                        help="set the cli in the classifier configuration and exit; no scan or model call")
     parser.add_argument("--config", type=Path, default=ROOT / "classifier.json")
     parser.add_argument("--rules", default=str(ROOT / "rules.json"))
     parser.add_argument("--window", default=None)
@@ -547,6 +566,10 @@ def main():
     os.umask(0o077)
     if args.usage_report:
         usage_report()
+        return 0
+    if args.select_cli:
+        changed = select_cli(args.config, args.select_cli)
+        print(f"[runner] {args.config.name}: cli is {args.select_cli}{'' if changed else ' (unchanged)'}")
         return 0
     now = dt.datetime.now()
     if args.scheduled and (now.weekday() >= 5 or not 8 <= now.hour <= 19):

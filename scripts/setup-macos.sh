@@ -2,7 +2,8 @@
 # Configure AI Mail Assistant from zero on macOS.
 #
 # Installs the CLIs with Homebrew, creates private local files, walks through
-# Google Cloud / Google Workspace / Copilot authentication, and verifies the
+# Google Cloud / Google Workspace / classifier CLI (Copilot or Claude Code)
+# authentication, and verifies the
 # install with the offline tests and a model-free, read-only dry run.
 #
 # It never modifies mail, never enables --apply, and never installs a schedule.
@@ -19,7 +20,8 @@ TASKS_SCOPE="https://www.googleapis.com/auth/tasks"
 ASSUME_YES=0
 DRY_RUN=0
 SKIP_AUTH=0
-SKIP_COPILOT=0
+SKIP_MODEL_CLI=0
+CLI=""            # copilot or claude; empty means "whatever classifier.json selects"
 SKIP_VERIFY=0
 GCP_PROJECT=""
 
@@ -32,8 +34,12 @@ Options:
   -n, --dry-run        Print the commands that would run; change nothing
       --project ID     Use an existing Google Cloud project for gws auth setup
       --skip-auth      Install tools and local files only; no logins
-      --skip-copilot   Do not install or log in to the Copilot CLI
+      --cli NAME       Classifier CLI to install and select in classifier.json:
+                       copilot (GitHub Copilot CLI) or claude (Claude Code).
+                       Default: the cli already set in classifier.json
+      --no-model-cli   Do not install or log in to any classifier CLI
                        (model-free use only: runner.py --no-model)
+      --skip-copilot   Same as --no-model-cli (older name)
       --skip-verify    Do not run the tests or the read-only dry run
   -h, --help           Show this help
 
@@ -47,7 +53,10 @@ while [[ $# -gt 0 ]]; do
     -n|--dry-run) DRY_RUN=1 ;;
     --project) GCP_PROJECT="${2:?--project requires a value}"; shift ;;
     --skip-auth) SKIP_AUTH=1 ;;
-    --skip-copilot) SKIP_COPILOT=1 ;;
+    --cli)
+      CLI="${2:?--cli requires a value}"; shift
+      [[ "$CLI" == copilot || "$CLI" == claude ]] || { echo "--cli must be copilot or claude" >&2; exit 64; } ;;
+    --no-model-cli|--skip-copilot) SKIP_MODEL_CLI=1 ;;
     --skip-verify) SKIP_VERIFY=1 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "unknown option: $1" >&2; usage >&2; exit 64 ;;
@@ -112,6 +121,19 @@ if [[ $DRY_RUN -eq 0 ]]; then
 fi
 ok "$PYTHON"
 
+# Which classifier CLI classifier.json selects now (the older flat format means copilot).
+CONFIG_CLI="$("$PYTHON" -c '
+import json, sys
+print(json.load(open(sys.argv[1])).get("cli", "copilot"))
+' "$ROOT/classifier.json" 2>/dev/null || true)"
+CLI_REQUESTED="$CLI"
+CLI="${CLI:-${CONFIG_CLI:-copilot}}"
+case "$CLI" in
+  claude) CLI_NAME="Claude Code" ;;
+  copilot) CLI_NAME="GitHub Copilot CLI" ;;
+  *) die "classifier.json selects an unknown cli '$CLI'; use --cli copilot or --cli claude" ;;
+esac
+
 # --- 3. CLIs ---------------------------------------------------------------------
 step "Command-line tools"
 # Homebrew's "gws" formula is an unrelated git-workspace tool with the same binary name.
@@ -133,10 +155,12 @@ brew_install() {  # brew_install <formula|--cask cask> <binary> <description>
 
 brew_install googleworkspace-cli gws "Google Workspace CLI (gws)"
 brew_install --cask gcloud-cli gcloud "Google Cloud CLI (gcloud)"
-if [[ $SKIP_COPILOT -eq 0 ]]; then
-  brew_install --cask copilot-cli copilot "GitHub Copilot CLI"
+if [[ $SKIP_MODEL_CLI -eq 1 ]]; then
+  warn "skipping the classifier CLI: only model-free runs (runner.py --no-model) will work"
+elif [[ "$CLI" == claude ]]; then
+  brew_install --cask claude-code claude "$CLI_NAME"
 else
-  warn "skipping Copilot CLI: only model-free runs (runner.py --no-model) will work"
+  brew_install --cask copilot-cli copilot "$CLI_NAME"
 fi
 
 # --- 4. Private local files -------------------------------------------------------
@@ -155,6 +179,11 @@ else
   run cp rules.example.json rules.json
   ok "created rules.json from the starter rules (no cleanup actions enabled)"
 fi
+if [[ -n "$CLI_REQUESTED" && "$CLI_REQUESTED" != "$CONFIG_CLI" ]]; then
+  # Validates the providers block before rewriting; mail and state are untouched.
+  run "$PYTHON" runner.py --select-cli "$CLI_REQUESTED"
+fi
+ok "classifier.json selects $CLI ($CLI_NAME)"
 
 # --- 5. Authentication --------------------------------------------------------------
 # Prints one word per missing piece: setup, apis, login. Reads gws status JSON on stdin.
@@ -223,8 +252,17 @@ else
     if [[ -z "$missing" ]]; then ok "gws is authorized for Gmail and Tasks"; else warn "gws still missing: $missing"; fi
   fi
 
-  if [[ $SKIP_COPILOT -eq 0 ]]; then
-    step "GitHub Copilot CLI"
+  if [[ $SKIP_MODEL_CLI -eq 1 ]]; then
+    :
+  elif [[ "$CLI" == claude ]]; then
+    step "$CLI_NAME"
+    echo "  Classification uses your Claude subscription login (providers.claude.auth in classifier.json)."
+    echo "  Each call is capped by providers.claude.max_budget_usd_per_call."
+    if confirm "Run claude auth login now? (skip if already logged in)"; then
+      run claude auth login
+    fi
+  else
+    step "$CLI_NAME"
     echo "  Classification uses your Copilot account and its organization model policy."
     if confirm "Run copilot login now? (skip if already logged in)"; then
       run copilot login
@@ -260,7 +298,7 @@ fi
 step "Done. Next steps"
 cat <<EOF
   1. Personalize rules (read-only discovery, you approve every rule):
-       open this folder in Copilot and ask it to use the mail-setup skill
+       open this folder in $( [[ "$CLI" == claude ]] && echo "Claude Code" || echo "Copilot" ) and ask it to use the mail-setup skill
   2. Review rules.json and classifier.json (models, limits).
   3. Paid classification, still a dry run:   $PYTHON runner.py
   4. Apply for real after reviewing state/:   $PYTHON runner.py --apply
